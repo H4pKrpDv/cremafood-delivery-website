@@ -564,6 +564,50 @@
         cursor: pointer;
       }
 
+      /* ─── LOYALTY CARD (программа лояльности, не товар) ─── */
+      .loyalty-card {
+        background: var(--bg-2);
+        border: 1px solid var(--gold-dark);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+
+      .loyalty-card__badge {
+        display: inline-block;
+        padding: 0.3rem 0.85rem;
+        border-radius: 999px;
+        background: rgba(200, 150, 74, 0.2);
+        color: var(--gold-light);
+        border: 1px solid var(--gold-dark);
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-bottom: 0.75rem;
+      }
+
+      .loyalty-card__title {
+        font-family: var(--font-head);
+        font-size: 1.15rem;
+        color: var(--cream);
+        margin-bottom: 0.5rem;
+      }
+
+      .loyalty-card__text {
+        font-size: 0.9rem;
+        color: var(--text-2);
+        line-height: 1.6;
+        max-width: 480px;
+        margin: 0 auto 0.75rem;
+      }
+
+      .loyalty-card__time {
+        font-size: 0.8rem;
+        color: var(--gold);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
       /* ─── FULL MENU CARD ─── */
       .full-menu-card {
         background: var(--bg-2);
@@ -955,6 +999,13 @@
       <section class="category-group" id="cat-special-offers" data-category="special-offers">
         <h3 class="category-group__title" data-i18n-key="categories.special-offers">Спец. предложения</h3>
 
+        <div class="loyalty-card" id="loyalty-card">
+          <span class="loyalty-card__badge" data-i18n-key="specialOffers.loyaltyBadge">-20%</span>
+          <h4 class="loyalty-card__title" data-i18n-key="specialOffers.loyaltyTitle">Скидочная карта</h4>
+          <p class="loyalty-card__text" data-i18n-key="specialOffers.loyaltyText">Постоянные гости могут получить скидочную карту на −20% на все кофейные напитки. Подробности и условия получения — узнавайте у наших сотрудников в заведении.</p>
+          <span class="loyalty-card__time" data-i18n-key="specialOffers.loyaltyTime">Навсегда</span>
+        </div>
+
         <div class="category" id="promo-permanent">
           <div class="category__header">
             <img src="img/categories/promo-permanent.jpg" alt="Постоянные" class="category__img" loading="lazy" />
@@ -1018,6 +1069,7 @@
 
       <section class="category-group" id="cat-cafe" data-category="cafe">
         <h3 class="category-group__title" data-i18n-key="categories.cafe">Кафе</h3>
+
 
         <div class="category" id="coffee">
           <div class="category__header">
@@ -1823,6 +1875,7 @@
 
       <section class="category-group" id="cat-kitchen" data-category="kitchen">
         <h3 class="category-group__title" data-i18n-key="categories.kitchen">Кухня</h3>
+
 
         <div class="category" id="breakfast">
           <div class="category__header">

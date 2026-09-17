@@ -183,11 +183,35 @@ function renderSubcategory(sub, index, categoryId) {
 }
 
 // ---------------------------------------------------------------------
+// Карточка программы лояльности ("Скидочная карта −20%") — это не товар,
+// поэтому в menu.json её нет: она не заказывается, у неё нет цены за
+// порцию/степпера. Показываем её только внутри группы "special-offers",
+// отдельным информационным блоком. См. Context.md, раздел
+// "Скидочная карта / программа лояльности".
+// ---------------------------------------------------------------------
+
+function renderLoyaltyCard() {
+  const badgeKey = 'specialOffers.loyaltyBadge';
+  const titleKey = 'specialOffers.loyaltyTitle';
+  const textKey = 'specialOffers.loyaltyText';
+  const timeKey = 'specialOffers.loyaltyTime';
+
+  return `
+        <div class="loyalty-card" id="loyalty-card">
+          <span class="loyalty-card__badge" data-i18n-key="${badgeKey}">${escapeHtml(t(badgeKey))}</span>
+          <h4 class="loyalty-card__title" data-i18n-key="${titleKey}">${escapeHtml(t(titleKey))}</h4>
+          <p class="loyalty-card__text" data-i18n-key="${textKey}">${escapeHtml(t(textKey))}</p>
+          <span class="loyalty-card__time" data-i18n-key="${timeKey}">${escapeHtml(t(timeKey))}</span>
+        </div>`;
+}
+
+// ---------------------------------------------------------------------
 // Генерация группы верхнего уровня (special-offers / cafe / kitchen)
 // ---------------------------------------------------------------------
 
 function renderCategoryGroup(category) {
   const titleKey = `categories.${category.id}`;
+  const loyaltyHtml = category.id === 'special-offers' ? renderLoyaltyCard() : '';
   const subsHtml = category.subcategories
     .map((sub, index) => renderSubcategory(sub, index, category.id))
     .join('\n');
@@ -195,6 +219,7 @@ function renderCategoryGroup(category) {
   return `
       <section class="category-group" id="cat-${category.id}" data-category="${category.id}">
         <h3 class="category-group__title" data-i18n-key="${titleKey}">${escapeHtml(t(titleKey))}</h3>
+${loyaltyHtml}
 ${subsHtml}
       </section>`;
 }
