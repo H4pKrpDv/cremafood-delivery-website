@@ -15,6 +15,13 @@
     <meta name="twitter:title" content="CR Crema Balti Premium Coffee">
     <meta name="twitter:description" content="Наше меню. Каждый напиток приготовлен с заботой из лучших ингредиентов">
     <style>
+      /*
+        ВРЕМЕННО: стили пока оставлены как в старой версии сайта (инлайн),
+        без изменений. Полный переезд на mobile-first css/style.css и
+        стилизация новых блоков (сетка товаров, табы, попап корзины,
+        бургер-меню и т.д.) — отдельный п.3 плана. Здесь ничего не трогаем,
+        чтобы не смешивать этот шаг с задачами шага 3.
+      */
       *, *::before, *::after {
         box-sizing: border-box;
         margin: 0;
@@ -421,7 +428,7 @@
         line-height: 1.7;
       }
 
-      /* ─── ITEMS LIST ─── */
+      /* ─── ITEMS LIST (старый формат, заменяется сеткой в п.6 плана) ─── */
       .items {
         background: var(--bg-2);
         border: 1px solid var(--border);
@@ -474,6 +481,125 @@
         color: var(--gold);
         white-space: nowrap;
         flex-shrink: 0;
+      }
+
+      /* ─── ITEM CARD (новая сетка товаров, п.2: временный минимальный вид,
+             полноценная стилизация — п.3/п.6 плана) ─── */
+      .items-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+
+      .item-card {
+        background: var(--bg-2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .item-card--unavailable {
+        opacity: 0.55;
+      }
+
+      .item-card__img {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+      }
+
+      .item-card__body {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        flex: 1;
+      }
+
+      .item-card__name {
+        font-family: var(--font-head);
+        font-size: 0.95rem;
+        color: var(--cream);
+      }
+
+      .item-card__desc {
+        font-size: 0.8rem;
+        color: var(--text-3);
+        line-height: 1.4;
+      }
+
+      .item-card__meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-top: auto;
+        font-size: 0.85rem;
+        color: var(--text-2);
+      }
+
+      .item-card__price {
+        color: var(--gold);
+        font-weight: 600;
+      }
+
+      .item-card__unavailable-note {
+        font-size: 0.8rem;
+        color: var(--text-3);
+      }
+
+      .item-card__stepper {
+        margin-top: 0.5rem;
+      }
+
+      .stepper__add {
+        width: 100%;
+        padding: 0.5rem;
+        border-radius: var(--radius);
+        background: var(--gold);
+        color: var(--bg);
+        border: none;
+        font-size: 0.85rem;
+        cursor: pointer;
+      }
+
+      /* ─── FULL MENU CARD ─── */
+      .full-menu-card {
+        background: var(--bg-2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        text-align: center;
+      }
+
+      .full-menu-card__qr-placeholder {
+        width: 96px;
+        height: 96px;
+        margin: 0 auto 1rem;
+        background: var(--surface);
+        border: 1px dashed var(--border);
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        color: var(--text-3);
+      }
+
+      /* ─── MENU-PILLS (категории верхнего уровня, временно как pills — табы см. п.6) ─── */
+      .category-group {
+        margin-bottom: 5rem;
+      }
+
+      .category-group__title {
+        font-family: var(--font-head);
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        color: var(--gold-light);
+        text-align: center;
+        margin-bottom: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
       }
 
       /* ─── PROMOTIONS ─── */
@@ -745,11 +871,29 @@
         .item__price {
           align-self: flex-end;
         }
+
+        .items-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.75rem;
+        }
       }
 
     </style>
   </head>
   <body>
+
+    <!--
+      ПРИМЕЧАНИЕ (Этап 1, п.2 плана): этот файл — ИСХОДНЫЙ шаблон для build.js.
+      Шапка/hero/футер ниже пока оставлены как в старой версии сайта —
+      их переделка (бургер-меню, карусель, новый футер) запланирована
+      отдельными пунктами плана (4, 5, 9). build.js на этом шаге трогает
+      только секцию <section class="menu" id="menu">: он подставляет туда
+      сгенерированные из data/menu.json категории/подкатегории/товары
+      вместо плейсхолдеров {{MENU_PILLS}} и {{MENU_CATEGORIES}}.
+      Не редактируй сгенерированный ../index.html руками — он перезатирается
+      при каждом запуске `node build/build.js`. Правь этот template.html
+      или data/menu.json / data/i18n/*.json.
+    -->
 
     <header class="header" id="top">
       <div class="header__inner">
@@ -783,194 +927,998 @@
     <section class="menu" id="menu">
       <div class="container">
         <div class="section-header">
-          <p class="section-eyebrow">Наше меню</p>
-          <h2 class="section-title">Всё, что вы любите</h2>
-          <p class="section-desc">Каждый напиток приготовлен с заботой из лучших ингредиентов</p>
+          <p class="section-eyebrow" data-i18n-key="menu.eyebrow">Наше меню</p>
+          <h2 class="section-title" data-i18n-key="menu.title">Всё, что вы любите</h2>
+          <p class="section-desc" data-i18n-key="menu.desc">Каждый напиток приготовлен с заботой из лучших ингредиентов</p>
         </div>
 
         <nav class="menu-pills">
-          <a href="#coffee" class="pill">Coffee</a>
-          <a href="#ice-coffee" class="pill">Ice Coffee</a>
-          <a href="#tea" class="pill">Tea</a>
-          <a href="#bubble-tea" class="pill">Bubble Tea</a>
-          <a href="#milkshakes" class="pill">Milkshakes</a>
-          <a href="#lemonades" class="pill">Lemonades</a>
-          <a href="#desserts" class="pill">Desserts</a>
-          <a href="#alcohol" class="pill">Alcohol</a>
-          <a href="#promotions" class="pill pill--accent">Promotions</a>
+          <a href="#promo-permanent" class="pill" data-category="special-offers" data-i18n-key="subcategories.promo-permanent.title">Постоянные</a>
+          <a href="#promo-seasonal" class="pill" data-category="special-offers" data-i18n-key="subcategories.promo-seasonal.title">Сезонные</a>
+          <a href="#promo-new" class="pill" data-category="special-offers" data-i18n-key="subcategories.promo-new.title">Новинки</a>
+          <a href="#full-menu-card-special-offers" class="pill pill--accent" data-category="special-offers" data-i18n-key="subcategories.full-menu.title">Полное меню</a>
+          <a href="#coffee" class="pill" data-category="cafe" data-i18n-key="subcategories.coffee.title">Coffee</a>
+          <a href="#ice-coffee" class="pill" data-category="cafe" data-i18n-key="subcategories.ice-coffee.title">Ice Coffee</a>
+          <a href="#tea" class="pill" data-category="cafe" data-i18n-key="subcategories.tea.title">Tea</a>
+          <a href="#bubble-tea" class="pill" data-category="cafe" data-i18n-key="subcategories.bubble-tea.title">Bubble Tea</a>
+          <a href="#milkshakes" class="pill" data-category="cafe" data-i18n-key="subcategories.milkshakes.title">Милкшейки</a>
+          <a href="#lemonades" class="pill" data-category="cafe" data-i18n-key="subcategories.lemonades.title">Лимонады</a>
+          <a href="#desserts" class="pill" data-category="cafe" data-i18n-key="subcategories.desserts.title">Десерты</a>
+          <a href="#alcohol" class="pill" data-category="cafe" data-i18n-key="subcategories.alcohol.title">Алкогольные напитки</a>
+          <a href="#full-menu-card-cafe" class="pill pill--accent" data-category="cafe" data-i18n-key="subcategories.full-menu.title">Полное меню</a>
+          <a href="#breakfast" class="pill" data-category="kitchen" data-i18n-key="subcategories.breakfast.title">Завтраки</a>
+          <a href="#mexican" class="pill" data-category="kitchen" data-i18n-key="subcategories.mexican.title">Мексиканская кухня</a>
+          <a href="#full-menu-card-kitchen" class="pill pill--accent" data-category="kitchen" data-i18n-key="subcategories.full-menu.title">Полное меню</a>
         </nav>
+
+        
+      <section class="category-group" id="cat-special-offers" data-category="special-offers">
+        <h3 class="category-group__title" data-i18n-key="categories.special-offers">Спец. предложения</h3>
+
+        <div class="category" id="promo-permanent">
+          <div class="category__header">
+            <img src="img/categories/promo-permanent.jpg" alt="Постоянные" class="category__img" loading="lazy" />
+            <div class="category__text">
+              <h4 class="category__title" data-i18n-key="subcategories.promo-permanent.title">Постоянные</h4>
+              <p class="category__desc" data-i18n-key="subcategories.promo-permanent.desc">Предложения, которые действуют всегда</p>
+            </div>
+          </div>
+          <div class="items-grid">
+          <article class="item-card" data-item-id="combo-latte-sandwich" data-available="true">
+            <img class="item-card__img" src="img/items/combo-latte-sandwich.jpg" alt="Латте и сэндвич" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.combo-latte-sandwich.name">Комбо: Латте/Капучино + сэндвич</h5>
+              <p class="item-card__desc" data-i18n-key="items.combo-latte-sandwich.desc">Выгодное предложение дня — ароматный кофе и свежий сэндвич по специальной цене</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.combo-latte-sandwich.weight"></span>
+                <span class="item-card__price">40 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="combo-latte-sandwich" data-price="40">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+          </div>
+        </div>
+
+        <div class="category" id="promo-seasonal">
+          <div class="category__header category__header--rev">
+            <img src="img/categories/promo-seasonal.jpg" alt="Сезонные" class="category__img" loading="lazy" />
+            <div class="category__text">
+              <h4 class="category__title" data-i18n-key="subcategories.promo-seasonal.title">Сезонные</h4>
+              <p class="category__desc" data-i18n-key="subcategories.promo-seasonal.desc">Ограниченные по времени сезонные предложения</p>
+            </div>
+          </div>
+          <div class="items-grid">
+          </div>
+        </div>
+
+        <div class="category" id="promo-new">
+          <div class="category__header">
+            <img src="img/categories/promo-new.jpg" alt="Новинки" class="category__img" loading="lazy" />
+            <div class="category__text">
+              <h4 class="category__title" data-i18n-key="subcategories.promo-new.title">Новинки</h4>
+              <p class="category__desc" data-i18n-key="subcategories.promo-new.desc">Только что появилось в меню</p>
+            </div>
+          </div>
+          <div class="items-grid">
+          </div>
+        </div>
+
+        <div class="category category--full-menu" id="full-menu-card-special-offers">
+          <div class="full-menu-card">
+            <div class="full-menu-card__qr-placeholder" aria-hidden="true">QR</div>
+            <p data-i18n-key="subcategories.full-menu.text">
+              На сайте представлены лишь те напитки/блюда, которые можно заказать. Если хотите ознакомиться с полным меню, нажмите «<a href="/full-menu.pdf" data-i18n-key="subcategories.full-menu.linkText">здесь</a>» или отсканируйте QR-код на экране.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="category-group" id="cat-cafe" data-category="cafe">
+        <h3 class="category-group__title" data-i18n-key="categories.cafe">Кафе</h3>
 
         <div class="category" id="coffee">
           <div class="category__header">
-            <img src="img/coffee-category-img.webp" alt="Кофе" class="category__img" />
+            <img src="img/categories/coffee.jpg" alt="Coffee" class="category__img" loading="lazy" />
             <div class="category__text">
-              <span class="category__num">01</span>
-              <h3 class="category__title">Coffee</h3>
-              <p class="category__desc">Зёрна из лучших плантаций мира, обжаренные для идеального баланса вкуса и аромата</p>
+              <h4 class="category__title" data-i18n-key="subcategories.coffee.title">Coffee</h4>
+              <p class="category__desc" data-i18n-key="subcategories.coffee.desc">Зёрна из лучших плантаций мира, обжаренные для идеального баланса вкуса и аромата</p>
             </div>
           </div>
-          <div class="items">
-            <div class="item"><div class="item__info"><span class="item__name">Espresso</span><span class="item__desc">Классический концентрированный кофе с насыщенным вкусом</span></div><span class="item__price">23 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Americano</span><span class="item__desc">Эспрессо с горячей водой — мягкий и ароматный</span></div><span class="item__price">23 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Doppio</span><span class="item__desc">Двойная порция эспрессо</span></div><span class="item__price">30 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Cortado</span><span class="item__desc">Эспрессо с горячей водой — мягкий и ароматный</span></div><span class="item__price">26 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Cappucino</span><span class="item__desc">Эспрессо с нежной бархатистой молочной пенкой</span></div><span class="item__price">27 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Grand Capuccino</span><span class="item__desc">Двойнная порция эспрессо с большим количеством вспененного молока</span></div><span class="item__price">35 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Latte</span><span class="item__desc">Мягкий кофе с большим количеством вспененного молока</span></div><span class="item__price">30 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Flat White</span><span class="item__desc">Двойной эспрессо с бархатным микропенным молоком</span></div><span class="item__price">30 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Moccacino</span><span class="item__desc">Капучино с добавлением горячего шоколада</span></div><span class="item__price">35 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Raf Coffee</span><span class="item__desc">Кофе со сливками и ванилью</span></div><span class="item__price">35 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Hot Chocolate</span><span class="item__desc">Горячий напиток, приготовленный из тертого шоколада и подогретого молока</span></div><span class="item__price">30 MDL</span></div>
+          <div class="items-grid">
+          <article class="item-card" data-item-id="espresso" data-available="true">
+            <img class="item-card__img" src="img/items/espresso.jpg" alt="Чашка эспрессо" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.espresso.name">Espresso</h5>
+              <p class="item-card__desc" data-i18n-key="items.espresso.desc">Классический концентрированный кофе с насыщенным вкусом</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.espresso.weight">30 мл</span>
+                <span class="item-card__price">23 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="espresso" data-price="23">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="americano" data-available="true">
+            <img class="item-card__img" src="img/items/americano.jpg" alt="Американо в чашке" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.americano.name">Americano</h5>
+              <p class="item-card__desc" data-i18n-key="items.americano.desc">Эспрессо с горячей водой — мягкий и ароматный</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.americano.weight">180 мл</span>
+                <span class="item-card__price">23 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="americano" data-price="23">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="doppio" data-available="true">
+            <img class="item-card__img" src="img/items/doppio.jpg" alt="Двойной эспрессо" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.doppio.name">Doppio</h5>
+              <p class="item-card__desc" data-i18n-key="items.doppio.desc">Двойная порция эспрессо</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.doppio.weight">60 мл</span>
+                <span class="item-card__price">30 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="doppio" data-price="30">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="cortado" data-available="true">
+            <img class="item-card__img" src="img/items/cortado.jpg" alt="Кортадо в стакане" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.cortado.name">Cortado</h5>
+              <p class="item-card__desc" data-i18n-key="items.cortado.desc">Эспрессо с небольшим количеством тёплого молока</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.cortado.weight">120 мл</span>
+                <span class="item-card__price">26 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="cortado" data-price="26">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="cappuccino" data-available="true">
+            <img class="item-card__img" src="img/items/cappuccino.jpg" alt="Капучино с пенкой" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.cappuccino.name">Cappuccino</h5>
+              <p class="item-card__desc" data-i18n-key="items.cappuccino.desc">Эспрессо с нежной бархатистой молочной пенкой</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.cappuccino.weight">180 мл</span>
+                <span class="item-card__price">27 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="cappuccino" data-price="27">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="grand-cappuccino" data-available="true">
+            <img class="item-card__img" src="img/items/grand-cappuccino.jpg" alt="Большой капучино" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.grand-cappuccino.name">Grand Cappuccino</h5>
+              <p class="item-card__desc" data-i18n-key="items.grand-cappuccino.desc">Двойная порция эспрессо с большим количеством вспененного молока</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.grand-cappuccino.weight">300 мл</span>
+                <span class="item-card__price">35 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="grand-cappuccino" data-price="35">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="latte" data-available="true">
+            <img class="item-card__img" src="img/items/latte.jpg" alt="Латте в чашке" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.latte.name">Latte</h5>
+              <p class="item-card__desc" data-i18n-key="items.latte.desc">Мягкий кофе с большим количеством вспененного молока</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.latte.weight">250 мл</span>
+                <span class="item-card__price">30 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="latte" data-price="30">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="flat-white" data-available="true">
+            <img class="item-card__img" src="img/items/flat-white.jpg" alt="Флэт уайт" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.flat-white.name">Flat White</h5>
+              <p class="item-card__desc" data-i18n-key="items.flat-white.desc">Двойной эспрессо с бархатным микропенным молоком</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.flat-white.weight">180 мл</span>
+                <span class="item-card__price">30 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="flat-white" data-price="30">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="moccacino" data-available="true">
+            <img class="item-card__img" src="img/items/moccacino.jpg" alt="Моккачино" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.moccacino.name">Moccacino</h5>
+              <p class="item-card__desc" data-i18n-key="items.moccacino.desc">Капучино с добавлением горячего шоколада</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.moccacino.weight">220 мл</span>
+                <span class="item-card__price">35 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="moccacino" data-price="35">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="raf-coffee" data-available="true">
+            <img class="item-card__img" src="img/items/raf-coffee.jpg" alt="Раф кофе" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.raf-coffee.name">Raf Coffee</h5>
+              <p class="item-card__desc" data-i18n-key="items.raf-coffee.desc">Кофе со сливками и ванилью</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.raf-coffee.weight">200 мл</span>
+                <span class="item-card__price">35 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="raf-coffee" data-price="35">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="hot-chocolate" data-available="true">
+            <img class="item-card__img" src="img/items/hot-chocolate.jpg" alt="Горячий шоколад" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.hot-chocolate.name">Hot Chocolate</h5>
+              <p class="item-card__desc" data-i18n-key="items.hot-chocolate.desc">Горячий напиток, приготовленный из тёртого шоколада и подогретого молока</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.hot-chocolate.weight">220 мл</span>
+                <span class="item-card__price">30 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="hot-chocolate" data-price="30">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
           </div>
         </div>
 
         <div class="category" id="ice-coffee">
-          <div class="category__header">
-            <img src="img/ice-coffee-category-img.jpg" alt="Ice Coffe" class="category__img" />
+          <div class="category__header category__header--rev">
+            <img src="img/categories/ice-coffee.jpg" alt="Ice Coffee" class="category__img" loading="lazy" />
             <div class="category__text">
-              <span class="category__num">02</span>
-              <h3 class="category__title">Ice Coffee</h3>
-              <p class="category__desc">Освежающий кофейный напиток заряжающий бодростью и энергией, что как раз необходимо в теплое время года</p>
+              <h4 class="category__title" data-i18n-key="subcategories.ice-coffee.title">Ice Coffee</h4>
+              <p class="category__desc" data-i18n-key="subcategories.ice-coffee.desc">Освежающий кофейный напиток, заряжающий бодростью и энергией</p>
             </div>
           </div>
-          <div class="items">
-            <div class="item"><div class="item__info"><span class="item__name">Ice Latte</span><span class="item__desc">Кофейный напиток на основе эспрессо, молока и льда, который подается холодным. Не только вкусно, но и эстетично</span></div><span class="item__price">40 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Frappe</span><span class="item__desc">Покрытый взбитыми сливками холодный кофейный напиток греческого происхождения</span></div><span class="item__price">45 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Espresso tonic</span><span class="item__desc">Безалкогольный напиток, приготовленный путем смешивания эспрессо, льда и тонизирующей воды, обладающий горьковато-освежающим вкусом</span></div><span class="item__price">50 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Bumblebee</span><span class="item__desc">Напиток из эспрессо, апельсинового сока и сиропа (обычно карамельного). Ингредиенты добавляются слоями благодаря чему получается коктейль напоминающий расцветкой шмеля</span></div><span class="item__price">55 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Bubble Coffee</span><span class="item__desc">Кофе с шариками тапиока, или, как его еще называют, кофе с пузырьками — идеальный освежающий напиток со льдом</span></div><span class="item__price">60 MDL</span></div>
+          <div class="items-grid">
+          <article class="item-card" data-item-id="iced-latte" data-available="true">
+            <img class="item-card__img" src="img/items/iced-latte.jpg" alt="Айс латте в стакане" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.iced-latte.name">Ice Latte</h5>
+              <p class="item-card__desc" data-i18n-key="items.iced-latte.desc">Кофейный напиток на основе эспрессо, молока и льда, который подаётся холодным. Не только вкусно, но и эстетично</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.iced-latte.weight">300 мл</span>
+                <span class="item-card__price">40 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="iced-latte" data-price="40">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="frappe" data-available="true">
+            <img class="item-card__img" src="img/items/frappe.jpg" alt="Фраппе со сливками" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.frappe.name">Frappe</h5>
+              <p class="item-card__desc" data-i18n-key="items.frappe.desc">Покрытый взбитыми сливками холодный кофейный напиток греческого происхождения</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.frappe.weight">300 мл</span>
+                <span class="item-card__price">45 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="frappe" data-price="45">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="espresso-tonic" data-available="true">
+            <img class="item-card__img" src="img/items/espresso-tonic.jpg" alt="Эспрессо тоник" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.espresso-tonic.name">Espresso Tonic</h5>
+              <p class="item-card__desc" data-i18n-key="items.espresso-tonic.desc">Безалкогольный напиток, приготовленный путём смешивания эспрессо, льда и тонизирующей воды, обладающий горьковато-освежающим вкусом</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.espresso-tonic.weight">300 мл</span>
+                <span class="item-card__price">50 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="espresso-tonic" data-price="50">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="bumblebee" data-available="true">
+            <img class="item-card__img" src="img/items/bumblebee.jpg" alt="Коктейль Bumblebee" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.bumblebee.name">Bumblebee</h5>
+              <p class="item-card__desc" data-i18n-key="items.bumblebee.desc">Напиток из эспрессо, апельсинового сока и сиропа. Ингредиенты добавляются слоями, благодаря чему получается коктейль, напоминающий расцветкой шмеля</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.bumblebee.weight">300 мл</span>
+                <span class="item-card__price">55 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="bumblebee" data-price="55">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="bubble-coffee" data-available="true">
+            <img class="item-card__img" src="img/items/bubble-coffee.jpg" alt="Кофе с тапиокой" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.bubble-coffee.name">Bubble Coffee</h5>
+              <p class="item-card__desc" data-i18n-key="items.bubble-coffee.desc">Кофе с шариками тапиоки — идеальный освежающий напиток со льдом</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.bubble-coffee.weight">350 мл</span>
+                <span class="item-card__price">60 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="bubble-coffee" data-price="60">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
           </div>
         </div>
 
         <div class="category" id="tea">
-          <div class="category__header category__header--rev">
+          <div class="category__header">
+            <img src="img/categories/tea.jpg" alt="Tea" class="category__img" loading="lazy" />
             <div class="category__text">
-              <span class="category__num">03</span>
-              <h3 class="category__title">Tea</h3>
-              <p class="category__desc">Изысканные чайные купажи со всего мира для тех, кто ценит гармонию вкуса</p>
+              <h4 class="category__title" data-i18n-key="subcategories.tea.title">Tea</h4>
+              <p class="category__desc" data-i18n-key="subcategories.tea.desc">Изысканные чайные купажи со всего мира для тех, кто ценит гармонию вкуса</p>
             </div>
-            <img src="img/tea-category-img.jpeg" alt="Чай" class="category__img" />
           </div>
-          <div class="items">
-            <div class="item"><div class="item__info"><span class="item__name">Tea Julius Meinl</span><span class="item__desc">Насыщенный чай с глубоким вкусом (чашка/чайничек)</span></div><span class="item__price">25/40 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Tea handmade/aftor</span><span class="item__desc">Чай с джемом из натуральных фруктов, ягод и растений с добавлением сахара - настоящее удовольствие с пользой для здоровья (чашка/чайничек)</span></div><span class="item__price">35/60 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Ice Tea</span><span class="item__desc">Холодный чай — отличный способ освежиться в жару</span></div><span class="item__price">45 MDL</span></div>
+          <div class="items-grid">
+          <article class="item-card" data-item-id="tea-julius-cup" data-available="true">
+            <img class="item-card__img" src="img/items/tea-julius-cup.jpg" alt="Чай Julius Meinl в чашке" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.tea-julius-cup.name">Tea Julius Meinl (чашка)</h5>
+              <p class="item-card__desc" data-i18n-key="items.tea-julius-cup.desc">Насыщенный чай с глубоким вкусом</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.tea-julius-cup.weight">чашка</span>
+                <span class="item-card__price">25 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="tea-julius-cup" data-price="25">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="tea-julius-pot" data-available="true">
+            <img class="item-card__img" src="img/items/tea-julius-pot.jpg" alt="Чай Julius Meinl в чайничке" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.tea-julius-pot.name">Tea Julius Meinl (чайничек)</h5>
+              <p class="item-card__desc" data-i18n-key="items.tea-julius-pot.desc">Насыщенный чай с глубоким вкусом</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.tea-julius-pot.weight">чайничек</span>
+                <span class="item-card__price">40 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="tea-julius-pot" data-price="40">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="tea-handmade-cup" data-available="true">
+            <img class="item-card__img" src="img/items/tea-handmade-cup.jpg" alt="Авторский чай в чашке" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.tea-handmade-cup.name">Tea handmade/aftor (чашка)</h5>
+              <p class="item-card__desc" data-i18n-key="items.tea-handmade-cup.desc">Чай с джемом из натуральных фруктов, ягод и растений с добавлением сахара — настоящее удовольствие с пользой для здоровья</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.tea-handmade-cup.weight">чашка</span>
+                <span class="item-card__price">35 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="tea-handmade-cup" data-price="35">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="tea-handmade-pot" data-available="true">
+            <img class="item-card__img" src="img/items/tea-handmade-pot.jpg" alt="Авторский чай в чайничке" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.tea-handmade-pot.name">Tea handmade/aftor (чайничек)</h5>
+              <p class="item-card__desc" data-i18n-key="items.tea-handmade-pot.desc">Чай с джемом из натуральных фруктов, ягод и растений с добавлением сахара — настоящее удовольствие с пользой для здоровья</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.tea-handmade-pot.weight">чайничек</span>
+                <span class="item-card__price">60 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="tea-handmade-pot" data-price="60">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="ice-tea" data-available="true">
+            <img class="item-card__img" src="img/items/ice-tea.jpg" alt="Холодный чай со льдом" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.ice-tea.name">Ice Tea</h5>
+              <p class="item-card__desc" data-i18n-key="items.ice-tea.desc">Холодный чай — отличный способ освежиться в жару</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.ice-tea.weight">350 мл</span>
+                <span class="item-card__price">45 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="ice-tea" data-price="45">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
           </div>
         </div>
 
         <div class="category" id="bubble-tea">
-          <div class="category__header">
-            <img src="img/bubble-tea-category-img.jpg" alt="Bubble Tea" class="category__img" />
+          <div class="category__header category__header--rev">
+            <img src="img/categories/bubble-tea.jpg" alt="Bubble Tea" class="category__img" loading="lazy" />
             <div class="category__text">
-              <span class="category__num">04</span>
-              <h3 class="category__title">Bubble Tea</h3>
-              <p class="category__desc">Напиток на чае или молоке, с добавлением желейных шариков с соком внутри. Может быть как горячим, так и холодным</p>
+              <h4 class="category__title" data-i18n-key="subcategories.bubble-tea.title">Bubble Tea</h4>
+              <p class="category__desc" data-i18n-key="subcategories.bubble-tea.desc">Напиток на чае или молоке с желейными шариками с соком внутри</p>
             </div>
           </div>
-          <div class="items">
-            <div class="item"><div class="item__info"><span class="item__name">Bubble Tea Kiwi 🥝</span><span class="item__desc"> </span></div><span class="item__price">60 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Bubble Tea Pineapple 🍍</span><span class="item__desc"> </span></div><span class="item__price">60 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Bubble Tea Strawberry 🍓</span><span class="item__desc"> </span></div><span class="item__price">60 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Bubble Tea Mango 🥭</span><span class="item__desc"> </span></div><span class="item__price">60 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Bubble Tea Banana 🍌</span><span class="item__desc"> </span></div><span class="item__price">60 MDL</span></div>
+          <div class="items-grid">
+          <article class="item-card" data-item-id="bubble-tea-kiwi" data-available="true">
+            <img class="item-card__img" src="img/items/bubble-tea-kiwi.jpg" alt="Bubble Tea со вкусом киви" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.bubble-tea-kiwi.name">Bubble Tea Kiwi</h5>
+              <p class="item-card__desc" data-i18n-key="items.bubble-tea-kiwi.desc">Чайный напиток с желейными шариками и вкусом киви</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.bubble-tea-kiwi.weight">400 мл</span>
+                <span class="item-card__price">60 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="bubble-tea-kiwi" data-price="60">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="bubble-tea-pineapple" data-available="true">
+            <img class="item-card__img" src="img/items/bubble-tea-pineapple.jpg" alt="Bubble Tea со вкусом ананаса" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.bubble-tea-pineapple.name">Bubble Tea Pineapple</h5>
+              <p class="item-card__desc" data-i18n-key="items.bubble-tea-pineapple.desc">Чайный напиток с желейными шариками и вкусом ананаса</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.bubble-tea-pineapple.weight">400 мл</span>
+                <span class="item-card__price">60 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="bubble-tea-pineapple" data-price="60">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="bubble-tea-strawberry" data-available="true">
+            <img class="item-card__img" src="img/items/bubble-tea-strawberry.jpg" alt="Bubble Tea со вкусом клубники" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.bubble-tea-strawberry.name">Bubble Tea Strawberry</h5>
+              <p class="item-card__desc" data-i18n-key="items.bubble-tea-strawberry.desc">Чайный напиток с желейными шариками и вкусом клубники</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.bubble-tea-strawberry.weight">400 мл</span>
+                <span class="item-card__price">60 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="bubble-tea-strawberry" data-price="60">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="bubble-tea-mango" data-available="true">
+            <img class="item-card__img" src="img/items/bubble-tea-mango.jpg" alt="Bubble Tea со вкусом манго" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.bubble-tea-mango.name">Bubble Tea Mango</h5>
+              <p class="item-card__desc" data-i18n-key="items.bubble-tea-mango.desc">Чайный напиток с желейными шариками и вкусом манго</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.bubble-tea-mango.weight">400 мл</span>
+                <span class="item-card__price">60 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="bubble-tea-mango" data-price="60">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="bubble-tea-banana" data-available="true">
+            <img class="item-card__img" src="img/items/bubble-tea-banana.jpg" alt="Bubble Tea со вкусом банана" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.bubble-tea-banana.name">Bubble Tea Banana</h5>
+              <p class="item-card__desc" data-i18n-key="items.bubble-tea-banana.desc">Чайный напиток с желейными шариками и вкусом банана</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.bubble-tea-banana.weight">400 мл</span>
+                <span class="item-card__price">60 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="bubble-tea-banana" data-price="60">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
           </div>
         </div>
 
         <div class="category" id="milkshakes">
           <div class="category__header">
-            <img src="img/milkshake-category-img.jpeg" alt="Милкшейки" class="category__img" />
+            <img src="img/categories/milkshakes.jpg" alt="Милкшейки" class="category__img" loading="lazy" />
             <div class="category__text">
-              <span class="category__num">05</span>
-              <h3 class="category__title">Милкшейки</h3>
-              <p class="category__desc">Густые сливочные коктейли из натурального мороженого и свежих ингредиентов</p>
+              <h4 class="category__title" data-i18n-key="subcategories.milkshakes.title">Милкшейки</h4>
+              <p class="category__desc" data-i18n-key="subcategories.milkshakes.desc">Густые сливочные коктейли из натурального мороженого и свежих ингредиентов</p>
             </div>
           </div>
-          <div class="items">
-            <div class="item"><div class="item__info"><span class="item__name">Classic</span><span class="item__desc">Классический нежный шейк с ванилью</span></div><span class="item__price">35 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Chocolate</span><span class="item__desc">Насыщенный шоколадный вкус в каждом глотке</span></div><span class="item__price">40 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Banana</span><span class="item__desc">Освежающий напиток со спелыми бананами, молоком и мороженым</span></div><span class="item__price">45 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Strawberry</span><span class="item__desc">С настоящей свежей клубникой — яркий и ароматный</span></div><span class="item__price">45 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Oreo</span><span class="item__desc">Коктейль с кусочками печенья, оценят и взрослые, и дети</span></div><span class="item__price">45 MDL</span></div>
+          <div class="items-grid">
+          <article class="item-card" data-item-id="milkshake-classic" data-available="true">
+            <img class="item-card__img" src="img/items/milkshake-classic.jpg" alt="Классический милкшейк" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.milkshake-classic.name">Classic</h5>
+              <p class="item-card__desc" data-i18n-key="items.milkshake-classic.desc">Классический нежный шейк с ванилью</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.milkshake-classic.weight">350 мл</span>
+                <span class="item-card__price">35 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="milkshake-classic" data-price="35">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="milkshake-chocolate" data-available="true">
+            <img class="item-card__img" src="img/items/milkshake-chocolate.jpg" alt="Шоколадный милкшейк" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.milkshake-chocolate.name">Chocolate</h5>
+              <p class="item-card__desc" data-i18n-key="items.milkshake-chocolate.desc">Насыщенный шоколадный вкус в каждом глотке</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.milkshake-chocolate.weight">350 мл</span>
+                <span class="item-card__price">40 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="milkshake-chocolate" data-price="40">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="milkshake-banana" data-available="true">
+            <img class="item-card__img" src="img/items/milkshake-banana.jpg" alt="Банановый милкшейк" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.milkshake-banana.name">Banana</h5>
+              <p class="item-card__desc" data-i18n-key="items.milkshake-banana.desc">Освежающий напиток со спелыми бананами, молоком и мороженым</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.milkshake-banana.weight">350 мл</span>
+                <span class="item-card__price">45 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="milkshake-banana" data-price="45">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="milkshake-strawberry" data-available="true">
+            <img class="item-card__img" src="img/items/milkshake-strawberry.jpg" alt="Клубничный милкшейк" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.milkshake-strawberry.name">Strawberry</h5>
+              <p class="item-card__desc" data-i18n-key="items.milkshake-strawberry.desc">С настоящей свежей клубникой — яркий и ароматный</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.milkshake-strawberry.weight">350 мл</span>
+                <span class="item-card__price">45 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="milkshake-strawberry" data-price="45">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="milkshake-oreo" data-available="true">
+            <img class="item-card__img" src="img/items/milkshake-oreo.jpg" alt="Милкшейк Орео" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.milkshake-oreo.name">Oreo</h5>
+              <p class="item-card__desc" data-i18n-key="items.milkshake-oreo.desc">Коктейль с кусочками печенья, оценят и взрослые, и дети</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.milkshake-oreo.weight">350 мл</span>
+                <span class="item-card__price">45 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="milkshake-oreo" data-price="45">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
           </div>
         </div>
 
         <div class="category" id="lemonades">
           <div class="category__header category__header--rev">
+            <img src="img/categories/lemonades.jpg" alt="Лимонады" class="category__img" loading="lazy" />
             <div class="category__text">
-              <span class="category__num">06</span>
-              <h3 class="category__title">Лимонады</h3>
-              <p class="category__desc">Освежающие авторские лимонады на натуральных фруктах и ягодах</p>
+              <h4 class="category__title" data-i18n-key="subcategories.lemonades.title">Лимонады</h4>
+              <p class="category__desc" data-i18n-key="subcategories.lemonades.desc">Освежающие авторские лимонады на натуральных фруктах и ягодах</p>
             </div>
-            <img src="img/lemonade-category-img.webp" alt="Лимонады" class="category__img" />
           </div>
-          <div class="items">
-            <div class="item"><div class="item__info"><span class="item__name">Mojito</span><span class="item__desc">Лайм, мята и газированная вода — вечная классика</span></div><span class="item__price">50 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Berry</span><span class="item__desc">Освежающий летний напиток, сочетающий свежевыжатый лимонный сок, ягодный джем и газированную воду</span></div><span class="item__price">50 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Tropic</span><span class="item__desc">Безалкогольный коктейль с фруктовой смесью манго, граната, лимона</span></div><span class="item__price">45 MDL</span></div>
+          <div class="items-grid">
+          <article class="item-card" data-item-id="lemonade-mojito" data-available="true">
+            <img class="item-card__img" src="img/items/lemonade-mojito.jpg" alt="Лимонад Мохито" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.lemonade-mojito.name">Mojito</h5>
+              <p class="item-card__desc" data-i18n-key="items.lemonade-mojito.desc">Лайм, мята и газированная вода — вечная классика</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.lemonade-mojito.weight">400 мл</span>
+                <span class="item-card__price">50 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="lemonade-mojito" data-price="50">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="lemonade-berry" data-available="true">
+            <img class="item-card__img" src="img/items/lemonade-berry.jpg" alt="Ягодный лимонад" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.lemonade-berry.name">Berry</h5>
+              <p class="item-card__desc" data-i18n-key="items.lemonade-berry.desc">Освежающий летний напиток, сочетающий свежевыжатый лимонный сок, ягодный джем и газированную воду</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.lemonade-berry.weight">400 мл</span>
+                <span class="item-card__price">50 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="lemonade-berry" data-price="50">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="lemonade-tropic" data-available="true">
+            <img class="item-card__img" src="img/items/lemonade-tropic.jpg" alt="Тропический лимонад" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.lemonade-tropic.name">Tropic</h5>
+              <p class="item-card__desc" data-i18n-key="items.lemonade-tropic.desc">Безалкогольный коктейль с фруктовой смесью манго, граната и лимона</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.lemonade-tropic.weight">400 мл</span>
+                <span class="item-card__price">45 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="lemonade-tropic" data-price="45">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
           </div>
         </div>
 
         <div class="category" id="desserts">
           <div class="category__header">
-            <img src="img/dessert-category-img.webp" alt="Десерты" class="category__img" />
+            <img src="img/categories/desserts.jpg" alt="Десерты" class="category__img" loading="lazy" />
             <div class="category__text">
-              <span class="category__num">07</span>
-              <h3 class="category__title">Десерты</h3>
-              <p class="category__desc">Удовлетворите свою тягу к сладкому нашим кондитерскими шедеврами и авторской выпечкой</p>
+              <h4 class="category__title" data-i18n-key="subcategories.desserts.title">Десерты</h4>
+              <p class="category__desc" data-i18n-key="subcategories.desserts.desc">Удовлетворите свою тягу к сладкому нашими кондитерскими шедеврами и авторской выпечкой</p>
             </div>
           </div>
-          <div class="items">
-            <div class="item"><div class="item__info"><span class="item__name">Cheesecake Caramel</span><span class="item__desc">Сливочный десерт, состоящий из основы из печенья, бархатистой начинки покрытой карамелью</span></div><span class="item__price">55 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Cheesecake Mac</span><span class="item__desc">Песочная основа с нежной начинкой из творога и мака, покрытая шоколадом, миндальной крошкой и посыпкой</span></div><span class="item__price">55 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Smetannik</span><span class="item__desc">Тонкие медовые корочки, покрытые нежным кремом из сметаны, ядер грецких орехов и вишни</span></div><span class="item__price">55 MDL</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Donuts</span><span class="item__desc">Популярное кондитерское изделие из сладкого дрожжевого теста с начинкой покрытое глазурью</span></div><span class="item__price">20 MDL</span></div>
+          <div class="items-grid">
+          <article class="item-card" data-item-id="cheesecake-caramel" data-available="true">
+            <img class="item-card__img" src="img/items/cheesecake-caramel.jpg" alt="Чизкейк с карамелью" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.cheesecake-caramel.name">Cheesecake Caramel</h5>
+              <p class="item-card__desc" data-i18n-key="items.cheesecake-caramel.desc">Сливочный десерт, состоящий из основы из печенья и бархатистой начинки, покрытой карамелью</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.cheesecake-caramel.weight">120 г</span>
+                <span class="item-card__price">55 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="cheesecake-caramel" data-price="55">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="cheesecake-mac" data-available="true">
+            <img class="item-card__img" src="img/items/cheesecake-mac.jpg" alt="Чизкейк с маком" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.cheesecake-mac.name">Cheesecake Mac</h5>
+              <p class="item-card__desc" data-i18n-key="items.cheesecake-mac.desc">Песочная основа с нежной начинкой из творога и мака, покрытая шоколадом, миндальной крошкой и посыпкой</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.cheesecake-mac.weight">120 г</span>
+                <span class="item-card__price">55 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="cheesecake-mac" data-price="55">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="smetannik" data-available="true">
+            <img class="item-card__img" src="img/items/smetannik.jpg" alt="Торт Сметанник" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.smetannik.name">Smetannik</h5>
+              <p class="item-card__desc" data-i18n-key="items.smetannik.desc">Тонкие медовые коржи, покрытые нежным кремом из сметаны, ядер грецких орехов и вишни</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.smetannik.weight">120 г</span>
+                <span class="item-card__price">55 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="smetannik" data-price="55">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="donuts" data-available="true">
+            <img class="item-card__img" src="img/items/donuts.jpg" alt="Пончик с глазурью" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.donuts.name">Donuts</h5>
+              <p class="item-card__desc" data-i18n-key="items.donuts.desc">Популярное кондитерское изделие из сладкого дрожжевого теста, покрытое глазурью</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.donuts.weight">1 шт</span>
+                <span class="item-card__price">20 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="donuts" data-price="20">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
           </div>
         </div>
 
         <div class="category" id="alcohol">
           <div class="category__header category__header--rev">
+            <img src="img/categories/alcohol.jpg" alt="Алкогольные напитки" class="category__img" loading="lazy" />
             <div class="category__text">
-              <span class="category__num">08</span>
-              <h3 class="category__title">Алкогольные напитки</h3>
-              <p class="category__desc">Популярные коктейли и отдельный алкоголь</p>
+              <h4 class="category__title" data-i18n-key="subcategories.alcohol.title">Алкогольные напитки</h4>
+              <p class="category__desc" data-i18n-key="subcategories.alcohol.desc">Популярные коктейли и отдельный алкоголь. Продажа только лицам старше 18 лет</p>
             </div>
-            <img src="img/alcohol-category-img.jpg" alt="Алкогольные напитки" class="category__img" />
           </div>
-          <div class="items">
-            <div class="item"><div class="item__info"><span class="item__name">Jack Daniel's Honey/Apple</span><span class="item__desc">Популярные 35-градусные ликеры на основе классического теннессийского виски</span></div><span class="item__price">50 MDL/50ml</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Crema Kick The Rules Mango/Watermelon cu Tequila 15%</span><span class="item__desc"></span></div><span class="item__price">50 MDL/50ml</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Johnnie Walker Red Label</span><span class="item__desc">Шотландский виски, известный своим насыщенным, пряным вкусом с дымными нотками</span></div><span class="item__price">50 MDL/50ml</span></div>
-            <div class="item"><div class="item__info"><span class="item__name">Jägermeister</span><span class="item__desc">Немецкий крепкий ликёр, известный своим уникальным составом из 56 тщательно отобранных трав, кореньев, фруктов и специй</span></div><span class="item__price">50 MDL/50ml</span></div>
+          <div class="items-grid">
+          <article class="item-card" data-item-id="jack-daniels-honey" data-age-restricted="true" data-available="true">
+            <img class="item-card__img" src="img/items/jack-daniels-honey.jpg" alt="Jack Daniel's Honey" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.jack-daniels-honey.name">Jack Daniel's Honey</h5>
+              <p class="item-card__desc" data-i18n-key="items.jack-daniels-honey.desc">Популярный ликёр на основе классического теннессийского виски</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.jack-daniels-honey.weight">50 мл</span>
+                <span class="item-card__price">50 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="jack-daniels-honey" data-price="50">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="jack-daniels-apple" data-age-restricted="true" data-available="true">
+            <img class="item-card__img" src="img/items/jack-daniels-apple.jpg" alt="Jack Daniel's Apple" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.jack-daniels-apple.name">Jack Daniel's Apple</h5>
+              <p class="item-card__desc" data-i18n-key="items.jack-daniels-apple.desc">Популярный ликёр на основе классического теннессийского виски</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.jack-daniels-apple.weight">50 мл</span>
+                <span class="item-card__price">50 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="jack-daniels-apple" data-price="50">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="crema-kick-mango" data-age-restricted="true" data-available="true">
+            <img class="item-card__img" src="img/items/crema-kick-mango.jpg" alt="Коктейль Crema Kick Mango" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.crema-kick-mango.name">Crema Kick The Rules Mango</h5>
+              <p class="item-card__desc" data-i18n-key="items.crema-kick-mango.desc">Авторский коктейль на основе текилы с манго</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.crema-kick-mango.weight">50 мл</span>
+                <span class="item-card__price">50 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="crema-kick-mango" data-price="50">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="crema-kick-watermelon" data-age-restricted="true" data-available="true">
+            <img class="item-card__img" src="img/items/crema-kick-watermelon.jpg" alt="Коктейль Crema Kick Watermelon" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.crema-kick-watermelon.name">Crema Kick The Rules Watermelon</h5>
+              <p class="item-card__desc" data-i18n-key="items.crema-kick-watermelon.desc">Авторский коктейль на основе текилы с арбузом</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.crema-kick-watermelon.weight">50 мл</span>
+                <span class="item-card__price">50 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="crema-kick-watermelon" data-price="50">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="johnnie-walker-red" data-age-restricted="true" data-available="true">
+            <img class="item-card__img" src="img/items/johnnie-walker-red.jpg" alt="Johnnie Walker Red Label" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.johnnie-walker-red.name">Johnnie Walker Red Label</h5>
+              <p class="item-card__desc" data-i18n-key="items.johnnie-walker-red.desc">Шотландский виски, известный своим насыщенным, пряным вкусом с дымными нотками</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.johnnie-walker-red.weight">50 мл</span>
+                <span class="item-card__price">50 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="johnnie-walker-red" data-price="50">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="jagermeister" data-age-restricted="true" data-available="true">
+            <img class="item-card__img" src="img/items/jagermeister.jpg" alt="Ягермайстер" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.jagermeister.name">Jägermeister</h5>
+              <p class="item-card__desc" data-i18n-key="items.jagermeister.desc">Немецкий крепкий ликёр, известный своим уникальным составом из 56 тщательно отобранных трав, кореньев, фруктов и специй</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.jagermeister.weight">50 мл</span>
+                <span class="item-card__price">50 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="jagermeister" data-price="50">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
           </div>
         </div>
 
-        <div class="category" id="promotions">
-          <div class="promo-header">
-            <span class="category__num">09</span>
-            <h3 class="category__title">Акции и спецпредложения</h3>
-            <p class="section-desc">Специальные предложения для наших гостей каждый день</p>
-          </div>
-          <div class="promos">
-            <div class="promo-card">
-              <img src="img/promo-regular-guests-img.webp" alt="Постоянные гости" class="promo-card__img" />
-              <div class="promo-card__body">
-                <span class="badge">−20%</span>
-                <h4 class="promo-card__title">Скидочная карта</h4>
-                <p class="promo-card__text">Постоянные гости имеют возможность получить скидочную карту 20% на все кофейные напитки (описать детали получения)</p>
-                <span class="promo-card__time">Навсегда</span>
-              </div>
-            </div>            
-            <div class="promo-card">
-              <img src="img/promo-sandwiche-with-coffee-img.jpg" alt="Сэндвич с кофе" class="promo-card__img" />
-              <div class="promo-card__body">
-                <span class="badge">−27%</span>
-                <h4 class="promo-card__title">Сэндвич с кофе</h4>
-                <p class="promo-card__text">Latte/Cappucino + Sandwich = <del>55</del> 40 MDL</p>
-                <span class="promo-card__time">Ежедневно</span>
-              </div>
-            </div>
+        <div class="category category--full-menu" id="full-menu-card-cafe">
+          <div class="full-menu-card">
+            <div class="full-menu-card__qr-placeholder" aria-hidden="true">QR</div>
+            <p data-i18n-key="subcategories.full-menu.text">
+              На сайте представлены лишь те напитки/блюда, которые можно заказать. Если хотите ознакомиться с полным меню, нажмите «<a href="/full-menu.pdf" data-i18n-key="subcategories.full-menu.linkText">здесь</a>» или отсканируйте QR-код на экране.
+            </p>
           </div>
         </div>
+      </section>
+
+      <section class="category-group" id="cat-kitchen" data-category="kitchen">
+        <h3 class="category-group__title" data-i18n-key="categories.kitchen">Кухня</h3>
+
+        <div class="category" id="breakfast">
+          <div class="category__header">
+            <img src="img/categories/breakfast.jpg" alt="Завтраки" class="category__img" loading="lazy" />
+            <div class="category__text">
+              <h4 class="category__title" data-i18n-key="subcategories.breakfast.title">Завтраки</h4>
+              <p class="category__desc" data-i18n-key="subcategories.breakfast.desc">Сытный старт дня — свежеприготовленные завтраки</p>
+            </div>
+          </div>
+          <div class="items-grid">
+          <article class="item-card" data-item-id="omelette" data-modifiers="sauces" data-available="true">
+            <img class="item-card__img" src="img/items/omelette.jpg" alt="Омлет на тарелке" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.omelette.name">Омлет</h5>
+              <p class="item-card__desc" data-i18n-key="items.omelette.desc">Классический омлет из свежих яиц (плейсхолдер — уточнить состав)</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.omelette.weight">200 г</span>
+                <span class="item-card__price">45 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="omelette" data-price="45">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="omelette-cheese" data-modifiers="sauces" data-available="true">
+            <img class="item-card__img" src="img/items/omelette-cheese.jpg" alt="Омлет с сыром" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.omelette-cheese.name">Омлет с сыром</h5>
+              <p class="item-card__desc" data-i18n-key="items.omelette-cheese.desc">Омлет с добавлением сыра (плейсхолдер — уточнить состав)</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.omelette-cheese.weight">220 г</span>
+                <span class="item-card__price">55 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="omelette-cheese" data-price="55">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+          </div>
+        </div>
+
+        <div class="category" id="mexican">
+          <div class="category__header category__header--rev">
+            <img src="img/categories/mexican.jpg" alt="Мексиканская кухня" class="category__img" loading="lazy" />
+            <div class="category__text">
+              <h4 class="category__title" data-i18n-key="subcategories.mexican.title">Мексиканская кухня</h4>
+              <p class="category__desc" data-i18n-key="subcategories.mexican.desc">Яркие блюда мексиканской кухни с насыщенным вкусом</p>
+            </div>
+          </div>
+          <div class="items-grid">
+          <article class="item-card" data-item-id="burrito-chicken" data-modifiers="sauces" data-available="true">
+            <img class="item-card__img" src="img/items/burrito-chicken.jpg" alt="Буррито с курицей" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.burrito-chicken.name">Буррито с курицей</h5>
+              <p class="item-card__desc" data-i18n-key="items.burrito-chicken.desc">Буррито с куриным филе и овощами (плейсхолдер — уточнить состав)</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.burrito-chicken.weight">350 г</span>
+                <span class="item-card__price">65 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="burrito-chicken" data-price="65">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+
+          <article class="item-card" data-item-id="tacos-beef" data-modifiers="sauces" data-available="true">
+            <img class="item-card__img" src="img/items/tacos-beef.jpg" alt="Тако с говядиной" loading="lazy" width="600" height="600" />
+            <div class="item-card__body">
+              <h5 class="item-card__name" data-i18n-key="items.tacos-beef.name">Тако с говядиной</h5>
+              <p class="item-card__desc" data-i18n-key="items.tacos-beef.desc">Тако с говядиной и овощами (плейсхолдер — уточнить состав)</p>
+              <div class="item-card__meta">
+                <span class="item-card__weight" data-i18n-key="items.tacos-beef.weight">300 г</span>
+                <span class="item-card__price">70 MDL</span>
+              </div>
+              <div class="item-card__stepper" data-stepper data-item-id="tacos-beef" data-price="70">
+              <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">Добавить</button>
+              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+            </div>
+            </div>
+          </article>
+          </div>
+        </div>
+
+        <div class="category category--full-menu" id="full-menu-card-kitchen">
+          <div class="full-menu-card">
+            <div class="full-menu-card__qr-placeholder" aria-hidden="true">QR</div>
+            <p data-i18n-key="subcategories.full-menu.text">
+              На сайте представлены лишь те напитки/блюда, которые можно заказать. Если хотите ознакомиться с полным меню, нажмите «<a href="/full-menu.pdf" data-i18n-key="subcategories.full-menu.linkText">здесь</a>» или отсканируйте QR-код на экране.
+            </p>
+          </div>
+        </div>
+      </section>
 
       </div>
     </section>
