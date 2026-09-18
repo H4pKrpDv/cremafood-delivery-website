@@ -12,8 +12,14 @@
  *    системы (file://) не даёт грузить json через fetch() из-за CORS.
  *  - Каждый переводимый элемент на странице помечен атрибутом
  *    data-i18n-key="путь.до.значения" (build.js расставляет их для
- *    меню; шапка получила свои ключи в п.4 плана, hero/футер получат
- *    свои — в п.5/9, когда дойдём до их переделки).
+ *    меню; шапка и hero получили свои ключи в п.4/аудите после п.4;
+ *    футер получит свои — в п.9, когда дойдём до его переделки).
+ *  - Для атрибутов (aria-label, title), а не видимого текста, — свой
+ *    отдельный атрибут data-i18n-attr-aria-label="путь.до.значения"
+ *    и/или data-i18n-attr-title="путь.до.значения". Это специально
+ *    отдельный механизм от data-i18n-key (который всегда пишет в
+ *    textContent) — у одного элемента может быть и то, и другое
+ *    (например, кнопка с иконкой без видимого текста, но с aria-label).
  *  - При переключении языка мы просто проходим по всем таким
  *    элементам и подставляем текст из нужного объекта. Если в выбранном
  *    языке конкретного ключа не оказалось — берём русский как запасной
@@ -71,6 +77,26 @@
         el.textContent = text;
       }
     });
+
+    // Атрибуты (aria-label/title) — отдельный проход, см. комментарий сверху файла.
+    ['aria-label', 'title'].forEach(function (attrName) {
+      var attrNodes = document.querySelectorAll('[data-i18n-attr-' + attrName + ']');
+      attrNodes.forEach(function (el) {
+        var key = el.getAttribute('data-i18n-attr-' + attrName);
+        var text = resolveKey(langData, key);
+        if (text === undefined) {
+          text = resolveKey(fallbackData, key);
+        }
+        if (text !== undefined) {
+          el.setAttribute(attrName, text);
+        }
+      });
+    });
+
+    var titleText = resolveKey(langData, 'meta.title') || resolveKey(fallbackData, 'meta.title');
+    if (titleText !== undefined) {
+      document.title = titleText;
+    }
 
     document.documentElement.setAttribute('lang', lang);
 

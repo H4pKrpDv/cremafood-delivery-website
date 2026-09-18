@@ -1191,7 +1191,7 @@
               </ul>
             </div>
           </nav>
-          <button type="button" class="header__cart" id="cartButton" aria-label="Корзина" title="Корзина">
+          <button type="button" class="header__cart" id="cartButton" aria-label="Корзина" title="Корзина" data-i18n-attr-aria-label="cart.title" data-i18n-attr-title="cart.title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <circle cx="9" cy="21" r="1"></circle>
               <circle cx="19" cy="21" r="1"></circle>
@@ -1199,7 +1199,7 @@
             </svg>
             <span class="header__cart-count" id="cartCount">0</span>
           </button>
-          <button type="button" class="burger" id="burgerButton" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobileMenu">
+          <button type="button" class="burger" id="burgerButton" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobileMenu" data-i18n-attr-aria-label="header.menuToggle">
             <span class="burger__line"></span>
             <span class="burger__line"></span>
             <span class="burger__line"></span>
@@ -1209,7 +1209,7 @@
       <div class="mobile-menu" id="mobileMenu" hidden>
         <a href="tel:+37360319994" class="mobile-menu__link" data-i18n-key="header.phone">+373 (60) 319-994</a>
         <a href="#footer" class="mobile-menu__link" data-i18n-key="header.deliverySchedule">График доставки</a>
-        <div class="mobile-menu__lang" role="group" aria-label="Язык">
+        <div class="mobile-menu__lang" role="group" aria-label="Язык" data-i18n-attr-aria-label="header.langLabel">
           <button type="button" class="pill lang-option" data-lang="ru">RU</button>
           <button type="button" class="pill lang-option" data-lang="ro">RO</button>
           <button type="button" class="pill lang-option" data-lang="en">EN</button>
@@ -1220,14 +1220,14 @@
     <section class="hero">
       <div class="hero__overlay"></div>
       <div class="hero__content">
-        <p class="hero__eyebrow">Добро пожаловать в</p>
-        <h1 class="hero__title">Crema</h1>
-        <p class="hero__tagline">Где каждый глоток — это маленькое удовольствие.<br>Авторский кофе, уют и атмосфера, созданная для вас.</p>
-        <a href="#menu" class="btn btn--primary">Смотреть меню</a>
+        <p class="hero__eyebrow" data-i18n-key="hero.eyebrow">Добро пожаловать в</p>
+        <h1 class="hero__title" data-i18n-key="hero.title">Crema</h1>
+        <p class="hero__tagline" data-i18n-key="hero.tagline">Где каждый глоток — это маленькое удовольствие. Авторский кофе, уют и атмосфера, созданная для вас.</p>
+        <a href="#menu" class="btn btn--primary" data-i18n-key="hero.cta">Смотреть меню</a>
       </div>
       <div class="hero__scroll">
-        <span>Листайте вниз</span>
-        <span class="hero__arrow">↓</span>
+        <span data-i18n-key="hero.scrollHint">Листайте вниз</span>
+        <span class="hero__arrow" aria-hidden="true">↓</span>
       </div>
     </section>
 

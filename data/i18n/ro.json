@@ -7,7 +7,8 @@
     "logoAlt": "Логотип Crema",
     "phone": "+373 (60) 319-994",
     "deliverySchedule": "График доставки",
-    "langLabel": "Язык"
+    "langLabel": "Язык",
+    "menuToggle": "Открыть меню"
   },
   "hero": {
     "eyebrow": "Добро пожаловать в",
