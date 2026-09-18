@@ -128,7 +128,6 @@
     var subtotal = 0;
     var totalCutleryCost = 0;
     var hasAgeRestrictedLine = false;
-    var hasCutleryEligibleLine = false;
 
     Object.keys(cart.items).forEach(function (itemId) {
       var entry = cart.items[itemId];
@@ -137,7 +136,6 @@
 
       var meta = getItemMeta(itemId);
       if (meta.available && meta.ageRestricted) hasAgeRestrictedLine = true;
-      if (meta.cutleryEligible) hasCutleryEligibleLine = true;
 
       var modifiersDetail = [];
       var modifiersCost = 0;
@@ -197,7 +195,6 @@
       cutleryCost: totalCutleryCost,
       total: subtotal,
       hasAgeRestrictedLine: hasAgeRestrictedLine,
-      hasCutleryEligibleLine: hasCutleryEligibleLine,
       ageConfirmed: ageConfirmed,
       canCheckout: hasAvailableLine && ageOk,
       freeDeliveryReached: subtotal >= FREE_DELIVERY_THRESHOLD,
@@ -307,8 +304,6 @@
     els.empty = document.getElementById('cartEmpty');
     els.body = document.getElementById('cartBody');
     els.list = document.getElementById('cartList');
-    els.cutleryNote = document.getElementById('cartCutleryNote');
-    els.cutleryExtra = document.getElementById('cartCutleryExtra');
     els.ageConfirm = document.getElementById('cartAgeConfirm');
     els.ageCheckbox = document.getElementById('cartAgeCheckbox');
     els.ageError = document.getElementById('cartAgeError');
@@ -351,21 +346,10 @@
 
     els.list.innerHTML = summary.lines.map(renderCartItemHtml).join('');
 
-    // Поясняющий текст про правило приборов — показываем только если в
-    // корзине реально есть хоть одна позиция, к которой приборы применимы
-    // (по просьбе пользователя, иначе надпись сбивала с толку при заказе
-    // одних напитков без блюд кухни/десертов).
-    if (els.cutleryNote) els.cutleryNote.hidden = !summary.hasCutleryEligibleLine;
-
-    // Доплата за приборы теперь считается по каждой позиции (см. cart-item__cutlery-row
-    // внутри списка) — здесь показываем только итоговую сумму доплаты по всей
-    // корзине, для общей картины.
-    if (summary.cutleryCost > 0) {
-      els.cutleryExtra.hidden = false;
-      els.cutleryExtra.textContent = t('cart.cutleryExtraFee').replace('{amount}', summary.cutleryCost);
-    } else {
-      els.cutleryExtra.hidden = true;
-    }
+    // Отдельная надпись про правило приборов и агрегированная "Доплата за
+    // приборы: N лей" убраны правкой от 18.09.2026 — та же информация уже
+    // видна по месту, в строке каждой позиции (.cart-item__cutlery-extra,
+    // "+N MDL" рядом со степпером приборов, см. renderCutleryRow выше).
 
     // Чекбокс "подтверждаю 18+" — показываем только если в корзине есть
     // хотя бы одна доступная позиция с алкоголем (data-age-restricted).
