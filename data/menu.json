@@ -342,7 +342,8 @@
               "modifiers": [],
               "available": true
             }
-          ]
+          ],
+          "cutleryEligible": true
         },
         {
           "id": "alcohol",
@@ -430,7 +431,8 @@
               ],
               "available": true
             }
-          ]
+          ],
+          "cutleryEligible": true
         },
         {
           "id": "mexican",
@@ -454,7 +456,8 @@
               ],
               "available": true
             }
-          ]
+          ],
+          "cutleryEligible": true
         },
         {
           "id": "full-menu",

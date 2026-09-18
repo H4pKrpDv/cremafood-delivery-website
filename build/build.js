@@ -107,7 +107,7 @@ function span(key, className) {
 // Генерация карточки товара
 // ---------------------------------------------------------------------
 
-function renderItemCard(item) {
+function renderItemCard(item, cutleryEligible) {
   const nameKey = `items.${item.id}.name`;
   const descKey = `items.${item.id}.desc`;
   const weightKey = `items.${item.id}.weight`;
@@ -122,6 +122,13 @@ function renderItemCard(item) {
     ? ` data-modifiers="${item.modifiers.join(',')}"`
     : '';
   const ageAttr = item.ageRestricted ? ' data-age-restricted="true"' : '';
+  // Приборы — теперь модификатор конкретной позиции (п.7, правки от 18.09.2026),
+  // а не общий счётчик на всю корзину. "Бесплатным" один набор приборов
+  // становится только для позиций из подкатегорий с cutleryEligible:true в
+  // menu.json (сейчас: kitchen->breakfast, kitchen->mexican, cafe->desserts) —
+  // js/cart.js читает этот атрибут напрямую с карточки товара, той же логикой,
+  // что и data-age-restricted/data-modifiers выше (единый источник правды).
+  const cutleryAttr = cutleryEligible ? ' data-cutlery-eligible="true"' : '';
   const availableAttr = item.available === false ? ' data-available="false"' : ' data-available="true"';
   const cardStateClass = item.available === false ? ' item-card--unavailable' : '';
 
@@ -144,7 +151,7 @@ function renderItemCard(item) {
   const descToggleId = `desc-${item.id}`;
 
   return `
-          <article class="item-card${cardStateClass}" data-item-id="${item.id}"${modifiersAttr}${ageAttr}${availableAttr}>
+          <article class="item-card${cardStateClass}" data-item-id="${item.id}"${modifiersAttr}${ageAttr}${cutleryAttr}${availableAttr}>
             <img class="item-card__img" src="${escapeHtml(item.image)}" alt="${imageAlt}" loading="lazy" width="600" height="450" />
             <div class="item-card__body">
               <h5 class="item-card__name" data-i18n-key="${nameKey}">${name}</h5>
@@ -202,7 +209,8 @@ function renderSubcategory(sub, index, categoryId) {
   const descKey = `subcategories.${sub.id}.desc`;
   const reversed = index % 2 === 1 ? ' category__header--rev' : '';
 
-  const itemsHtml = (sub.items || []).map(renderItemCard).join('\n');
+  const cutleryEligible = Boolean(sub.cutleryEligible);
+  const itemsHtml = (sub.items || []).map((item) => renderItemCard(item, cutleryEligible)).join('\n');
 
   // Карточка лояльности ("Скидочная карта −20%") живёт не отдельно, а как
   // последний элемент сетки товаров подкатегории "Постоянные" (promo-permanent)

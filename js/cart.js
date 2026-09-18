@@ -21,15 +21,32 @@
  * (вшито build.js из data/menu.json, см. build/build.js).
  *
  * Правила, которые считает этот файл (см. Context.md, разделы
- * "Модификаторы и приборы" и уточнения по бесплатной доставке):
- *  - Приборы: первые N бесплатны, где N = суммарное количество ДОСТУПНЫХ
- *    позиций в корзине; каждый прибор сверх — доплата 2 лея.
+ * "Модификаторы и приборы" и уточнения по бесплатной доставке; ПЕРЕСМОТРЕНО
+ * правками от 18.09.2026):
+ *  - Приборы — модификатор КОНКРЕТНОЙ позиции (как соусы), а не общий
+ *    счётчик на всю корзину. Доступны только для позиций, у которых на
+ *    карточке в сетке меню стоит data-cutlery-eligible="true" (это
+ *    подкатегории с cutleryEligible:true в data/menu.json — сейчас
+ *    kitchen->breakfast, kitchen->mexican, cafe->desserts). Для такой
+ *    позиции первый набор приборов на каждую заказанную единицу товара —
+ *    бесплатно (N бесплатных = qty этой строки), всё сверху — доплата
+ *    2 лея за набор. Это позволяет при отправке инф-ции о заказе указать,
+ *    к какой именно позиции сколько приборов положить (напр. вилки к
+ *    омлету и отдельно палочки к суши, если такое появится).
+ *  - Доплата за приборы сложена прямо в lineTotal каждой строки — поэтому
+ *    порог бесплатной доставки (см. ниже) естественным образом её учитывает
+ *    (раньше отдельно исключалась — это было ошибкой, поправлено).
  *  - Бесплатная доставка (визуальный триггер, сама доставка добавляется
- *    в форме заказа, п.8): порог 399 лей по сумме ДОСТУПНЫХ позиций
- *    (без учёта приборов).
+ *    в форме заказа, п.8): порог 399 лей по сумме ДОСТУПНЫХ позиций,
+ *    ВКЛЮЧАЯ доплату за приборы.
  *  - Товар с available:false (см. data-available на карточке) показывается
  *    в списке с пометкой "больше нет в наличии" и не участвует в сумме —
  *    не удаляется молча, пользователь должен увидеть и убрать сам.
+ *  - Подтверждение 18+: если в корзине есть хотя бы одна ДОСТУПНАЯ позиция
+ *    с data-age-restricted="true" (алкоголь), показываем чекбокс
+ *    "Подтверждаю, что мне есть 18 лет" и блокируем кнопку "Заказать",
+ *    пока он не отмечен. Состояние живёт в cart.ageConfirmed (корень
+ *    корзины) — чтобы позже (п.8) его можно было отправить в инф-ции заказа.
  * ------------------------------------------------------------------
  */
 (function () {
@@ -83,23 +100,34 @@
     if (!cardEl) {
       // Товар был в корзине, но исчез из menu.json (переименовали id и т.п.) —
       // редкий случай, показываем как недоступный, не даём сломать попап.
-      return { name: itemId, price: 0, available: false, modifierGroupIds: [] };
+      return { name: itemId, price: 0, available: false, modifierGroupIds: [], ageRestricted: false, cutleryEligible: false };
     }
     var stepperEl = cardEl.querySelector('[data-stepper]');
     var price = stepperEl ? parseFloat(stepperEl.getAttribute('data-price')) || 0 : 0;
     var available = cardEl.getAttribute('data-available') !== 'false';
     var modifiersAttr = cardEl.getAttribute('data-modifiers') || '';
     var modifierGroupIds = modifiersAttr ? modifiersAttr.split(',').filter(Boolean) : [];
+    var ageRestricted = cardEl.getAttribute('data-age-restricted') === 'true';
+    var cutleryEligible = cardEl.getAttribute('data-cutlery-eligible') === 'true';
     var name = t('items.' + itemId + '.name') || itemId;
-    return { name: name, price: price, available: available, modifierGroupIds: modifierGroupIds };
+    return {
+      name: name,
+      price: price,
+      available: available,
+      modifierGroupIds: modifierGroupIds,
+      ageRestricted: ageRestricted,
+      cutleryEligible: cutleryEligible
+    };
   }
 
-  // ---- Пересчёт корзины: строки, сумма, приборы, порог бесплатной доставки
+  // ---- Пересчёт корзины: строки, сумма, приборы (теперь на уровне строки),
+  // порог бесплатной доставки, подтверждение 18+ ----------------------------
   function computeSummary(cart) {
     var modifierGroups = getModifierGroups();
     var lines = [];
     var subtotal = 0;
-    var availableItemsQty = 0;
+    var totalCutleryCost = 0;
+    var hasAgeRestrictedLine = false;
 
     Object.keys(cart.items).forEach(function (itemId) {
       var entry = cart.items[itemId];
@@ -107,7 +135,7 @@
       if (qty <= 0) return;
 
       var meta = getItemMeta(itemId);
-      if (meta.available) availableItemsQty += qty;
+      if (meta.available && meta.ageRestricted) hasAgeRestrictedLine = true;
 
       var modifiersDetail = [];
       var modifiersCost = 0;
@@ -120,35 +148,55 @@
         });
       });
 
-      var lineTotal = meta.available ? meta.price * qty + modifiersCost : 0;
-      if (meta.available) subtotal += lineTotal;
+      // Приборы — модификатор ЭТОЙ строки. Бесплатных наборов ровно столько,
+      // сколько единиц товара заказано в этой строке (qty); всё сверху —
+      // доплата 2 лея/набор. Позиции без cutleryEligible приборы не заказывают
+      // вовсе (напитки и т.п.) — cutleryQty у них всегда 0.
+      var cutleryQty = meta.cutleryEligible && typeof entry.cutlery === 'number' && entry.cutlery > 0
+        ? entry.cutlery
+        : 0;
+      var freeCutlery = meta.cutleryEligible ? qty : 0;
+      var extraCutlery = Math.max(0, cutleryQty - freeCutlery);
+      var cutleryCost = extraCutlery * 2;
+
+      // Доплата за приборы сложена прямо в lineTotal — благодаря этому
+      // subtotal (и, соответственно, порог бесплатной доставки ниже)
+      // естественным образом включает стоимость приборов.
+      var lineTotal = meta.available ? meta.price * qty + modifiersCost + cutleryCost : 0;
+      if (meta.available) {
+        subtotal += lineTotal;
+        totalCutleryCost += cutleryCost;
+      }
 
       lines.push({
         itemId: itemId,
         qty: qty,
         meta: meta,
         modifiersDetail: modifiersDetail,
+        cutleryQty: cutleryQty,
+        extraCutlery: extraCutlery,
+        cutleryCost: cutleryCost,
         lineTotal: lineTotal
       });
     });
 
-    var cutleryQty = typeof cart.cutlery === 'number' && cart.cutlery > 0 ? cart.cutlery : 0;
-    var extraCutlery = Math.max(0, cutleryQty - availableItemsQty);
-    var cutleryCost = extraCutlery * 2;
-
     var hasAvailableLine = lines.some(function (line) {
       return line.meta.available;
     });
+
+    var ageConfirmed = Boolean(cart.ageConfirmed);
+    var ageOk = !hasAgeRestrictedLine || ageConfirmed;
 
     return {
       lines: lines,
       isEmpty: lines.length === 0,
       hasAvailableLine: hasAvailableLine,
       subtotal: subtotal,
-      cutleryQty: cutleryQty,
-      extraCutlery: extraCutlery,
-      cutleryCost: cutleryCost,
-      total: subtotal + cutleryCost,
+      cutleryCost: totalCutleryCost,
+      total: subtotal,
+      hasAgeRestrictedLine: hasAgeRestrictedLine,
+      ageConfirmed: ageConfirmed,
+      canCheckout: hasAvailableLine && ageOk,
       freeDeliveryReached: subtotal >= FREE_DELIVERY_THRESHOLD,
       deliveryRemaining: Math.max(0, FREE_DELIVERY_THRESHOLD - subtotal)
     };
@@ -167,6 +215,28 @@
           '<span class="stepper__qty">' + detail.qty + '</span>' +
           '<button type="button" class="stepper__btn" data-action="modifier-increase"' + disabledAttr + '>+</button>' +
         '</div>' +
+      '</div>'
+    );
+  }
+
+  // Приборы для конкретной позиции (правки от 18.09.2026) — та же визуальная
+  // логика, что и у соусов (renderModifierRow), но не через
+  // window.__CREMA_MODIFIER_GROUPS__ (приборы не общий модификатор с ценой
+  // из menu.json, а собственное правило "N бесплатно, дальше 2 лея").
+  function renderCutleryRow(line, isLineAvailable) {
+    var disabledAttr = isLineAvailable ? '' : ' disabled';
+    var extraHtml = line.cutleryCost > 0
+      ? '<span class="cart-item__cutlery-extra">+' + formatMdl(line.cutleryCost) + '</span>'
+      : '';
+    return (
+      '<div class="cart-item__cutlery-row" data-cutlery-stepper data-item-id="' + line.itemId + '">' +
+        '<span class="cart-item__cutlery-label" data-i18n-key="cart.cutlery">' + escapeHtml(t('cart.cutlery')) + '</span>' +
+        '<div class="stepper stepper--sm">' +
+          '<button type="button" class="stepper__btn" data-action="cutlery-decrease"' + disabledAttr + '>−</button>' +
+          '<span class="stepper__qty">' + line.cutleryQty + '</span>' +
+          '<button type="button" class="stepper__btn" data-action="cutlery-increase"' + disabledAttr + '>+</button>' +
+        '</div>' +
+        extraHtml +
       '</div>'
     );
   }
@@ -193,6 +263,10 @@
       modifiersHtml = '<div class="cart-item__modifiers">' + rows + '</div>';
     }
 
+    var cutleryHtml = meta.cutleryEligible
+      ? '<div class="cart-item__modifiers">' + renderCutleryRow(line, meta.available) + '</div>'
+      : '';
+
     var unavailableHtml = !meta.available
       ? '<span class="cart-item__unavailable-note" data-i18n-key="cart.itemUnavailable">' + escapeHtml(t('cart.itemUnavailable')) + '</span>'
       : '';
@@ -206,6 +280,7 @@
           '<span class="cart-item__name" data-i18n-key="items.' + line.itemId + '.name">' + escapeHtml(meta.name) + '</span>' +
           unavailableHtml +
           modifiersHtml +
+          cutleryHtml +
         '</div>' +
         '<div class="cart-item__side">' +
           '<span class="cart-item__price">' + formatMdl(line.lineTotal) + '</span>' +
@@ -229,8 +304,10 @@
     els.empty = document.getElementById('cartEmpty');
     els.body = document.getElementById('cartBody');
     els.list = document.getElementById('cartList');
-    els.cutleryQty = document.getElementById('cutleryQty');
     els.cutleryExtra = document.getElementById('cartCutleryExtra');
+    els.ageConfirm = document.getElementById('cartAgeConfirm');
+    els.ageCheckbox = document.getElementById('cartAgeCheckbox');
+    els.ageError = document.getElementById('cartAgeError');
     els.deliveryText = document.getElementById('cartDeliveryText');
     els.deliveryBarFill = document.getElementById('cartDeliveryBarFill');
     els.totalAmount = document.getElementById('cartTotalAmount');
@@ -253,16 +330,30 @@
     els.empty.hidden = true;
     els.body.hidden = false;
     els.checkoutBtn.hidden = false;
-    els.checkoutBtn.disabled = !summary.hasAvailableLine;
+    els.checkoutBtn.disabled = !summary.canCheckout;
 
     els.list.innerHTML = summary.lines.map(renderCartItemHtml).join('');
 
-    els.cutleryQty.textContent = String(summary.cutleryQty);
-    if (summary.extraCutlery > 0) {
+    // Доплата за приборы теперь считается по каждой позиции (см. cart-item__cutlery-row
+    // внутри списка) — здесь показываем только итоговую сумму доплаты по всей
+    // корзине, для общей картины.
+    if (summary.cutleryCost > 0) {
       els.cutleryExtra.hidden = false;
       els.cutleryExtra.textContent = t('cart.cutleryExtraFee').replace('{amount}', summary.cutleryCost);
     } else {
       els.cutleryExtra.hidden = true;
+    }
+
+    // Чекбокс "подтверждаю 18+" — показываем только если в корзине есть
+    // хотя бы одна доступная позиция с алкоголем (data-age-restricted).
+    if (els.ageConfirm) {
+      if (summary.hasAgeRestrictedLine) {
+        els.ageConfirm.hidden = false;
+        if (els.ageCheckbox) els.ageCheckbox.checked = summary.ageConfirmed;
+        if (els.ageError) els.ageError.hidden = summary.ageConfirmed;
+      } else {
+        els.ageConfirm.hidden = true;
+      }
     }
 
     if (summary.freeDeliveryReached) {
@@ -335,10 +426,20 @@
   }
 
   function handleCutleryClick(actionEl) {
+    var stepperEl = actionEl.closest('[data-cutlery-stepper]');
+    if (!stepperEl) return;
+    var itemId = stepperEl.getAttribute('data-item-id');
     var cart = window.CremaCart.readCart();
-    var qty = typeof cart.cutlery === 'number' && cart.cutlery > 0 ? cart.cutlery : 0;
+    if (!cart.items[itemId]) return; // товар уже убрали из корзины — защита от гонки кликов
+    var qty = window.CremaCart.getItemCutlery(cart, itemId);
     qty = actionEl.getAttribute('data-action') === 'cutlery-increase' ? qty + 1 : Math.max(0, qty - 1);
-    cart.cutlery = qty;
+    window.CremaCart.setItemCutlery(cart, itemId, qty);
+    window.CremaCart.writeCart(cart);
+  }
+
+  function handleAgeCheckboxChange(checkboxEl) {
+    var cart = window.CremaCart.readCart();
+    cart.ageConfirmed = Boolean(checkboxEl.checked);
     window.CremaCart.writeCart(cart);
   }
 
@@ -383,10 +484,19 @@
         return;
       }
 
-      var cutleryBtn = target.closest('[data-action="cutlery-increase"], [data-action="cutlery-decrease"]');
+      var cutleryBtn = target.closest('.cart-list [data-action="cutlery-increase"], .cart-list [data-action="cutlery-decrease"]');
       if (cutleryBtn) {
         handleCutleryClick(cutleryBtn);
         return;
+      }
+    });
+
+    // Чекбокс "подтверждаю 18+" — отдельным слушателем на 'change' (а не через
+    // делегированный click выше), т.к. на момент 'change' checkboxEl.checked
+    // уже гарантированно отражает новое состояние.
+    document.addEventListener('change', function (event) {
+      if (event.target && event.target.id === 'cartAgeCheckbox') {
+        handleAgeCheckboxChange(event.target);
       }
     });
 

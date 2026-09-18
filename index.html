@@ -560,14 +560,47 @@
 
       .cart-list {
         list-style: none;
-        margin: 0 -0.25rem 1rem;
-        padding: 0 0.25rem;
+        margin: 0 0 1rem;
+        padding: 0.85rem 0.65rem;
         overflow-y: auto;
         flex: 1;
-        min-height: 0;
+        /* Правки от 18.09.2026: список раньше сливался фоном с остальной
+           модалкой — сложно было на глаз понять, что это отдельный
+           скроллящийся блок. Добавили собственный фон/обводку и увеличили
+           минимальную высоту, чтобы сразу было видно больше содержимого. */
+        min-height: 260px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
         display: flex;
         flex-direction: column;
         gap: 0.85rem;
+        /* Стилизация скроллбара под тёмную тему (правки от 18.09.2026):
+           системный скроллбар на десктопе (Chrome/Edge/Safari/Firefox) по
+           умолчанию белый и толстый — ломает тёмный дизайн модалки. На
+           мобильных (iOS/Android) браузеры рисуют свой лёгкий оверлей-скроллбар
+           поверх контента независимо от этих правил, так что там всё
+           остаётся как было (пользователь подтвердил, что там ок). */
+        scrollbar-width: thin; /* Firefox */
+        scrollbar-color: var(--gold-dark) var(--surface-2); /* Firefox: thumb, track */
+      }
+
+      .cart-list::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .cart-list::-webkit-scrollbar-track {
+        background: var(--surface-2);
+        border-radius: 999px;
+      }
+
+      .cart-list::-webkit-scrollbar-thumb {
+        background: var(--gold-dark);
+        border-radius: 999px;
+      }
+
+      .cart-list::-webkit-scrollbar-thumb:hover {
+        background: var(--gold);
       }
 
       .cart-item {
@@ -669,32 +702,32 @@
         min-width: 1.1rem;
       }
 
-      .cart-modal__cutlery {
+      /* Приборы как модификатор позиции (правки от 18.09.2026) — та же
+         визуальная логика, что у .cart-item__modifier-row (соусы), только
+         с собственной подписью и, при доплате, суммой доплаты справа. */
+      .cart-item__cutlery-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0.85rem 0;
-        border-top: 1px solid var(--border);
-        font-size: 0.85rem;
-        color: var(--text);
-      }
-
-      .cart-modal__cutlery .stepper {
-        flex: none;
-        width: auto;
         gap: 0.5rem;
+        font-size: 0.76rem;
+        color: var(--text-2);
       }
 
-      .cart-modal__cutlery .stepper__qty {
-        flex: none;
-        min-width: 1.5rem;
+      .cart-item__cutlery-label {
+        flex-shrink: 0;
+      }
+
+      .cart-item__cutlery-extra {
+        font-size: 0.72rem;
+        color: var(--gold-light);
+        white-space: nowrap;
       }
 
       .cart-modal__cutlery-note {
         font-size: 0.7rem;
         color: var(--text-3);
         line-height: 1.4;
-        margin-top: -0.4rem;
         margin-bottom: 0.75rem;
       }
 
@@ -706,6 +739,48 @@
       }
 
       .cart-modal__cutlery-extra[hidden] {
+        display: none;
+      }
+
+      /* Чекбокс подтверждения 18+ (правки от 18.09.2026) — показывается только
+         когда в корзине есть алкоголь, см. js/cart.js renderCartModal(). */
+      .cart-modal__age-confirm {
+        margin-bottom: 0.9rem;
+        padding: 0.75rem 0.85rem;
+        background: var(--surface);
+        border: 1px solid var(--gold-dark);
+        border-radius: var(--radius);
+      }
+
+      .cart-modal__age-confirm[hidden] {
+        display: none;
+      }
+
+      .cart-modal__age-confirm-label {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        font-size: 0.8rem;
+        color: var(--text);
+        cursor: pointer;
+      }
+
+      .cart-modal__age-checkbox {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        accent-color: var(--gold);
+        cursor: pointer;
+      }
+
+      .cart-modal__age-error {
+        display: block;
+        font-size: 0.72rem;
+        color: var(--gold-light);
+        margin-top: 0.35rem;
+      }
+
+      .cart-modal__age-error[hidden] {
         display: none;
       }
 
@@ -1865,35 +1940,27 @@
         </div>
 
         <div class="cart-modal__body" id="cartBody" hidden>
+          <!-- Приборы — правки от 18.09.2026: раньше был общий счётчик на всю
+               корзину (отдельный блок здесь), теперь это модификатор конкретной
+               позиции (степпер внутри каждой карточки товара, .cart-item__cutlery-row,
+               рисует js/cart.js). Поясняющий текст про "первый набор бесплатно"
+               остаётся один раз, над списком — относится к правилу целиком. -->
+          <p class="cart-modal__cutlery-note" data-i18n-key="cart.cutleryFeeNote">Первый прибор на каждую позицию — бесплатно, далее +2 лея за штуку</p>
+
           <ul class="cart-list" id="cartList"></ul>
 
-          <div class="cart-modal__cutlery">
-            <span data-i18n-key="cart.cutlery">Приборы</span>
-            <div class="stepper" data-cutlery-stepper>
-              <button
-                type="button"
-                class="stepper__btn"
-                data-action="cutlery-decrease"
-                aria-label="Уменьшить количество"
-                data-i18n-attr-aria-label="common.decreaseQty"
-              >−</button>
-              <span
-                class="stepper__qty"
-                id="cutleryQty"
-                aria-label="Количество"
-                data-i18n-attr-aria-label="common.quantityLabel"
-              >0</span>
-              <button
-                type="button"
-                class="stepper__btn"
-                data-action="cutlery-increase"
-                aria-label="Увеличить количество"
-                data-i18n-attr-aria-label="common.increaseQty"
-              >+</button>
-            </div>
-          </div>
-          <p class="cart-modal__cutlery-note" data-i18n-key="cart.cutleryFeeNote">Первый прибор на каждую позицию — бесплатно, далее +2 лея за штуку</p>
           <p class="cart-modal__cutlery-extra" id="cartCutleryExtra" hidden></p>
+
+          <!-- Чекбокс подтверждения 18+ — показывается js/cart.js только когда
+               в корзине есть доступная позиция с data-age-restricted="true"
+               (алкоголь). Пока не отмечен — кнопка "Заказать" заблокирована. -->
+          <div class="cart-modal__age-confirm" id="cartAgeConfirm" hidden>
+            <label class="cart-modal__age-confirm-label">
+              <input type="checkbox" id="cartAgeCheckbox" class="cart-modal__age-checkbox" />
+              <span data-i18n-key="checkout.ageConfirm">Подтверждаю, что мне есть 18 лет</span>
+            </label>
+            <span class="cart-modal__age-error" id="cartAgeError" hidden data-i18n-key="checkout.validation.ageConfirmRequired">Необходимо подтвердить возраст</span>
+          </div>
 
           <div class="cart-modal__delivery" id="cartDelivery">
             <p class="cart-modal__delivery-text" id="cartDeliveryText"></p>
@@ -2808,7 +2875,7 @@
             </div>
           </div>
           <div class="items-grid">
-          <article class="item-card" data-item-id="cheesecake-caramel" data-available="true">
+          <article class="item-card" data-item-id="cheesecake-caramel" data-cutlery-eligible="true" data-available="true">
             <img class="item-card__img" src="img/items/cheesecake-caramel.jpg" alt="Чизкейк с карамелью" loading="lazy" width="600" height="450" />
             <div class="item-card__body">
               <h5 class="item-card__name" data-i18n-key="items.cheesecake-caramel.name">Cheesecake Caramel</h5>
@@ -2828,7 +2895,7 @@
             </div>
           </article>
 
-          <article class="item-card" data-item-id="cheesecake-mac" data-available="true">
+          <article class="item-card" data-item-id="cheesecake-mac" data-cutlery-eligible="true" data-available="true">
             <img class="item-card__img" src="img/items/cheesecake-mac.jpg" alt="Чизкейк с маком" loading="lazy" width="600" height="450" />
             <div class="item-card__body">
               <h5 class="item-card__name" data-i18n-key="items.cheesecake-mac.name">Cheesecake Mac</h5>
@@ -2848,7 +2915,7 @@
             </div>
           </article>
 
-          <article class="item-card" data-item-id="smetannik" data-available="true">
+          <article class="item-card" data-item-id="smetannik" data-cutlery-eligible="true" data-available="true">
             <img class="item-card__img" src="img/items/smetannik.jpg" alt="Торт Сметанник" loading="lazy" width="600" height="450" />
             <div class="item-card__body">
               <h5 class="item-card__name" data-i18n-key="items.smetannik.name">Smetannik</h5>
@@ -2868,7 +2935,7 @@
             </div>
           </article>
 
-          <article class="item-card" data-item-id="donuts" data-available="true">
+          <article class="item-card" data-item-id="donuts" data-cutlery-eligible="true" data-available="true">
             <img class="item-card__img" src="img/items/donuts.jpg" alt="Пончик с глазурью" loading="lazy" width="600" height="450" />
             <div class="item-card__body">
               <h5 class="item-card__name" data-i18n-key="items.donuts.name">Donuts</h5>
@@ -3045,7 +3112,7 @@
             </div>
           </div>
           <div class="items-grid">
-          <article class="item-card" data-item-id="omelette" data-modifiers="sauces" data-available="true">
+          <article class="item-card" data-item-id="omelette" data-modifiers="sauces" data-cutlery-eligible="true" data-available="true">
             <img class="item-card__img" src="img/items/omelette.jpg" alt="Омлет на тарелке" loading="lazy" width="600" height="450" />
             <div class="item-card__body">
               <h5 class="item-card__name" data-i18n-key="items.omelette.name">Омлет</h5>
@@ -3065,7 +3132,7 @@
             </div>
           </article>
 
-          <article class="item-card" data-item-id="omelette-cheese" data-modifiers="sauces" data-available="true">
+          <article class="item-card" data-item-id="omelette-cheese" data-modifiers="sauces" data-cutlery-eligible="true" data-available="true">
             <img class="item-card__img" src="img/items/omelette-cheese.jpg" alt="Омлет с сыром" loading="lazy" width="600" height="450" />
             <div class="item-card__body">
               <h5 class="item-card__name" data-i18n-key="items.omelette-cheese.name">Омлет с сыром</h5>
@@ -3097,7 +3164,7 @@
             </div>
           </div>
           <div class="items-grid">
-          <article class="item-card" data-item-id="burrito-chicken" data-modifiers="sauces" data-available="true">
+          <article class="item-card" data-item-id="burrito-chicken" data-modifiers="sauces" data-cutlery-eligible="true" data-available="true">
             <img class="item-card__img" src="img/items/burrito-chicken.jpg" alt="Буррито с курицей" loading="lazy" width="600" height="450" />
             <div class="item-card__body">
               <h5 class="item-card__name" data-i18n-key="items.burrito-chicken.name">Буррито с курицей</h5>
@@ -3117,7 +3184,7 @@
             </div>
           </article>
 
-          <article class="item-card" data-item-id="tacos-beef" data-modifiers="sauces" data-available="true">
+          <article class="item-card" data-item-id="tacos-beef" data-modifiers="sauces" data-cutlery-eligible="true" data-available="true">
             <img class="item-card__img" src="img/items/tacos-beef.jpg" alt="Тако с говядиной" loading="lazy" width="600" height="450" />
             <div class="item-card__body">
               <h5 class="item-card__name" data-i18n-key="items.tacos-beef.name">Тако с говядиной</h5>
