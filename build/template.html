@@ -651,8 +651,49 @@
         background: var(--bg);
       }
 
-      /* ─── MENU PILLS NAV (пилюли подкатегорий; переключение по клику —
-             пока обычные якоря-ссылки, JS-табы верхнего уровня — п.6) ─── */
+      /* ─── CATEGORY TABS (верхнеуровневые табы: Спец.предложения/Кафе/Кухня,
+             п.6 плана) ─── логика переключения в js/menu.js. */
+      .category-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .category-tab {
+        padding: 0.55rem 1.25rem;
+        border-radius: 999px;
+        background: none;
+        color: var(--text-2);
+        font-family: var(--font-body);
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        border: 1px solid var(--border);
+        cursor: pointer;
+        transition: all var(--transition);
+      }
+
+      .category-tab:hover {
+        color: var(--gold-light);
+        border-color: var(--gold-dark);
+      }
+
+      .category-tab--active {
+        background: var(--gold);
+        color: var(--bg);
+        border-color: var(--gold);
+      }
+
+      .category-tab--active:hover {
+        color: var(--bg);
+      }
+
+      /* ─── MENU PILLS NAV (пилюли подкатегорий текущего таба; клик — якорь-
+             ссылка на подкатегорию + подсветка "текущей" пилюли). Пилюли
+             подкатегорий других табов скрыты классом .pill--hidden — см.
+             js/menu.js. ─── */
       .menu-pills {
         display: flex;
         flex-wrap: wrap;
@@ -689,11 +730,24 @@
         background: rgba(200, 150, 74, 0.25);
       }
 
+      .pill--current {
+        border-color: var(--gold);
+        color: var(--gold-light);
+      }
+
+      .pill--hidden {
+        display: none;
+      }
+
       /* ─── CATEGORY GROUP (верхнеуровневая категория: Спец.предложения /
-             Кафе / Кухня — визуально как раздел-таб; сама механика
-             переключения табов кликом — п.6 плана) ─── */
+             Кафе / Кухня — один видимый таб за раз, остальные скрыты
+             классом .category-group--hidden, см. js/menu.js) ─── */
       .category-group {
         margin-bottom: 3rem;
+      }
+
+      .category-group--hidden {
+        display: none;
       }
 
       .category-group__title {
@@ -805,7 +859,7 @@
 
       .item-card__img {
         width: 100%;
-        aspect-ratio: 1 / 1;
+        aspect-ratio: 4 / 3;
         object-fit: cover;
       }
 
@@ -833,6 +887,40 @@
         line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+      }
+
+      /* Раскрытое описание (после клика "ещё") — снимаем обрезку до 2 строк.
+         Джаваскрипт добавляет/убирает этот класс, см. js/menu.js. */
+      .item-card__desc--expanded {
+        display: block;
+        -webkit-line-clamp: unset;
+        line-clamp: unset;
+        overflow: visible;
+      }
+
+      /* Кнопка "ещё"/"свернуть" — по умолчанию скрыта атрибутом [hidden],
+         JS показывает её только если текст описания реально обрезан
+         (scrollHeight > clientHeight при зажатых 2 строках), см. п.6 плана
+         и уточнения по карточке товара в Context.md. */
+      .item-card__desc-toggle {
+        align-self: flex-start;
+        margin-top: -0.15rem;
+        padding: 0;
+        background: none;
+        border: none;
+        color: var(--gold);
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: color var(--transition);
+      }
+
+      .item-card__desc-toggle:hover {
+        color: var(--gold-light);
+      }
+
+      .item-card__desc-toggle[hidden] {
+        display: none;
       }
 
       .item-card__meta {
@@ -881,6 +969,49 @@
         transform: scale(0.97);
       }
 
+      /* Степпер "< + | кол-во | - >" — подменяет .stepper__add после клика
+         "Добавить" (см. js/menu.js). Живёт в том же .item-card__stepper. */
+      .stepper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.4rem;
+      }
+
+      .stepper__btn {
+        width: 30px;
+        height: 30px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        color: var(--gold-light);
+        font-size: 1rem;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background var(--transition), border-color var(--transition), transform var(--transition);
+      }
+
+      .stepper__btn:hover {
+        background: var(--surface);
+        border-color: var(--gold-dark);
+      }
+
+      .stepper__btn:active {
+        transform: scale(0.92);
+      }
+
+      .stepper__qty {
+        flex: 1;
+        text-align: center;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--cream);
+      }
+
       /* ─── LOYALTY CARD (программа лояльности, не товар) ─── */
       .loyalty-card {
         background: var(--bg-2);
@@ -889,6 +1020,15 @@
         padding: 1.25rem;
         margin-bottom: 1.5rem;
         text-align: center;
+      }
+
+      /* Уточнение от 18.09.2026 (п.6): карточка лояльности переехала внутрь
+         .items-grid подкатегории "Постоянные" как последний элемент — но
+         остаётся на всю ширину строки (не сжимается в одну колонку сетки
+         товаров), чтобы текст оставался читаемым при любом числе колонок. */
+      .items-grid > .loyalty-card {
+        grid-column: 1 / -1;
+        margin-bottom: 0;
       }
 
       .loyalty-card__badge {
@@ -1389,6 +1529,8 @@
           <p class="section-desc" data-i18n-key="menu.desc">Каждый напиток приготовлен с заботой из лучших ингредиентов</p>
         </div>
 
+        <!--{{CATEGORY_TABS}}-->
+
         <!--{{MENU_PILLS}}-->
 
         <!--{{MENU_CATEGORIES}}-->
@@ -1442,5 +1584,6 @@
     <script src="js/i18n.js" defer></script>
     <script src="js/main.js" defer></script>
     <script src="js/gallery.js" defer></script>
+    <script src="js/menu.js" defer></script>
   </body>
 </html>

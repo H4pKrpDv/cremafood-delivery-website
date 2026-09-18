@@ -40,6 +40,13 @@ const ROOT = path.join(__dirname, '..');
 const DEFAULT_LANG = 'ru';
 const SITE_URL = 'https://cremafood.md';
 
+// Какой верхнеуровневый таб (Спец.предложения/Кафе/Кухня) открыт по умолчанию
+// при первой загрузке страницы (п.6 плана). Выбрали "Кафе" — это самая
+// богатая контентом категория (напитки/десерты), а "Спец.предложения" сейчас
+// почти пустая (только карточка лояльности + QR "Полное меню", т.к.
+// promo-seasonal/promo-new — заглушки без товаров, см. isSubRenderable).
+const DEFAULT_ACTIVE_CATEGORY = 'cafe';
+
 // ---------------------------------------------------------------------
 // Загрузка данных
 // ---------------------------------------------------------------------
@@ -125,15 +132,24 @@ function renderItemCard(item) {
     ? `<p class="item-card__unavailable-note" data-i18n-key="cart.itemUnavailable">${escapeHtml(t('cart.itemUnavailable'))}</p>`
     : `<div class="item-card__stepper" data-stepper data-item-id="${item.id}" data-price="${item.price}">
               <button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">${escapeHtml(t('common.add'))}</button>
-              <!-- JS корзины (п.7 плана) подменит эту кнопку на "< + | кол-во | - >" -->
+              <!-- js/menu.js (п.6 плана) подменяет эту кнопку на "< + | кол-во | - >"
+                   при клике, и при загрузке страницы — если товар уже лежит в
+                   localStorage["crema_cart"] (гидратация). Выбор соусов/модификаторов
+                   для кухонных позиций — отдельный попап корзины, п.7 плана. -->
             </div>`;
+
+  // Кнопка "ещё"/"свернуть" — по умолчанию скрыта атрибутом hidden; JS
+  // показывает её только если описание реально обрезано до 2 строк
+  // (scrollHeight > clientHeight), см. .item-card__desc-toggle в CSS.
+  const descToggleId = `desc-${item.id}`;
 
   return `
           <article class="item-card${cardStateClass}" data-item-id="${item.id}"${modifiersAttr}${ageAttr}${availableAttr}>
-            <img class="item-card__img" src="${escapeHtml(item.image)}" alt="${imageAlt}" loading="lazy" width="600" height="600" />
+            <img class="item-card__img" src="${escapeHtml(item.image)}" alt="${imageAlt}" loading="lazy" width="600" height="450" />
             <div class="item-card__body">
               <h5 class="item-card__name" data-i18n-key="${nameKey}">${name}</h5>
-              <p class="item-card__desc" data-i18n-key="${descKey}">${desc}</p>
+              <p class="item-card__desc" id="${descToggleId}" data-i18n-key="${descKey}">${desc}</p>
+              <button type="button" class="item-card__desc-toggle" data-action="toggle-desc" aria-controls="${descToggleId}" aria-expanded="false" data-i18n-key="common.readMore" hidden>${escapeHtml(t('common.readMore'))}</button>
               <div class="item-card__meta">
                 <span class="item-card__weight" data-i18n-key="${weightKey}">${weight}</span>
                 <span class="item-card__price">${item.price} MDL</span>
@@ -165,6 +181,18 @@ function renderFullMenuCard(sub) {
 // Генерация одной подкатегории (баннер + сетка карточек товара)
 // ---------------------------------------------------------------------
 
+// Подкатегория считается "отрисовываемой", если это карточка "Полное меню"
+// (у неё нет items — она не товарная) или если в ней реально есть товары.
+// Сейчас пустые заглушки — promo-seasonal и promo-new (у special-offers):
+// в menu.json у них items: [] (задел на будущие акции/новинки), и рисовать
+// пустую сетку карточек/пилюлю-ссылку на пустой блок было бы багом вида
+// "пустой экран" — поэтому такие подкатегории пропускаем целиком (и в
+// сетке категорий, и в навигации-пилюлях, см. renderPills). Как только в
+// menu.json у них появятся товары — они начнут отображаться автоматически.
+function isSubRenderable(sub) {
+  return sub.type === 'full-menu-card' || Boolean(sub.items && sub.items.length > 0);
+}
+
 function renderSubcategory(sub, index, categoryId) {
   if (sub.type === 'full-menu-card') {
     return renderFullMenuCard({ ...sub, parentCategoryId: categoryId });
@@ -176,6 +204,12 @@ function renderSubcategory(sub, index, categoryId) {
 
   const itemsHtml = (sub.items || []).map(renderItemCard).join('\n');
 
+  // Карточка лояльности ("Скидочная карта −20%") живёт не отдельно, а как
+  // последний элемент сетки товаров подкатегории "Постоянные" (promo-permanent)
+  // внутри "Спец.предложений" — уточнение от 18.09.2026 (п.6). Занимает всю
+  // ширину строки сетки через CSS .items-grid > .loyalty-card, см. template.html.
+  const loyaltyHtml = sub.id === 'promo-permanent' ? renderLoyaltyCard() : '';
+
   return `
         <div class="category" id="${sub.id}">
           <div class="category__header${reversed}">
@@ -186,6 +220,7 @@ function renderSubcategory(sub, index, categoryId) {
             </div>
           </div>
           <div class="items-grid">${itemsHtml}
+${loyaltyHtml}
           </div>
         </div>`;
 }
@@ -219,17 +254,36 @@ function renderLoyaltyCard() {
 
 function renderCategoryGroup(category) {
   const titleKey = `categories.${category.id}`;
-  const loyaltyHtml = category.id === 'special-offers' ? renderLoyaltyCard() : '';
-  const subsHtml = category.subcategories
+  const isActive = category.id === DEFAULT_ACTIVE_CATEGORY;
+  const hiddenClass = isActive ? '' : ' category-group--hidden';
+  const visibleSubs = category.subcategories.filter(isSubRenderable);
+  const subsHtml = visibleSubs
     .map((sub, index) => renderSubcategory(sub, index, category.id))
     .join('\n');
 
   return `
-      <section class="category-group" id="cat-${category.id}" data-category="${category.id}">
+      <section class="category-group${hiddenClass}" id="cat-${category.id}" data-category="${category.id}">
         <h3 class="category-group__title" data-i18n-key="${titleKey}">${escapeHtml(t(titleKey))}</h3>
-${loyaltyHtml}
 ${subsHtml}
       </section>`;
+}
+
+// ---------------------------------------------------------------------
+// Табы верхнего уровня (Спец.предложения/Кафе/Кухня) — переключение и
+// синхронизация с пилюлями/секциями делает js/menu.js (п.6 плана).
+// По умолчанию открыт DEFAULT_ACTIVE_CATEGORY — остальные табы отрисованы
+// в HTML (важно для SEO/шеринга — весь текст есть в статике), но их секции
+// сразу получают класс .category-group--hidden.
+// ---------------------------------------------------------------------
+
+function renderCategoryTabs() {
+  const tabs = menu.categories.map((category) => {
+    const titleKey = `categories.${category.id}`;
+    const isActive = category.id === DEFAULT_ACTIVE_CATEGORY;
+    const activeClass = isActive ? ' category-tab--active' : '';
+    return `<button type="button" class="category-tab${activeClass}" data-category-tab="${category.id}" role="tab" aria-selected="${isActive ? 'true' : 'false'}" data-i18n-key="${titleKey}">${escapeHtml(t(titleKey))}</button>`;
+  });
+  return `<div class="category-tabs" id="categoryTabs" role="tablist" aria-label="Категории меню" data-i18n-attr-aria-label="menu.categoryTabsLabel">\n          ${tabs.join('\n          ')}\n        </div>`;
 }
 
 // ---------------------------------------------------------------------
@@ -239,17 +293,19 @@ ${subsHtml}
 function renderPills() {
   const pills = [];
   for (const category of menu.categories) {
-    for (const sub of category.subcategories) {
+    const isActiveCategory = category.id === DEFAULT_ACTIVE_CATEGORY;
+    for (const sub of category.subcategories.filter(isSubRenderable)) {
       const isFullMenu = sub.type === 'full-menu-card';
       const anchor = isFullMenu ? `full-menu-card-${category.id}` : sub.id;
       const key = isFullMenu ? 'subcategories.full-menu.title' : `subcategories.${sub.id}.title`;
       const accentClass = isFullMenu ? ' pill--accent' : '';
+      const hiddenClass = isActiveCategory ? '' : ' pill--hidden';
       pills.push(
-        `<a href="#${anchor}" class="pill${accentClass}" data-category="${category.id}" data-i18n-key="${key}">${escapeHtml(t(key))}</a>`
+        `<a href="#${anchor}" class="pill${accentClass}${hiddenClass}" data-category="${category.id}" data-i18n-key="${key}">${escapeHtml(t(key))}</a>`
       );
     }
   }
-  return `<nav class="menu-pills">\n          ${pills.join('\n          ')}\n        </nav>`;
+  return `<nav class="menu-pills" id="menuPills">\n          ${pills.join('\n          ')}\n        </nav>`;
 }
 
 // ---------------------------------------------------------------------
@@ -276,9 +332,11 @@ function buildIndexHtml() {
   let html = fs.readFileSync(templatePath, 'utf-8');
 
   const menuCategoriesHtml = menu.categories.map(renderCategoryGroup).join('\n');
+  const categoryTabsHtml = renderCategoryTabs();
   const menuPillsHtml = renderPills();
   const i18nDataScript = buildI18nDataScript();
 
+  html = html.replace('<!--{{CATEGORY_TABS}}-->', categoryTabsHtml);
   html = html.replace('<!--{{MENU_PILLS}}-->', menuPillsHtml);
   html = html.replace('<!--{{MENU_CATEGORIES}}-->', menuCategoriesHtml);
   html = html.replace('<!--{{I18N_DATA}}-->', i18nDataScript);

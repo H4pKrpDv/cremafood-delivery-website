@@ -118,6 +118,12 @@
 
     storeLang(lang);
     window.CremaI18n.currentLang = lang;
+
+    // Кастомное событие для остальных скриптов (сейчас — js/menu.js, п.6
+    // плана): после смены языка нужно, например, заново посчитать, обрезано
+    // ли описание товара (scrollHeight меняется от длины текста) и обновить
+    // подпись кнопки "ещё"/"свернуть" на новом языке.
+    document.dispatchEvent(new CustomEvent('crema:langchange', { detail: { lang: lang } }));
   }
 
   function closeDesktopDropdown(clickedInsideList) {
