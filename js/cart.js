@@ -225,18 +225,31 @@
   // из menu.json, а собственное правило "N бесплатно, дальше 2 лея").
   function renderCutleryRow(line, isLineAvailable) {
     var disabledAttr = isLineAvailable ? '' : ' disabled';
+    // Правка от 18.09.2026 (UX-фикс по видео пользователя): раньше "+N MDL"
+    // была ТРЕТЬИМ flex-элементом строки (после степпера), что при
+    // justify-content:space-between на 2 vs 3 детях заставляло сам степпер
+    // визуально "прыгать" влево/вправо в зависимости от того, есть ли
+    // доплата. Теперь подпись и доплата сгруппированы в один общий
+    // левый flex-элемент (.cart-item__cutlery-left, та же идея, что у
+    // name+price в renderModifierRow — соусы), а степпер остаётся ВТОРЫМ
+    // и последним элементом строки всегда — при justify-content:space-between
+    // ровно на 2 элементах он гарантированно не сдвигается, есть доплата
+    // или нет. Формат доплаты приведён к тому же виду, что у цены модификатора
+    // соуса — "(+N MDL)" — для единообразия, как и попросил пользователь.
     var extraHtml = line.cutleryCost > 0
-      ? '<span class="cart-item__cutlery-extra">+' + formatMdl(line.cutleryCost) + '</span>'
+      ? '<span class="cart-item__cutlery-extra">(+' + formatMdl(line.cutleryCost) + ')</span>'
       : '';
     return (
       '<div class="cart-item__cutlery-row" data-cutlery-stepper data-item-id="' + line.itemId + '">' +
-        '<span class="cart-item__cutlery-label" data-i18n-key="cart.cutlery">' + escapeHtml(t('cart.cutlery')) + '</span>' +
+        '<span class="cart-item__cutlery-left">' +
+          '<span class="cart-item__cutlery-label" data-i18n-key="cart.cutlery">' + escapeHtml(t('cart.cutlery')) + '</span>' +
+          extraHtml +
+        '</span>' +
         '<div class="stepper stepper--sm">' +
           '<button type="button" class="stepper__btn" data-action="cutlery-decrease"' + disabledAttr + '>−</button>' +
           '<span class="stepper__qty">' + line.cutleryQty + '</span>' +
           '<button type="button" class="stepper__btn" data-action="cutlery-increase"' + disabledAttr + '>+</button>' +
         '</div>' +
-        extraHtml +
       '</div>'
     );
   }
