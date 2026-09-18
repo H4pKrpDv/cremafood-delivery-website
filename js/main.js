@@ -1,7 +1,8 @@
 /**
  * js/main.js
  * ------------------------------------------------------------------
- * Общая инициализация интерактива шапки (Этап 1, п.4 плана):
+ * Общая инициализация интерактива шапки (Этап 1, п.4 плана) + единая
+ * модель корзины в window.CremaCart (центр хранения, дополнено в п.7):
  *  - бургер-меню (открыть/закрыть, закрытие по Escape и по клику на
  *    ссылку внутри панели);
  *  - выпадающий список языка на десктопе (открыть/закрыть, закрытие
@@ -9,34 +10,76 @@
  *    js/i18n.js, здесь только открытие/закрытие самого списка;
  *  - кнопка "наверх" (появляется после прокрутки на один экран вниз,
  *    скроллит обратно к #top);
- *  - счётчик товаров на иконке корзины в шапке — считает суммарное
- *    количество позиций из localStorage по модели корзины из
- *    Context.md (ключ "crema_cart"): { items: { id: { qty, modifiers } }, cutlery }.
- *    Сама корзина (попап, добавление товаров) появится в п.7 плана —
- *    здесь только отображение счётчика, чтобы иконка не выглядела
- *    "пустой" уже сейчас. window.CremaCart.updateBadge() специально
- *    вынесен наружу — п.7 будет вызывать его после каждого изменения
- *    localStorage, чтобы не дублировать логику подсчёта в двух местах.
+ *  - счётчик товаров на иконке корзины в шапке.
+ *
+ * window.CremaCart — единственное место, которое читает/пишет
+ * localStorage["crema_cart"] (модель: { items: { id: { qty, modifiers } },
+ * cutlery }). До п.7 эта логика (readCart/writeCart/getItemQty/setItemQty)
+ * была продублирована прямо в js/menu.js — при добавлении попапа корзины
+ * (п.7, js/cart.js) вынесено сюда одним местом, чтобы js/menu.js (степпер
+ * в карточке товара сетки) и js/cart.js (попап) не могли разойтись в
+ * логике чтения/записи корзины. writeCart() сама вызывает updateBadge()
+ * и рассылает кастомное событие "crema:cartchange" — любой другой скрипт
+ * подписывается на него, чтобы пересинхронизировать свою часть UI после
+ * ЛЮБОГО изменения корзины, независимо от того, кто именно её изменил
+ * (см. js/menu.js: hydrateSteppers() по этому событию; js/cart.js:
+ * перерисовка попапа по этому событию).
  * ------------------------------------------------------------------
  */
 (function () {
   var CART_STORAGE_KEY = 'crema_cart';
 
-  // ---- Счётчик корзины ---------------------------------------------------
-  function getCartItemCount() {
+  // ---- Модель корзины (localStorage) --------------------------------------
+  function readCart() {
     try {
       var raw = localStorage.getItem(CART_STORAGE_KEY);
-      if (!raw) return 0;
-      var data = JSON.parse(raw);
-      if (!data || !data.items) return 0;
-      return Object.keys(data.items).reduce(function (sum, id) {
-        var entry = data.items[id];
-        var qty = entry && entry.qty;
-        return sum + (typeof qty === 'number' && qty > 0 ? qty : 0);
-      }, 0);
+      var data = raw ? JSON.parse(raw) : null;
+      if (!data || typeof data !== 'object') data = {};
+      if (!data.items || typeof data.items !== 'object') data.items = {};
+      if (typeof data.cutlery !== 'number' || data.cutlery < 0) data.cutlery = 0;
+      return data;
     } catch (e) {
-      return 0;
+      return { items: {}, cutlery: 0 };
     }
+  }
+
+  function writeCart(cart) {
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+    } catch (e) {
+      /* localStorage недоступен (приватный режим и т.п.) — не критично,
+         просто состояние корзины не переживёт перезагрузку страницы. */
+    }
+    updateCartBadge();
+    document.dispatchEvent(new CustomEvent('crema:cartchange', { detail: { cart: cart } }));
+  }
+
+  function getItemQty(cart, itemId) {
+    var entry = cart.items[itemId];
+    return entry && typeof entry.qty === 'number' ? entry.qty : 0;
+  }
+
+  // qty <= 0 удаляет позицию из корзины целиком (вместе с её модификаторами).
+  // Существующие модификаторы (соусы) сохраняются при простом изменении qty.
+  function setItemQty(cart, itemId, qty) {
+    if (qty <= 0) {
+      delete cart.items[itemId];
+      return;
+    }
+    var existing = cart.items[itemId] || { modifiers: {} };
+    existing.qty = qty;
+    if (!existing.modifiers || typeof existing.modifiers !== 'object') {
+      existing.modifiers = {};
+    }
+    cart.items[itemId] = existing;
+  }
+
+  // ---- Счётчик корзины ---------------------------------------------------
+  function getCartItemCount() {
+    var cart = readCart();
+    return Object.keys(cart.items).reduce(function (sum, id) {
+      return sum + getItemQty(cart, id);
+    }, 0);
   }
 
   function updateCartBadge(count) {
@@ -48,7 +91,11 @@
 
   window.CremaCart = {
     getCount: getCartItemCount,
-    updateBadge: updateCartBadge
+    updateBadge: updateCartBadge,
+    readCart: readCart,
+    writeCart: writeCart,
+    getItemQty: getItemQty,
+    setItemQty: setItemQty
   };
 
   // ---- Бургер-меню --------------------------------------------------------

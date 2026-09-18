@@ -134,7 +134,8 @@
     "freeDeliveryHint": "Добавьте ещё на {amount} лей до бесплатной доставки",
     "freeDeliveryReached": "Бесплатная доставка по Бельцам!",
     "itemUnavailable": "Позиции больше нет в наличии",
-    "itemClosedNow": "Сейчас недоступно для заказа"
+    "itemClosedNow": "Сейчас недоступно для заказа",
+    "cutleryExtraFee": "Доплата за приборы: {amount} лей"
   },
   "checkout": {
     "formTitle": "Оформление заказа",

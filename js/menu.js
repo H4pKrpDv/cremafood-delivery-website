@@ -14,21 +14,24 @@
  *    смены языка (событие "crema:langchange" из js/i18n.js), т.к. длина
  *    текста перевода может отличаться;
  *  - степпер "Добавить" → "‹ − | кол-во | + ›" в карточке товара: пишет
- *    реальные данные в localStorage["crema_cart"] (та же модель, что и
- *    в js/main.js: { items: { id: { qty, modifiers } }, cutlery }) и
- *    зовёт window.CremaCart.updateBadge(), чтобы счётчик в шапке сразу
- *    обновлялся. При qty=0 товар убирается из корзины и карточка
- *    возвращается к кнопке "Добавить". Выбор модификаторов (соусы для
- *    кухонных позиций) в саму карточку НЕ вынесен — это отдельный шаг
- *    в попапе корзины, п.7 плана; здесь modifiers всегда {}.
+ *    реальные данные в localStorage["crema_cart"] через общую модель
+ *    window.CremaCart (см. js/main.js — readCart/writeCart/getItemQty/
+ *    setItemQty теперь живут там одним местом, чтобы попап корзины из
+ *    п.7, js/cart.js, не мог разойтись в логике с этой карточкой). При
+ *    qty=0 товар убирается из корзины и карточка возвращается к кнопке
+ *    "Добавить". Выбор модификаторов (соусы для кухонных позиций) в саму
+ *    карточку НЕ вынесен — это отдельный шаг в попапе корзины, п.7 плана;
+ *    здесь modifiers всегда {}.
  *  - гидратация при загрузке страницы: если товар уже лежит в корзине
  *    (localStorage сохранился с прошлого визита) — карточка сразу
  *    рисуется со степпером и правильным количеством, а не с "Добавить".
+ *    Та же гидратация переиспользуется для пересинхронизации ПОСЛЕ любого
+ *    изменения корзины из попапа (событие "crema:cartchange" из
+ *    js/main.js) — например, если товар убрали через попап корзины,
+ *    его карточка в сетке должна вернуться к кнопке "Добавить" сама.
  * ------------------------------------------------------------------
  */
 (function () {
-  var CART_STORAGE_KEY = 'crema_cart';
-
   // ---- Мини-версия резолвера i18n-ключей (только для текста, который
   // нужно вставить в динамически создаваемую разметку прямо в момент
   // создания — сам механизм переключения языка на лету остаётся в
@@ -181,50 +184,8 @@
 
   // ------------------------------------------------------------------
   // Степпер "Добавить" → "‹ − | кол-во | + ›" + localStorage["crema_cart"]
+  // (модель корзины теперь целиком в window.CremaCart, см. js/main.js)
   // ------------------------------------------------------------------
-  function readCart() {
-    try {
-      var raw = localStorage.getItem(CART_STORAGE_KEY);
-      var data = raw ? JSON.parse(raw) : null;
-      if (!data || typeof data !== 'object') data = {};
-      if (!data.items || typeof data.items !== 'object') data.items = {};
-      if (typeof data.cutlery !== 'number') data.cutlery = 0;
-      return data;
-    } catch (e) {
-      return { items: {}, cutlery: 0 };
-    }
-  }
-
-  function writeCart(cart) {
-    try {
-      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
-    } catch (e) {
-      /* localStorage недоступен (приватный режим и т.п.) — не критично,
-         просто состояние корзины не переживёт перезагрузку страницы. */
-    }
-    if (window.CremaCart && typeof window.CremaCart.updateBadge === 'function') {
-      window.CremaCart.updateBadge();
-    }
-  }
-
-  function getQty(cart, itemId) {
-    var entry = cart.items[itemId];
-    return entry && typeof entry.qty === 'number' ? entry.qty : 0;
-  }
-
-  function setQty(cart, itemId, qty) {
-    if (qty <= 0) {
-      delete cart.items[itemId];
-      return;
-    }
-    var existing = cart.items[itemId] || { modifiers: {} };
-    existing.qty = qty;
-    if (!existing.modifiers || typeof existing.modifiers !== 'object') {
-      existing.modifiers = {};
-    }
-    cart.items[itemId] = existing;
-  }
-
   function stepperMarkupIdle() {
     return (
       '<button type="button" class="stepper__add" data-action="add-to-cart" data-i18n-key="common.add">' +
@@ -255,13 +216,19 @@
     container.innerHTML = qty > 0 ? stepperMarkupActive(qty) : stepperMarkupIdle();
   }
 
+  // Всегда перерисовывает КАЖДЫЙ степпер по текущему состоянию корзины —
+  // как при первой загрузке страницы (часть карточек станет активным
+  // степпером, если товар уже был в корзине с прошлого визита), так и
+  // при пересинхронизации после изменений из попапа корзины (часть
+  // карточек наоборот должна вернуться к кнопке "Добавить", если товар
+  // убрали через попап) — поэтому вызывается безусловно, не только для qty>0.
   function hydrateSteppers() {
-    var cart = readCart();
+    var cart = window.CremaCart.readCart();
     var containers = document.querySelectorAll('[data-stepper]');
     containers.forEach(function (container) {
       var itemId = container.getAttribute('data-item-id');
-      var qty = getQty(cart, itemId);
-      if (qty > 0) renderStepper(container, qty);
+      var qty = window.CremaCart.getItemQty(cart, itemId);
+      renderStepper(container, qty);
     });
   }
 
@@ -279,8 +246,8 @@
 
       var itemId = container.getAttribute('data-item-id');
       var action = actionEl.getAttribute('data-action');
-      var cart = readCart();
-      var qty = getQty(cart, itemId);
+      var cart = window.CremaCart.readCart();
+      var qty = window.CremaCart.getItemQty(cart, itemId);
 
       if (action === 'add-to-cart') {
         qty = 1;
@@ -290,10 +257,16 @@
         qty = Math.max(0, qty - 1);
       }
 
-      setQty(cart, itemId, qty);
-      writeCart(cart);
-      renderStepper(container, qty);
+      window.CremaCart.setItemQty(cart, itemId, qty);
+      window.CremaCart.writeCart(cart);
+      // Перерисовку делает слушатель "crema:cartchange" ниже (writeCart
+      // уже разослал событие синхронно) — не дублируем renderStepper здесь.
     });
+
+    // Корзину мог изменить попап (js/cart.js) — например, убрать товар
+    // целиком или поменять количество не через карточку в сетке.
+    // Пересинхронизируем ВСЕ степпера сетки по свежему состоянию корзины.
+    document.addEventListener('crema:cartchange', hydrateSteppers);
   }
 
   document.addEventListener('DOMContentLoaded', function () {

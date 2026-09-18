@@ -40,92 +40,362 @@
           "id": "coffee",
           "image": "img/categories/coffee.jpg",
           "items": [
-            { "id": "espresso", "price": 23, "image": "img/items/espresso.jpg", "modifiers": [], "available": true },
-            { "id": "americano", "price": 23, "image": "img/items/americano.jpg", "modifiers": [], "available": true },
-            { "id": "doppio", "price": 30, "image": "img/items/doppio.jpg", "modifiers": [], "available": true },
-            { "id": "cortado", "price": 26, "image": "img/items/cortado.jpg", "modifiers": [], "available": true },
-            { "id": "cappuccino", "price": 27, "image": "img/items/cappuccino.jpg", "modifiers": [], "available": true },
-            { "id": "grand-cappuccino", "price": 35, "image": "img/items/grand-cappuccino.jpg", "modifiers": [], "available": true },
-            { "id": "latte", "price": 30, "image": "img/items/latte.jpg", "modifiers": [], "available": true },
-            { "id": "flat-white", "price": 30, "image": "img/items/flat-white.jpg", "modifiers": [], "available": true },
-            { "id": "moccacino", "price": 35, "image": "img/items/moccacino.jpg", "modifiers": [], "available": true },
-            { "id": "raf-coffee", "price": 35, "image": "img/items/raf-coffee.jpg", "modifiers": [], "available": true },
-            { "id": "hot-chocolate", "price": 30, "image": "img/items/hot-chocolate.jpg", "modifiers": [], "available": true }
+            {
+              "id": "espresso",
+              "price": 23,
+              "image": "img/items/espresso.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "americano",
+              "price": 23,
+              "image": "img/items/americano.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "doppio",
+              "price": 30,
+              "image": "img/items/doppio.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "cortado",
+              "price": 26,
+              "image": "img/items/cortado.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "cappuccino",
+              "price": 27,
+              "image": "img/items/cappuccino.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "grand-cappuccino",
+              "price": 35,
+              "image": "img/items/grand-cappuccino.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "latte",
+              "price": 30,
+              "image": "img/items/latte.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "flat-white",
+              "price": 30,
+              "image": "img/items/flat-white.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "moccacino",
+              "price": 35,
+              "image": "img/items/moccacino.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "raf-coffee",
+              "price": 35,
+              "image": "img/items/raf-coffee.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "hot-chocolate",
+              "price": 30,
+              "image": "img/items/hot-chocolate.jpg",
+              "modifiers": [],
+              "available": true
+            }
           ]
         },
         {
           "id": "ice-coffee",
           "image": "img/categories/ice-coffee.jpg",
           "items": [
-            { "id": "iced-latte", "price": 40, "image": "img/items/iced-latte.jpg", "modifiers": [], "available": true },
-            { "id": "frappe", "price": 45, "image": "img/items/frappe.jpg", "modifiers": [], "available": true },
-            { "id": "espresso-tonic", "price": 50, "image": "img/items/espresso-tonic.jpg", "modifiers": [], "available": true },
-            { "id": "bumblebee", "price": 55, "image": "img/items/bumblebee.jpg", "modifiers": [], "available": true },
-            { "id": "bubble-coffee", "price": 60, "image": "img/items/bubble-coffee.jpg", "modifiers": [], "available": true }
+            {
+              "id": "iced-latte",
+              "price": 40,
+              "image": "img/items/iced-latte.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "frappe",
+              "price": 45,
+              "image": "img/items/frappe.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "espresso-tonic",
+              "price": 50,
+              "image": "img/items/espresso-tonic.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "bumblebee",
+              "price": 55,
+              "image": "img/items/bumblebee.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "bubble-coffee",
+              "price": 60,
+              "image": "img/items/bubble-coffee.jpg",
+              "modifiers": [],
+              "available": true
+            }
           ]
         },
         {
           "id": "tea",
           "image": "img/categories/tea.jpg",
           "items": [
-            { "id": "tea-julius-cup", "price": 25, "image": "img/items/tea-julius-cup.jpg", "modifiers": [], "available": true },
-            { "id": "tea-julius-pot", "price": 40, "image": "img/items/tea-julius-pot.jpg", "modifiers": [], "available": true },
-            { "id": "tea-handmade-cup", "price": 35, "image": "img/items/tea-handmade-cup.jpg", "modifiers": [], "available": true },
-            { "id": "tea-handmade-pot", "price": 60, "image": "img/items/tea-handmade-pot.jpg", "modifiers": [], "available": true },
-            { "id": "ice-tea", "price": 45, "image": "img/items/ice-tea.jpg", "modifiers": [], "available": true }
+            {
+              "id": "tea-julius-cup",
+              "price": 25,
+              "image": "img/items/tea-julius-cup.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "tea-julius-pot",
+              "price": 40,
+              "image": "img/items/tea-julius-pot.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "tea-handmade-cup",
+              "price": 35,
+              "image": "img/items/tea-handmade-cup.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "tea-handmade-pot",
+              "price": 60,
+              "image": "img/items/tea-handmade-pot.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "ice-tea",
+              "price": 45,
+              "image": "img/items/ice-tea.jpg",
+              "modifiers": [],
+              "available": true
+            }
           ]
         },
         {
           "id": "bubble-tea",
           "image": "img/categories/bubble-tea.jpg",
           "items": [
-            { "id": "bubble-tea-kiwi", "price": 60, "image": "img/items/bubble-tea-kiwi.jpg", "modifiers": [], "available": true },
-            { "id": "bubble-tea-pineapple", "price": 60, "image": "img/items/bubble-tea-pineapple.jpg", "modifiers": [], "available": true },
-            { "id": "bubble-tea-strawberry", "price": 60, "image": "img/items/bubble-tea-strawberry.jpg", "modifiers": [], "available": true },
-            { "id": "bubble-tea-mango", "price": 60, "image": "img/items/bubble-tea-mango.jpg", "modifiers": [], "available": true },
-            { "id": "bubble-tea-banana", "price": 60, "image": "img/items/bubble-tea-banana.jpg", "modifiers": [], "available": true }
+            {
+              "id": "bubble-tea-kiwi",
+              "price": 60,
+              "image": "img/items/bubble-tea-kiwi.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "bubble-tea-pineapple",
+              "price": 60,
+              "image": "img/items/bubble-tea-pineapple.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "bubble-tea-strawberry",
+              "price": 60,
+              "image": "img/items/bubble-tea-strawberry.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "bubble-tea-mango",
+              "price": 60,
+              "image": "img/items/bubble-tea-mango.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "bubble-tea-banana",
+              "price": 60,
+              "image": "img/items/bubble-tea-banana.jpg",
+              "modifiers": [],
+              "available": true
+            }
           ]
         },
         {
           "id": "milkshakes",
           "image": "img/categories/milkshakes.jpg",
           "items": [
-            { "id": "milkshake-classic", "price": 35, "image": "img/items/milkshake-classic.jpg", "modifiers": [], "available": true },
-            { "id": "milkshake-chocolate", "price": 40, "image": "img/items/milkshake-chocolate.jpg", "modifiers": [], "available": true },
-            { "id": "milkshake-banana", "price": 45, "image": "img/items/milkshake-banana.jpg", "modifiers": [], "available": true },
-            { "id": "milkshake-strawberry", "price": 45, "image": "img/items/milkshake-strawberry.jpg", "modifiers": [], "available": true },
-            { "id": "milkshake-oreo", "price": 45, "image": "img/items/milkshake-oreo.jpg", "modifiers": [], "available": true }
+            {
+              "id": "milkshake-classic",
+              "price": 35,
+              "image": "img/items/milkshake-classic.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "milkshake-chocolate",
+              "price": 40,
+              "image": "img/items/milkshake-chocolate.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "milkshake-banana",
+              "price": 45,
+              "image": "img/items/milkshake-banana.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "milkshake-strawberry",
+              "price": 45,
+              "image": "img/items/milkshake-strawberry.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "milkshake-oreo",
+              "price": 45,
+              "image": "img/items/milkshake-oreo.jpg",
+              "modifiers": [],
+              "available": true
+            }
           ]
         },
         {
           "id": "lemonades",
           "image": "img/categories/lemonades.jpg",
           "items": [
-            { "id": "lemonade-mojito", "price": 50, "image": "img/items/lemonade-mojito.jpg", "modifiers": [], "available": true },
-            { "id": "lemonade-berry", "price": 50, "image": "img/items/lemonade-berry.jpg", "modifiers": [], "available": true },
-            { "id": "lemonade-tropic", "price": 45, "image": "img/items/lemonade-tropic.jpg", "modifiers": [], "available": true }
+            {
+              "id": "lemonade-mojito",
+              "price": 50,
+              "image": "img/items/lemonade-mojito.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "lemonade-berry",
+              "price": 50,
+              "image": "img/items/lemonade-berry.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "lemonade-tropic",
+              "price": 45,
+              "image": "img/items/lemonade-tropic.jpg",
+              "modifiers": [],
+              "available": true
+            }
           ]
         },
         {
           "id": "desserts",
           "image": "img/categories/desserts.jpg",
           "items": [
-            { "id": "cheesecake-caramel", "price": 55, "image": "img/items/cheesecake-caramel.jpg", "modifiers": [], "available": true },
-            { "id": "cheesecake-mac", "price": 55, "image": "img/items/cheesecake-mac.jpg", "modifiers": [], "available": true },
-            { "id": "smetannik", "price": 55, "image": "img/items/smetannik.jpg", "modifiers": [], "available": true },
-            { "id": "donuts", "price": 20, "image": "img/items/donuts.jpg", "modifiers": [], "available": true }
+            {
+              "id": "cheesecake-caramel",
+              "price": 55,
+              "image": "img/items/cheesecake-caramel.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "cheesecake-mac",
+              "price": 55,
+              "image": "img/items/cheesecake-mac.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "smetannik",
+              "price": 55,
+              "image": "img/items/smetannik.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "donuts",
+              "price": 20,
+              "image": "img/items/donuts.jpg",
+              "modifiers": [],
+              "available": true
+            }
           ]
         },
         {
           "id": "alcohol",
           "image": "img/categories/alcohol.jpg",
           "items": [
-            { "id": "jack-daniels-honey", "price": 50, "image": "img/items/jack-daniels-honey.jpg", "modifiers": [], "available": true, "ageRestricted": true },
-            { "id": "jack-daniels-apple", "price": 50, "image": "img/items/jack-daniels-apple.jpg", "modifiers": [], "available": true, "ageRestricted": true },
-            { "id": "crema-kick-mango", "price": 50, "image": "img/items/crema-kick-mango.jpg", "modifiers": [], "available": true, "ageRestricted": true },
-            { "id": "crema-kick-watermelon", "price": 50, "image": "img/items/crema-kick-watermelon.jpg", "modifiers": [], "available": true, "ageRestricted": true },
-            { "id": "johnnie-walker-red", "price": 50, "image": "img/items/johnnie-walker-red.jpg", "modifiers": [], "available": true, "ageRestricted": true },
-            { "id": "jagermeister", "price": 50, "image": "img/items/jagermeister.jpg", "modifiers": [], "available": true, "ageRestricted": true }
+            {
+              "id": "jack-daniels-honey",
+              "price": 50,
+              "image": "img/items/jack-daniels-honey.jpg",
+              "modifiers": [],
+              "available": true,
+              "ageRestricted": true
+            },
+            {
+              "id": "jack-daniels-apple",
+              "price": 50,
+              "image": "img/items/jack-daniels-apple.jpg",
+              "modifiers": [],
+              "available": true,
+              "ageRestricted": true
+            },
+            {
+              "id": "crema-kick-mango",
+              "price": 50,
+              "image": "img/items/crema-kick-mango.jpg",
+              "modifiers": [],
+              "available": true,
+              "ageRestricted": true
+            },
+            {
+              "id": "crema-kick-watermelon",
+              "price": 50,
+              "image": "img/items/crema-kick-watermelon.jpg",
+              "modifiers": [],
+              "available": true,
+              "ageRestricted": true
+            },
+            {
+              "id": "johnnie-walker-red",
+              "price": 50,
+              "image": "img/items/johnnie-walker-red.jpg",
+              "modifiers": [],
+              "available": true,
+              "ageRestricted": true
+            },
+            {
+              "id": "jagermeister",
+              "price": 50,
+              "image": "img/items/jagermeister.jpg",
+              "modifiers": [],
+              "available": true,
+              "ageRestricted": true
+            }
           ]
         },
         {
@@ -142,16 +412,48 @@
           "id": "breakfast",
           "image": "img/categories/breakfast.jpg",
           "items": [
-            { "id": "omelette", "price": 45, "image": "img/items/omelette.jpg", "modifiers": ["sauces"], "available": true },
-            { "id": "omelette-cheese", "price": 55, "image": "img/items/omelette-cheese.jpg", "modifiers": ["sauces"], "available": true }
+            {
+              "id": "omelette",
+              "price": 45,
+              "image": "img/items/omelette.jpg",
+              "modifiers": [
+                "sauces"
+              ],
+              "available": true
+            },
+            {
+              "id": "omelette-cheese",
+              "price": 55,
+              "image": "img/items/omelette-cheese.jpg",
+              "modifiers": [
+                "sauces"
+              ],
+              "available": true
+            }
           ]
         },
         {
           "id": "mexican",
           "image": "img/categories/mexican.jpg",
           "items": [
-            { "id": "burrito-chicken", "price": 65, "image": "img/items/burrito-chicken.jpg", "modifiers": ["sauces"], "available": true },
-            { "id": "tacos-beef", "price": 70, "image": "img/items/tacos-beef.jpg", "modifiers": ["sauces"], "available": true }
+            {
+              "id": "burrito-chicken",
+              "price": 65,
+              "image": "img/items/burrito-chicken.jpg",
+              "modifiers": [
+                "sauces"
+              ],
+              "available": true
+            },
+            {
+              "id": "tacos-beef",
+              "price": 70,
+              "image": "img/items/tacos-beef.jpg",
+              "modifiers": [
+                "sauces"
+              ],
+              "available": true
+            }
           ]
         },
         {
@@ -164,7 +466,10 @@
   ],
   "modifierGroups": {
     "sauces": [
-      { "id": "ketchup", "price": 10 }
+      {
+        "id": "ketchup",
+        "price": 10
+      }
     ]
   }
 }

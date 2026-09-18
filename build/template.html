@@ -79,6 +79,12 @@
         min-width: 320px;
       }
 
+      /* Пока открыт попап корзины (п.7 плана) — блокируем прокрутку
+         основного сайта, класс вешает/снимает js/cart.js. */
+      body.cart-modal-open {
+        overflow: hidden;
+      }
+
       a {
         text-decoration: none;
         color: inherit;
@@ -427,6 +433,344 @@
         border-color: var(--gold-light);
         transform: translateY(-2px);
         box-shadow: 0 8px 32px rgba(200, 150, 74, 0.35);
+      }
+
+      /* Вторичная кнопка (п.7, попап корзины — "Вернуться к меню") — тот же
+         .btn, но контурный вариант вместо сплошной заливки, чтобы не
+         конкурировать по вниманию с основной кнопкой действия рядом. */
+      .btn--secondary {
+        background: none;
+        color: var(--gold-light);
+        border: 2px solid var(--gold-dark);
+      }
+
+      .btn--secondary:hover {
+        background: rgba(200, 150, 74, 0.12);
+        border-color: var(--gold);
+      }
+
+      .btn:disabled,
+      .btn[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+      }
+
+      /* ─── CART MODAL (попап корзины, п.7 плана) ───
+         Открытие/закрытие/рендер списка — js/cart.js. Оверлей на весь экран
+         с полупрозрачной подложкой, сама модалка — по центру, не на весь
+         экран (по технике), с внутренним скроллом только у списка позиций
+         (.cart-list), чтобы шапка/итог/кнопки модалки всегда были на виду
+         независимо от того, сколько товаров в корзине. */
+      .cart-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(8, 5, 3, 0.72);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        z-index: 1000;
+      }
+
+      .cart-overlay[hidden] {
+        display: none;
+      }
+
+      .cart-modal {
+        position: relative;
+        width: 100%;
+        max-width: 420px;
+        max-height: 88vh;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem 1.25rem 1.25rem;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+      }
+
+      .cart-modal__close {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        color: var(--text-2);
+        font-size: 1.1rem;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: color var(--transition), border-color var(--transition);
+      }
+
+      .cart-modal__close:hover {
+        color: var(--gold-light);
+        border-color: var(--gold-dark);
+      }
+
+      .cart-modal__title {
+        font-family: var(--font-head);
+        font-size: 1.4rem;
+        color: var(--cream);
+        text-align: center;
+        padding-right: 2rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .cart-modal__subtitle {
+        font-size: 0.8rem;
+        color: var(--text-2);
+        text-align: center;
+        margin-bottom: 1.25rem;
+      }
+
+      .cart-modal__empty {
+        text-align: center;
+        padding: 1.5rem 0 0.5rem;
+      }
+
+      .cart-modal__empty[hidden] {
+        display: none;
+      }
+
+      .cart-modal__empty p {
+        color: var(--text-2);
+        font-size: 0.9rem;
+      }
+
+      .cart-modal__body {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+      }
+
+      .cart-modal__body[hidden] {
+        display: none;
+      }
+
+      .cart-list {
+        list-style: none;
+        margin: 0 -0.25rem 1rem;
+        padding: 0 0.25rem;
+        overflow-y: auto;
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+      }
+
+      .cart-item {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.65rem;
+        padding-bottom: 0.85rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .cart-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      .cart-item--unavailable {
+        opacity: 0.55;
+      }
+
+      .cart-item__info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .cart-item__name {
+        display: block;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--cream);
+        margin-bottom: 0.15rem;
+      }
+
+      .cart-item__unit-price {
+        display: block;
+        font-size: 0.72rem;
+        color: var(--text-3);
+      }
+
+      .cart-item__unavailable-note {
+        display: block;
+        font-size: 0.72rem;
+        color: var(--gold-light);
+        margin-top: 0.3rem;
+      }
+
+      .cart-item__modifiers {
+        margin-top: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+
+      .cart-item__modifiers-label {
+        font-size: 0.68rem;
+        color: var(--text-3);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .cart-item__modifier-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        font-size: 0.76rem;
+        color: var(--text-2);
+      }
+
+      .cart-item__side {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.5rem;
+        flex-shrink: 0;
+      }
+
+      .cart-item__price {
+        font-size: 0.82rem;
+        color: var(--gold);
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      /* Компактный степпер для соусов внутри строки товара — тот же .stepper,
+         просто помельче, чтобы не спорить по вниманию со степпером количества. */
+      .stepper--sm {
+        gap: 0.3rem;
+      }
+
+      .stepper--sm .stepper__btn {
+        width: 24px;
+        height: 24px;
+        font-size: 0.85rem;
+      }
+
+      .stepper--sm .stepper__qty {
+        font-size: 0.78rem;
+        min-width: 1.1rem;
+      }
+
+      .cart-modal__cutlery {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.85rem 0;
+        border-top: 1px solid var(--border);
+        font-size: 0.85rem;
+        color: var(--text);
+      }
+
+      .cart-modal__cutlery .stepper {
+        flex: none;
+        width: auto;
+        gap: 0.5rem;
+      }
+
+      .cart-modal__cutlery .stepper__qty {
+        flex: none;
+        min-width: 1.5rem;
+      }
+
+      .cart-modal__cutlery-note {
+        font-size: 0.7rem;
+        color: var(--text-3);
+        line-height: 1.4;
+        margin-top: -0.4rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .cart-modal__cutlery-extra {
+        font-size: 0.74rem;
+        color: var(--gold-light);
+        margin-top: -0.4rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .cart-modal__cutlery-extra[hidden] {
+        display: none;
+      }
+
+      .cart-modal__delivery {
+        margin-bottom: 1rem;
+      }
+
+      .cart-modal__delivery-text {
+        font-size: 0.78rem;
+        color: var(--text-2);
+        margin-bottom: 0.4rem;
+      }
+
+      .cart-modal__delivery-text--reached {
+        color: var(--gold-light);
+        font-weight: 600;
+      }
+
+      .cart-modal__delivery-bar {
+        height: 6px;
+        border-radius: 999px;
+        background: var(--surface);
+        overflow: hidden;
+      }
+
+      .cart-modal__delivery-bar-fill {
+        height: 100%;
+        width: 0%;
+        background: var(--gold);
+        border-radius: 999px;
+        transition: width 0.3s ease;
+      }
+
+      .cart-modal__total {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        padding-top: 0.85rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.95rem;
+        color: var(--cream);
+        font-weight: 600;
+        margin-bottom: 1.1rem;
+      }
+
+      .cart-modal__total-amount {
+        font-family: var(--font-head);
+        font-size: 1.2rem;
+        color: var(--gold);
+      }
+
+      .cart-modal__actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+
+      .cart-modal__actions .btn {
+        width: 100%;
+        text-align: center;
+        border-radius: var(--radius);
+      }
+
+      .cart-modal__actions .btn[hidden] {
+        display: none;
       }
 
       /* ─── HERO ───
@@ -1277,6 +1621,11 @@
       }
 
       @media (min-width: 769px) {
+        .cart-modal {
+          max-width: 460px;
+          padding: 2rem 1.75rem 1.5rem;
+        }
+
         .header__inner {
           height: 72px;
           padding: 0 2rem;
@@ -1486,6 +1835,86 @@
       </div>
     </header>
 
+    <!-- ─── ПОПАП КОРЗИНЫ (п.7 плана) ───
+         Логика открытия/закрытия/рендера — js/cart.js. Модель данных и
+         localStorage — window.CremaCart (js/main.js), общая со степпером
+         в карточке товара (js/menu.js). Разметку списка позиций/модификаторов
+         внутри .cart-list JS генерирует на лету (там нужны динамические id
+         каждой позиции корзины), поэтому здесь только статический "каркас". -->
+    <div class="cart-overlay" id="cartOverlay" hidden>
+      <div
+        class="cart-modal"
+        id="cartModal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cartTitle"
+      >
+        <button
+          type="button"
+          class="cart-modal__close"
+          id="cartClose"
+          aria-label="Закрыть"
+          data-i18n-attr-aria-label="common.close"
+        >×</button>
+
+        <h2 class="cart-modal__title" id="cartTitle" data-i18n-key="cart.title">Корзина</h2>
+        <p class="cart-modal__subtitle" data-i18n-key="cart.subtitle">Всё, что вы заказываете</p>
+
+        <div class="cart-modal__empty" id="cartEmpty" hidden>
+          <p data-i18n-key="cart.empty">Добавьте что-нибудь для заказа</p>
+        </div>
+
+        <div class="cart-modal__body" id="cartBody" hidden>
+          <ul class="cart-list" id="cartList"></ul>
+
+          <div class="cart-modal__cutlery">
+            <span data-i18n-key="cart.cutlery">Приборы</span>
+            <div class="stepper" data-cutlery-stepper>
+              <button
+                type="button"
+                class="stepper__btn"
+                data-action="cutlery-decrease"
+                aria-label="Уменьшить количество"
+                data-i18n-attr-aria-label="common.decreaseQty"
+              >−</button>
+              <span
+                class="stepper__qty"
+                id="cutleryQty"
+                aria-label="Количество"
+                data-i18n-attr-aria-label="common.quantityLabel"
+              >0</span>
+              <button
+                type="button"
+                class="stepper__btn"
+                data-action="cutlery-increase"
+                aria-label="Увеличить количество"
+                data-i18n-attr-aria-label="common.increaseQty"
+              >+</button>
+            </div>
+          </div>
+          <p class="cart-modal__cutlery-note" data-i18n-key="cart.cutleryFeeNote">Первый прибор на каждую позицию — бесплатно, далее +2 лея за штуку</p>
+          <p class="cart-modal__cutlery-extra" id="cartCutleryExtra" hidden></p>
+
+          <div class="cart-modal__delivery" id="cartDelivery">
+            <p class="cart-modal__delivery-text" id="cartDeliveryText"></p>
+            <div class="cart-modal__delivery-bar">
+              <div class="cart-modal__delivery-bar-fill" id="cartDeliveryBarFill"></div>
+            </div>
+          </div>
+
+          <div class="cart-modal__total">
+            <span data-i18n-key="cart.total">Итого к оплате</span>
+            <span class="cart-modal__total-amount" id="cartTotalAmount">0 MDL</span>
+          </div>
+        </div>
+
+        <div class="cart-modal__actions">
+          <button type="button" class="btn btn--secondary" id="cartBackToMenu" data-i18n-key="cart.backToMenu">Вернуться к меню</button>
+          <button type="button" class="btn btn--primary" id="cartCheckout" data-i18n-key="cart.checkout" hidden>Заказать</button>
+        </div>
+      </div>
+    </div>
+
     <section class="hero">
       <div
         class="hero__carousel"
@@ -1592,9 +2021,11 @@
     </button>
 
     <!--{{I18N_DATA}}-->
+    <!--{{MODIFIER_GROUPS_DATA}}-->
     <script src="js/i18n.js" defer></script>
     <script src="js/main.js" defer></script>
     <script src="js/gallery.js" defer></script>
     <script src="js/menu.js" defer></script>
+    <script src="js/cart.js" defer></script>
   </body>
 </html>

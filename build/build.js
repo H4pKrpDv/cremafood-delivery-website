@@ -324,6 +324,21 @@ function buildI18nDataScript() {
 }
 
 // ---------------------------------------------------------------------
+// <script> с ценами групп модификаторов (соусы и т.п., п.7 плана) —
+// нужно попапу корзины (js/cart.js), чтобы посчитать доплату за соус и
+// нарисовать список опций, без похода за отдельным JSON через fetch()
+// (та же причина, что и у i18n-данных выше — file:// не даёт fetch).
+// Название/подпись каждой опции при этом берутся из обычного i18n
+// (ключи "modifiers.<id>.name" / "modifiers.<groupId>.groupLabel") —
+// здесь только цены и список id, привязка к языку не нужна.
+// ---------------------------------------------------------------------
+
+function buildModifierGroupsDataScript() {
+  const json = JSON.stringify(menu.modifierGroups || {}).replace(/</g, '\\u003c');
+  return `<script id="modifier-groups-data">\n      window.__CREMA_MODIFIER_GROUPS__ = ${json};\n    </script>`;
+}
+
+// ---------------------------------------------------------------------
 // Сборка index.html из шаблона
 // ---------------------------------------------------------------------
 
@@ -335,11 +350,13 @@ function buildIndexHtml() {
   const categoryTabsHtml = renderCategoryTabs();
   const menuPillsHtml = renderPills();
   const i18nDataScript = buildI18nDataScript();
+  const modifierGroupsDataScript = buildModifierGroupsDataScript();
 
   html = html.replace('<!--{{CATEGORY_TABS}}-->', categoryTabsHtml);
   html = html.replace('<!--{{MENU_PILLS}}-->', menuPillsHtml);
   html = html.replace('<!--{{MENU_CATEGORIES}}-->', menuCategoriesHtml);
   html = html.replace('<!--{{I18N_DATA}}-->', i18nDataScript);
+  html = html.replace('<!--{{MODIFIER_GROUPS_DATA}}-->', modifierGroupsDataScript);
 
   const outputPath = path.join(ROOT, 'index.html');
   fs.writeFileSync(outputPath, html, 'utf-8');
