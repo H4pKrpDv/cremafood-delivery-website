@@ -128,6 +128,7 @@
     var subtotal = 0;
     var totalCutleryCost = 0;
     var hasAgeRestrictedLine = false;
+    var hasCutleryEligibleLine = false;
 
     Object.keys(cart.items).forEach(function (itemId) {
       var entry = cart.items[itemId];
@@ -136,6 +137,7 @@
 
       var meta = getItemMeta(itemId);
       if (meta.available && meta.ageRestricted) hasAgeRestrictedLine = true;
+      if (meta.cutleryEligible) hasCutleryEligibleLine = true;
 
       var modifiersDetail = [];
       var modifiersCost = 0;
@@ -195,6 +197,7 @@
       cutleryCost: totalCutleryCost,
       total: subtotal,
       hasAgeRestrictedLine: hasAgeRestrictedLine,
+      hasCutleryEligibleLine: hasCutleryEligibleLine,
       ageConfirmed: ageConfirmed,
       canCheckout: hasAvailableLine && ageOk,
       freeDeliveryReached: subtotal >= FREE_DELIVERY_THRESHOLD,
@@ -304,12 +307,19 @@
     els.empty = document.getElementById('cartEmpty');
     els.body = document.getElementById('cartBody');
     els.list = document.getElementById('cartList');
+    els.cutleryNote = document.getElementById('cartCutleryNote');
     els.cutleryExtra = document.getElementById('cartCutleryExtra');
     els.ageConfirm = document.getElementById('cartAgeConfirm');
     els.ageCheckbox = document.getElementById('cartAgeCheckbox');
     els.ageError = document.getElementById('cartAgeError');
+    // Правки от 18.09.2026: .cart-modal__delivery/.cart-modal__total теперь
+    // отдельные "закреплённые" блоки ВНЕ .cart-modal__body (см. template.html) —
+    // раньше прятались вместе с ним автоматически через [hidden] на родителе,
+    // теперь нужно скрывать/показывать их явно здесь при пустой корзине.
+    els.deliveryBlock = document.getElementById('cartDelivery');
     els.deliveryText = document.getElementById('cartDeliveryText');
     els.deliveryBarFill = document.getElementById('cartDeliveryBarFill');
+    els.totalRow = document.getElementById('cartTotalRow');
     els.totalAmount = document.getElementById('cartTotalAmount');
     els.backToMenuBtn = document.getElementById('cartBackToMenu');
     els.checkoutBtn = document.getElementById('cartCheckout');
@@ -324,6 +334,11 @@
       els.empty.hidden = false;
       els.body.hidden = true;
       els.checkoutBtn.hidden = true;
+      // Возрастной блок/доставка/итог теперь вне .cart-modal__body — при
+      // пустой корзине скрываем их явно, иначе останутся видны сами по себе.
+      if (els.ageConfirm) els.ageConfirm.hidden = true;
+      if (els.deliveryBlock) els.deliveryBlock.hidden = true;
+      if (els.totalRow) els.totalRow.hidden = true;
       return;
     }
 
@@ -331,8 +346,16 @@
     els.body.hidden = false;
     els.checkoutBtn.hidden = false;
     els.checkoutBtn.disabled = !summary.canCheckout;
+    if (els.deliveryBlock) els.deliveryBlock.hidden = false;
+    if (els.totalRow) els.totalRow.hidden = false;
 
     els.list.innerHTML = summary.lines.map(renderCartItemHtml).join('');
+
+    // Поясняющий текст про правило приборов — показываем только если в
+    // корзине реально есть хоть одна позиция, к которой приборы применимы
+    // (по просьбе пользователя, иначе надпись сбивала с толку при заказе
+    // одних напитков без блюд кухни/десертов).
+    if (els.cutleryNote) els.cutleryNote.hidden = !summary.hasCutleryEligibleLine;
 
     // Доплата за приборы теперь считается по каждой позиции (см. cart-item__cutlery-row
     // внутри списка) — здесь показываем только итоговую сумму доплаты по всей

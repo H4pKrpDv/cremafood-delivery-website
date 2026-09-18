@@ -551,7 +551,19 @@
         flex-direction: column;
         flex: 1;
         min-height: 0;
-        overflow: hidden;
+        /* Правки от 18.09.2026 (баг-фикс): было overflow:hidden — на невысоких
+           экранах (короткий мобильный viewport + чекбокс 18+ + доплата за
+           приборы одновременно) суммарная высота содержимого попапа могла
+           превысить высоту этого блока, а .cart-list из-за своего min-height
+           не давал ужаться настолько, чтобы всё поместилось — итог: чекбокс
+           18+/индикатор доставки/итоговая сумма молча обрезались снизу,
+           оставаясь недоступными и невидимыми. overflow-y:auto — защитная
+           сетка: в обычном случае (как сейчас, после уменьшения min-height
+           у .cart-list) скролл не появляется вообще, а в редком экстремальном
+           сжатии по высоте пользователь просто может докрутить блок целиком,
+           вместо того чтобы критичный контент (galochka 18+, кнопка "Заказать")
+           пропадал без следа. */
+        overflow-y: auto;
       }
 
       .cart-modal__body[hidden] {
@@ -567,8 +579,14 @@
         /* Правки от 18.09.2026: список раньше сливался фоном с остальной
            модалкой — сложно было на глаз понять, что это отдельный
            скроллящийся блок. Добавили собственный фон/обводку и увеличили
-           минимальную высоту, чтобы сразу было видно больше содержимого. */
-        min-height: 260px;
+           минимальную высоту, чтобы сразу было видно больше содержимого.
+           Уменьшено на треть той же датой (баг-фикс) — 260px оказалось
+           слишком много: на невысоких мобильных экранах эта жёсткая
+           минимальная высота не давала списку ужаться под чекбокс 18+/
+           индикатор доставки/итог, из-за чего они обрезались (см. комментарий
+           у .cart-modal__body выше). 170px — по-прежнему заметно выше
+           изначального "как получится", но оставляет достаточно места. */
+        min-height: 170px;
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: var(--radius);
@@ -725,13 +743,23 @@
       }
 
       .cart-modal__cutlery-note {
+        flex-shrink: 0;
         font-size: 0.7rem;
         color: var(--text-3);
         line-height: 1.4;
         margin-bottom: 0.75rem;
       }
 
+      /* Правки от 18.09.2026: раньше показывалась всегда, даже если в корзине
+         нет ни одной позиции, к которой применимы приборы (например, только
+         напитки) — по просьбе пользователя теперь скрыта по умолчанию и
+         js/cart.js показывает её только когда есть хотя бы одна такая позиция. */
+      .cart-modal__cutlery-note[hidden] {
+        display: none;
+      }
+
       .cart-modal__cutlery-extra {
+        flex-shrink: 0;
         font-size: 0.74rem;
         color: var(--gold-light);
         margin-top: -0.4rem;
@@ -745,7 +773,13 @@
       /* Чекбокс подтверждения 18+ (правки от 18.09.2026) — показывается только
          когда в корзине есть алкоголь, см. js/cart.js renderCartModal(). */
       .cart-modal__age-confirm {
-        margin-bottom: 0.9rem;
+        flex-shrink: 0;
+        /* margin-top (не margin-bottom) — правки от 18.09.2026: этот блок
+           теперь сам "закреплённый" сосед .cart-modal__body (см. разметку и
+           комментарий у .cart-modal__delivery ниже), margin-top даёт отступ
+           от того, что идёт ПЕРЕД ним (список), независимо от того, что
+           именно следует ПОСЛЕ (доставка сразу или её пропуск). */
+        margin-top: 0.9rem;
         padding: 0.75rem 0.85rem;
         background: var(--surface);
         border: 1px solid var(--gold-dark);
@@ -784,8 +818,23 @@
         display: none;
       }
 
+      /* .cart-modal__delivery и .cart-modal__total (ниже) теперь живут ВНЕ
+         .cart-modal__body, "закреплёнными" соседями (см. разметку и комментарий
+         у .cart-modal__age-confirm выше) — раньше прятались автоматически
+         вместе с body через .cart-modal__body[hidden], в пустой корзине
+         сейчас скрываются сами через js/cart.js (renderCartModal). Без
+         отдельного правила [hidden] ниже атрибут не сработал бы — display:flex
+         у самого класса той же специфичности перебивал бы стандартное
+         [hidden]{display:none}. margin-top вместо margin-bottom — та же
+         причина, что и у .cart-modal__age-confirm: отступ от предыдущего
+         элемента, кем бы он ни был (список или блок 18+). */
       .cart-modal__delivery {
-        margin-bottom: 1rem;
+        flex-shrink: 0;
+        margin-top: 0.9rem;
+      }
+
+      .cart-modal__delivery[hidden] {
+        display: none;
       }
 
       .cart-modal__delivery-text {
@@ -815,6 +864,7 @@
       }
 
       .cart-modal__total {
+        flex-shrink: 0;
         display: flex;
         align-items: baseline;
         justify-content: space-between;
@@ -823,7 +873,14 @@
         font-size: 0.95rem;
         color: var(--cream);
         font-weight: 600;
-        margin-bottom: 1.1rem;
+        /* Отступ перед кнопками теперь даёт margin-top у .cart-modal__actions
+           (см. комментарий там) — этот margin-bottom оставлен небольшим,
+           просто как внутренний зазор до нижнего края .cart-modal__body. */
+        margin-bottom: 0.2rem;
+      }
+
+      .cart-modal__total[hidden] {
+        display: none;
       }
 
       .cart-modal__total-amount {
@@ -833,6 +890,17 @@
       }
 
       .cart-modal__actions {
+        /* margin-top (не gap на .cart-modal) — правки от 18.09.2026 (баг-фикс):
+           раньше визуальный отступ перед кнопками держался на margin-bottom
+           у .cart-modal__total, а тот сидит ВНУТРИ скроллящегося .cart-modal__body
+           (overflow-y:auto) — в сжатых по высоте случаях именно этот отступ
+           обрезался первым, из-за чего "Итого к оплате" визуально прилипало
+           к кнопке "Вернуться к меню" без зазора. Кнопки — отдельный элемент
+           ВНЕ .cart-modal__body, поэтому свой отступ сверху у них самих
+           гарантированно не обрежется, даже если внутренний список приборов/
+           доставки/итога пришлось скроллить. */
+        flex-shrink: 0;
+        margin-top: 0.9rem;
         display: flex;
         flex-direction: column;
         gap: 0.6rem;
@@ -1944,35 +2012,47 @@
                корзину (отдельный блок здесь), теперь это модификатор конкретной
                позиции (степпер внутри каждой карточки товара, .cart-item__cutlery-row,
                рисует js/cart.js). Поясняющий текст про "первый набор бесплатно"
-               остаётся один раз, над списком — относится к правилу целиком. -->
-          <p class="cart-modal__cutlery-note" data-i18n-key="cart.cutleryFeeNote">Первый прибор на каждую позицию — бесплатно, далее +2 лея за штуку</p>
+               остаётся один раз, над списком — относится к правилу целиком, но
+               показывается только когда в корзине есть хотя бы одна позиция,
+               к которой приборы применимы (js/cart.js, hasCutleryEligibleLine) —
+               по умолчанию скрыт, чтобы не путать при заказе одних напитков. -->
+          <p class="cart-modal__cutlery-note" id="cartCutleryNote" data-i18n-key="cart.cutleryFeeNote" hidden>Первый прибор на каждую позицию — бесплатно, далее +2 лея за штуку</p>
 
           <ul class="cart-list" id="cartList"></ul>
 
           <p class="cart-modal__cutlery-extra" id="cartCutleryExtra" hidden></p>
+        </div>
 
-          <!-- Чекбокс подтверждения 18+ — показывается js/cart.js только когда
-               в корзине есть доступная позиция с data-age-restricted="true"
-               (алкоголь). Пока не отмечен — кнопка "Заказать" заблокирована. -->
-          <div class="cart-modal__age-confirm" id="cartAgeConfirm" hidden>
-            <label class="cart-modal__age-confirm-label">
-              <input type="checkbox" id="cartAgeCheckbox" class="cart-modal__age-checkbox" />
-              <span data-i18n-key="checkout.ageConfirm">Подтверждаю, что мне есть 18 лет</span>
-            </label>
-            <span class="cart-modal__age-error" id="cartAgeError" hidden data-i18n-key="checkout.validation.ageConfirmRequired">Необходимо подтвердить возраст</span>
-          </div>
+        <!-- Правки от 18.09.2026 (баг-фикс): чекбокс 18+, индикатор бесплатной
+             доставки и итоговая сумма ПЕРЕНЕСЕНЫ из .cart-modal__body сюда —
+             раньше они были внутри скроллящегося списка и на невысоких экранах
+             (короткий mobile-viewport + чекбокс 18+ + доплата за приборы
+             одновременно) оказывались обрезаны/невидимы вместе с ним. Теперь
+             это отдельные элементы НА ОДНОМ уровне с .cart-modal__actions —
+             гарантированно видны всегда, скроллится только список позиций
+             внутри .cart-modal__body/.cart-list, а самое важное (возрастное
+             подтверждение, статус доставки, итог, кнопки) закреплено. -->
+        <!-- Чекбокс подтверждения 18+ — показывается js/cart.js только когда
+             в корзине есть доступная позиция с data-age-restricted="true"
+             (алкоголь). Пока не отмечен — кнопка "Заказать" заблокирована. -->
+        <div class="cart-modal__age-confirm" id="cartAgeConfirm" hidden>
+          <label class="cart-modal__age-confirm-label">
+            <input type="checkbox" id="cartAgeCheckbox" class="cart-modal__age-checkbox" />
+            <span data-i18n-key="checkout.ageConfirm">Подтверждаю, что мне есть 18 лет</span>
+          </label>
+          <span class="cart-modal__age-error" id="cartAgeError" hidden data-i18n-key="checkout.validation.ageConfirmRequired">Необходимо подтвердить возраст</span>
+        </div>
 
-          <div class="cart-modal__delivery" id="cartDelivery">
-            <p class="cart-modal__delivery-text" id="cartDeliveryText"></p>
-            <div class="cart-modal__delivery-bar">
-              <div class="cart-modal__delivery-bar-fill" id="cartDeliveryBarFill"></div>
-            </div>
+        <div class="cart-modal__delivery" id="cartDelivery">
+          <p class="cart-modal__delivery-text" id="cartDeliveryText"></p>
+          <div class="cart-modal__delivery-bar">
+            <div class="cart-modal__delivery-bar-fill" id="cartDeliveryBarFill"></div>
           </div>
+        </div>
 
-          <div class="cart-modal__total">
-            <span data-i18n-key="cart.total">Итого к оплате</span>
-            <span class="cart-modal__total-amount" id="cartTotalAmount">0 MDL</span>
-          </div>
+        <div class="cart-modal__total" id="cartTotalRow">
+          <span data-i18n-key="cart.total">Итого к оплате</span>
+          <span class="cart-modal__total-amount" id="cartTotalAmount">0 MDL</span>
         </div>
 
         <div class="cart-modal__actions">
