@@ -51,7 +51,15 @@ function readJson(relativePath) {
 }
 
 const menu = readJson('data/menu.json');
-const i18n = readJson(`data/i18n/${DEFAULT_LANG}.json`);
+
+// Читаем все три языка: RU используется для "запекания" статичного текста
+// (как и раньше), но теперь RO и EN тоже нужны — они вшиваются в саму
+// страницу, чтобы js/i18n.js мог переключать язык в браузере без fetch()
+// (см. buildI18nDataScript ниже и комментарий в build/template.html).
+const i18nRu = readJson('data/i18n/ru.json');
+const i18nRo = readJson('data/i18n/ro.json');
+const i18nEn = readJson('data/i18n/en.json');
+const i18n = i18nRu;
 
 // ---------------------------------------------------------------------
 // Маленькие помощники
@@ -245,6 +253,21 @@ function renderPills() {
 }
 
 // ---------------------------------------------------------------------
+// <script> с данными всех 3 языков — вставляется перед </body>, чтобы
+// js/i18n.js мог переключать язык в браузере без сетевого запроса
+// (fetch json-файла не сработал бы при открытии index.html напрямую
+// как file://, из-за CORS — см. комментарий в build/template.html).
+// ---------------------------------------------------------------------
+
+function buildI18nDataScript() {
+  const payload = { ru: i18nRu, ro: i18nRo, en: i18nEn };
+  // Экранируем "<", чтобы случайная подстрока вида "</script>" внутри
+  // текста перевода не оборвала тег раньше времени.
+  const json = JSON.stringify(payload).replace(/</g, '\\u003c');
+  return `<script id="i18n-data">\n      window.__CREMA_I18N__ = ${json};\n      window.__CREMA_DEFAULT_LANG__ = ${JSON.stringify(DEFAULT_LANG)};\n    </script>`;
+}
+
+// ---------------------------------------------------------------------
 // Сборка index.html из шаблона
 // ---------------------------------------------------------------------
 
@@ -254,9 +277,11 @@ function buildIndexHtml() {
 
   const menuCategoriesHtml = menu.categories.map(renderCategoryGroup).join('\n');
   const menuPillsHtml = renderPills();
+  const i18nDataScript = buildI18nDataScript();
 
   html = html.replace('<!--{{MENU_PILLS}}-->', menuPillsHtml);
   html = html.replace('<!--{{MENU_CATEGORIES}}-->', menuCategoriesHtml);
+  html = html.replace('<!--{{I18N_DATA}}-->', i18nDataScript);
 
   const outputPath = path.join(ROOT, 'index.html');
   fs.writeFileSync(outputPath, html, 'utf-8');

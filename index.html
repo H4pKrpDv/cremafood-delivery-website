@@ -134,9 +134,19 @@
         opacity: 0.85;
       }
 
-      .logo__icon {
-        font-size: 1.5rem;
-        line-height: 1;
+      .logo__mark {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--gold);
+        color: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-head);
+        font-size: 1rem;
+        font-weight: 700;
+        flex-shrink: 0;
       }
 
       .logo__text {
@@ -184,6 +194,213 @@
 
       .nav__link:hover::after {
         transform: scaleX(1);
+      }
+
+      /* ─── HEADER ACTIONS (обёртка: контакты+язык / корзина / бургер) ─── */
+      .header__actions {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+
+      /* ─── КОРЗИНА В ШАПКЕ (счётчик; сам попап корзины — п.7 плана) ─── */
+      .header__cart {
+        position: relative;
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        color: var(--cream-2);
+        cursor: pointer;
+        transition: color var(--transition);
+        flex-shrink: 0;
+      }
+
+      .header__cart:hover {
+        color: var(--gold-light);
+      }
+
+      .header__cart svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      .header__cart-count {
+        position: absolute;
+        top: -2px;
+        right: -4px;
+        min-width: 17px;
+        height: 17px;
+        padding: 0 4px;
+        border-radius: 999px;
+        background: var(--gold);
+        color: var(--bg);
+        font-size: 0.65rem;
+        font-weight: 700;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* ─── БУРГЕР (мобильное меню; скрыт от 769px — там инлайн-шапка) ─── */
+      .burger {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 28px;
+        height: 18px;
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .burger__line {
+        display: block;
+        width: 100%;
+        height: 2px;
+        border-radius: 2px;
+        background: var(--cream-2);
+        transition: transform var(--transition), opacity var(--transition);
+      }
+
+      .burger[aria-expanded="true"] .burger__line:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+      }
+
+      .burger[aria-expanded="true"] .burger__line:nth-child(2) {
+        opacity: 0;
+      }
+
+      .burger[aria-expanded="true"] .burger__line:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+      }
+
+      /* ─── ВЫПАДАЮЩИЙ СПИСОК ЯЗЫКА (десктоп) ─── */
+      .lang-switcher {
+        position: relative;
+      }
+
+      .lang-switcher__toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.35rem 0.75rem;
+        color: var(--cream-2);
+        font-family: var(--font-body);
+        font-size: 0.8rem;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        transition: all var(--transition);
+      }
+
+      .lang-switcher__toggle:hover {
+        border-color: var(--gold-dark);
+        color: var(--gold-light);
+      }
+
+      .lang-switcher__arrow {
+        font-size: 0.65rem;
+        opacity: 0.8;
+      }
+
+      .lang-switcher__list {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        list-style: none;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 0.35rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        min-width: 64px;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+        z-index: 10;
+      }
+
+      .lang-switcher__list li {
+        list-style: none;
+      }
+
+      .lang-switcher__list[hidden] {
+        display: none;
+      }
+
+      .lang-option {
+        background: none;
+        border: none;
+        color: var(--text-2);
+        font-family: var(--font-body);
+        font-size: 0.8rem;
+        padding: 0.35rem 0.5rem;
+        border-radius: var(--radius);
+        text-align: left;
+        cursor: pointer;
+        transition: all var(--transition);
+      }
+
+      .lang-switcher__list .lang-option:hover {
+        background: var(--surface-2);
+        color: var(--gold-light);
+      }
+
+      .lang-switcher__list .lang-option--active {
+        color: var(--gold-light);
+        background: rgba(200, 150, 74, 0.15);
+      }
+
+      /* ─── МОБИЛЬНОЕ МЕНЮ (бургер-панель: телефон → график доставки → язык) ─── */
+      .mobile-menu {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
+        z-index: 99;
+        background: var(--bg-2);
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+        padding: 1rem 1.25rem 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+      }
+
+      .mobile-menu[hidden] {
+        display: none;
+      }
+
+      .mobile-menu__link {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--cream-2);
+        padding: 0.4rem 0;
+        border-bottom: 1px solid var(--border);
+        transition: color var(--transition);
+      }
+
+      .mobile-menu__link:last-of-type {
+        border-bottom: none;
+      }
+
+      .mobile-menu__link:hover {
+        color: var(--gold-light);
+      }
+
+      .mobile-menu__lang {
+        display: flex;
+        gap: 0.5rem;
+        padding-top: 0.25rem;
       }
 
       /* ─── BUTTON ─── */
@@ -517,8 +734,8 @@
         color: var(--text-3);
         line-height: 1.4;
         display: -webkit-box;
-        line-clamp: 2;
         -webkit-line-clamp: 2;
+        line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
       }
@@ -743,6 +960,41 @@
         text-align: center;
       }
 
+      /* ─── КНОПКА "НАВЕРХ" (появляется при скролле — см. main.js) ─── */
+      .back-to-top {
+        position: fixed;
+        bottom: 1.25rem;
+        right: 1.25rem;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--gold);
+        color: var(--bg);
+        border: none;
+        font-size: 1.1rem;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+        z-index: 90;
+        opacity: 0;
+        transform: translateY(8px);
+        pointer-events: none;
+        transition: opacity var(--transition), transform var(--transition), background var(--transition);
+      }
+
+      .back-to-top--visible {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      .back-to-top:hover {
+        background: var(--gold-light);
+      }
+
       /* ═══════════════════════════════════════════════════════════════
          RESPONSIVE (mobile-first: min-width) — база выше = мобильный вид.
 
@@ -754,10 +1006,6 @@
       @media (min-width: 481px) {
         .container {
           padding: 0 2rem;
-        }
-
-        .nav {
-          display: flex;
         }
 
         .hero__title {
@@ -785,7 +1033,20 @@
         }
 
         .nav {
+          display: flex;
           gap: 2rem;
+        }
+
+        .header__actions {
+          gap: 1.5rem;
+        }
+
+        .burger {
+          display: none;
+        }
+
+        .mobile-menu {
+          display: none;
         }
 
         .nav__link {
@@ -889,30 +1150,70 @@
   <body>
 
     <!--
-      ПРИМЕЧАНИЕ (Этап 1, п.2 плана): этот файл — ИСХОДНЫЙ шаблон для build.js.
-      Шапка/hero/футер ниже пока оставлены как в старой версии сайта —
-      их переделка (бургер-меню, карусель, новый футер) запланирована
-      отдельными пунктами плана (4, 5, 9). build.js на этом шаге трогает
-      только секцию <section class="menu" id="menu">: он подставляет туда
+      ПРИМЕЧАНИЕ: этот файл — ИСХОДНЫЙ шаблон для build.js.
+      build.js подставляет в секцию <section class="menu" id="menu">
       сгенерированные из data/menu.json категории/подкатегории/товары
-      вместо плейсхолдеров {{MENU_PILLS}} и {{MENU_CATEGORIES}}.
+      вместо плейсхолдеров {{MENU_PILLS}} и {{MENU_CATEGORIES}}, а перед
+      </body> — вставляет все 3 языка (ru/ro/en) как window.__CREMA_I18N__
+      вместо плейсхолдера {{I18N_DATA}} (см. js/i18n.js — почему это
+      сделано так, а не через fetch()).
       Не редактируй сгенерированный ../index.html руками — он перезатирается
       при каждом запуске `node build/build.js`. Правь этот template.html
-      или data/menu.json / data/i18n/*.json.
+      или data/menu.json / data/i18n/*.json / js/*.js.
+
+      Шапка (п.4 плана) уже переделана: лого-заглушка, телефон/якорь на
+      график доставки вместо старого nav, переключатель языка RU/RO/EN,
+      иконка корзины со счётчиком, бургер-меню на мобильном, кнопка
+      "наверх" (см. .back-to-top в конце body). Hero и футер пока
+      оставлены как в старой версии сайта — их переделка (карусель,
+      новый футер) запланирована отдельными пунктами плана (5, 9).
     -->
 
     <header class="header" id="top">
       <div class="header__inner">
         <a href="#top" class="logo">
-          <span class="logo__icon">☕</span>
+          <span class="logo__mark" aria-hidden="true">C</span>
           <span class="logo__text">Crema</span>
         </a>
-        <nav class="nav">
-          <a href="#menu" class="nav__link">Меню</a>
-          <a href="#coffee" class="nav__link">Кофе</a>
-          <a href="#promotions" class="nav__link">Акции</a>
-          <a href="#footer" class="nav__link">Контакты</a>
-        </nav>
+        <div class="header__actions">
+          <nav class="nav">
+            <a href="tel:+37360319994" class="nav__link" data-i18n-key="header.phone">+373 (60) 319-994</a>
+            <a href="#footer" class="nav__link" data-i18n-key="header.deliverySchedule">График доставки</a>
+            <div class="lang-switcher" id="langSwitcher">
+              <button type="button" class="lang-switcher__toggle" id="langToggle" aria-haspopup="listbox" aria-expanded="false">
+                <span id="langCurrent">RU</span>
+                <span class="lang-switcher__arrow" aria-hidden="true">▾</span>
+              </button>
+              <ul class="lang-switcher__list" id="langList" role="listbox" hidden>
+                <li role="presentation"><button type="button" class="lang-option" role="option" data-lang="ru">RU</button></li>
+                <li role="presentation"><button type="button" class="lang-option" role="option" data-lang="ro">RO</button></li>
+                <li role="presentation"><button type="button" class="lang-option" role="option" data-lang="en">EN</button></li>
+              </ul>
+            </div>
+          </nav>
+          <button type="button" class="header__cart" id="cartButton" aria-label="Корзина" title="Корзина">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="19" cy="21" r="1"></circle>
+              <path d="M2.5 3h2l2.6 12.6a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 7H6"></path>
+            </svg>
+            <span class="header__cart-count" id="cartCount">0</span>
+          </button>
+          <button type="button" class="burger" id="burgerButton" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobileMenu">
+            <span class="burger__line"></span>
+            <span class="burger__line"></span>
+            <span class="burger__line"></span>
+          </button>
+        </div>
+      </div>
+      <div class="mobile-menu" id="mobileMenu" hidden>
+        <a href="tel:+37360319994" class="mobile-menu__link" data-i18n-key="header.phone">+373 (60) 319-994</a>
+        <a href="#footer" class="mobile-menu__link" data-i18n-key="header.deliverySchedule">График доставки</a>
+        <div class="mobile-menu__lang" role="group" aria-label="Язык">
+          <button type="button" class="pill lang-option" data-lang="ru">RU</button>
+          <button type="button" class="pill lang-option" data-lang="ro">RO</button>
+          <button type="button" class="pill lang-option" data-lang="en">EN</button>
+        </div>
       </div>
     </header>
 
@@ -1942,7 +2243,7 @@
       <div class="footer__inner">
         <div class="footer__brand">
           <a href="#top" class="logo logo--footer">
-            <span class="logo__icon">☕</span>
+            <span class="logo__mark" aria-hidden="true">C</span>
             <span class="logo__text">Crema</span>
           </a>
           <p class="footer__tagline">Место, где каждый день начинается с идеальной чашки кофе</p>
@@ -1975,5 +2276,16 @@
         <p>© 2026 Crema. Все права защищены.</p>
       </div>
     </footer>
+
+    <button type="button" class="back-to-top" id="backToTop" aria-label="Наверх" title="Наверх">
+      <span aria-hidden="true">↑</span>
+    </button>
+
+    <script id="i18n-data">
+      window.__CREMA_I18N__ = {"ru":{"meta":{"title":"Crema — кофейня в Бэлць","description":"Авторский кофе, десерты и кухня с доставкой по Бэлць. Смотрите меню и заказывайте онлайн."},"header":{"logoAlt":"Логотип Crema","phone":"+373 (60) 319-994","deliverySchedule":"График доставки","langLabel":"Язык"},"hero":{"eyebrow":"Добро пожаловать в","title":"Crema","tagline":"Где каждый глоток — это маленькое удовольствие. Авторский кофе, уют и атмосфера, созданная для вас.","cta":"Смотреть меню","scrollHint":"Листайте вниз"},"menu":{"eyebrow":"Наше меню","title":"Всё, что вы любите","desc":"Каждый напиток приготовлен с заботой из лучших ингредиентов"},"categories":{"special-offers":"Спец. предложения","cafe":"Кафе","kitchen":"Кухня"},"specialOffers":{"loyaltyBadge":"-20%","loyaltyTitle":"Скидочная карта","loyaltyText":"Постоянные гости могут получить скидочную карту на −20% на все кофейные напитки. Подробности и условия получения — узнавайте у наших сотрудников в заведении.","loyaltyTime":"Навсегда"},"subcategories":{"promo-permanent":{"title":"Постоянные","desc":"Предложения, которые действуют всегда"},"promo-seasonal":{"title":"Сезонные","desc":"Ограниченные по времени сезонные предложения"},"promo-new":{"title":"Новинки","desc":"Только что появилось в меню"},"coffee":{"title":"Coffee","desc":"Зёрна из лучших плантаций мира, обжаренные для идеального баланса вкуса и аромата"},"ice-coffee":{"title":"Ice Coffee","desc":"Освежающий кофейный напиток, заряжающий бодростью и энергией"},"tea":{"title":"Tea","desc":"Изысканные чайные купажи со всего мира для тех, кто ценит гармонию вкуса"},"bubble-tea":{"title":"Bubble Tea","desc":"Напиток на чае или молоке с желейными шариками с соком внутри"},"milkshakes":{"title":"Милкшейки","desc":"Густые сливочные коктейли из натурального мороженого и свежих ингредиентов"},"lemonades":{"title":"Лимонады","desc":"Освежающие авторские лимонады на натуральных фруктах и ягодах"},"desserts":{"title":"Десерты","desc":"Удовлетворите свою тягу к сладкому нашими кондитерскими шедеврами и авторской выпечкой"},"alcohol":{"title":"Алкогольные напитки","desc":"Популярные коктейли и отдельный алкоголь. Продажа только лицам старше 18 лет"},"breakfast":{"title":"Завтраки","desc":"Сытный старт дня — свежеприготовленные завтраки"},"mexican":{"title":"Мексиканская кухня","desc":"Яркие блюда мексиканской кухни с насыщенным вкусом"},"full-menu":{"title":"Полное меню","text":"На сайте представлены лишь те напитки/блюда, которые можно заказать. Если хотите ознакомиться с полным меню, нажмите «здесь» или отсканируйте QR-код на экране.","linkText":"здесь"}},"items":{"combo-latte-sandwich":{"name":"Комбо: Латте/Капучино + сэндвич","desc":"Выгодное предложение дня — ароматный кофе и свежий сэндвич по специальной цене","weight":"","imageAlt":"Латте и сэндвич"},"espresso":{"name":"Espresso","desc":"Классический концентрированный кофе с насыщенным вкусом","weight":"30 мл","imageAlt":"Чашка эспрессо"},"americano":{"name":"Americano","desc":"Эспрессо с горячей водой — мягкий и ароматный","weight":"180 мл","imageAlt":"Американо в чашке"},"doppio":{"name":"Doppio","desc":"Двойная порция эспрессо","weight":"60 мл","imageAlt":"Двойной эспрессо"},"cortado":{"name":"Cortado","desc":"Эспрессо с небольшим количеством тёплого молока","weight":"120 мл","imageAlt":"Кортадо в стакане"},"cappuccino":{"name":"Cappuccino","desc":"Эспрессо с нежной бархатистой молочной пенкой","weight":"180 мл","imageAlt":"Капучино с пенкой"},"grand-cappuccino":{"name":"Grand Cappuccino","desc":"Двойная порция эспрессо с большим количеством вспененного молока","weight":"300 мл","imageAlt":"Большой капучино"},"latte":{"name":"Latte","desc":"Мягкий кофе с большим количеством вспененного молока","weight":"250 мл","imageAlt":"Латте в чашке"},"flat-white":{"name":"Flat White","desc":"Двойной эспрессо с бархатным микропенным молоком","weight":"180 мл","imageAlt":"Флэт уайт"},"moccacino":{"name":"Moccacino","desc":"Капучино с добавлением горячего шоколада","weight":"220 мл","imageAlt":"Моккачино"},"raf-coffee":{"name":"Raf Coffee","desc":"Кофе со сливками и ванилью","weight":"200 мл","imageAlt":"Раф кофе"},"hot-chocolate":{"name":"Hot Chocolate","desc":"Горячий напиток, приготовленный из тёртого шоколада и подогретого молока","weight":"220 мл","imageAlt":"Горячий шоколад"},"iced-latte":{"name":"Ice Latte","desc":"Кофейный напиток на основе эспрессо, молока и льда, который подаётся холодным. Не только вкусно, но и эстетично","weight":"300 мл","imageAlt":"Айс латте в стакане"},"frappe":{"name":"Frappe","desc":"Покрытый взбитыми сливками холодный кофейный напиток греческого происхождения","weight":"300 мл","imageAlt":"Фраппе со сливками"},"espresso-tonic":{"name":"Espresso Tonic","desc":"Безалкогольный напиток, приготовленный путём смешивания эспрессо, льда и тонизирующей воды, обладающий горьковато-освежающим вкусом","weight":"300 мл","imageAlt":"Эспрессо тоник"},"bumblebee":{"name":"Bumblebee","desc":"Напиток из эспрессо, апельсинового сока и сиропа. Ингредиенты добавляются слоями, благодаря чему получается коктейль, напоминающий расцветкой шмеля","weight":"300 мл","imageAlt":"Коктейль Bumblebee"},"bubble-coffee":{"name":"Bubble Coffee","desc":"Кофе с шариками тапиоки — идеальный освежающий напиток со льдом","weight":"350 мл","imageAlt":"Кофе с тапиокой"},"tea-julius-cup":{"name":"Tea Julius Meinl (чашка)","desc":"Насыщенный чай с глубоким вкусом","weight":"чашка","imageAlt":"Чай Julius Meinl в чашке"},"tea-julius-pot":{"name":"Tea Julius Meinl (чайничек)","desc":"Насыщенный чай с глубоким вкусом","weight":"чайничек","imageAlt":"Чай Julius Meinl в чайничке"},"tea-handmade-cup":{"name":"Tea handmade/aftor (чашка)","desc":"Чай с джемом из натуральных фруктов, ягод и растений с добавлением сахара — настоящее удовольствие с пользой для здоровья","weight":"чашка","imageAlt":"Авторский чай в чашке"},"tea-handmade-pot":{"name":"Tea handmade/aftor (чайничек)","desc":"Чай с джемом из натуральных фруктов, ягод и растений с добавлением сахара — настоящее удовольствие с пользой для здоровья","weight":"чайничек","imageAlt":"Авторский чай в чайничке"},"ice-tea":{"name":"Ice Tea","desc":"Холодный чай — отличный способ освежиться в жару","weight":"350 мл","imageAlt":"Холодный чай со льдом"},"bubble-tea-kiwi":{"name":"Bubble Tea Kiwi","desc":"Чайный напиток с желейными шариками и вкусом киви","weight":"400 мл","imageAlt":"Bubble Tea со вкусом киви"},"bubble-tea-pineapple":{"name":"Bubble Tea Pineapple","desc":"Чайный напиток с желейными шариками и вкусом ананаса","weight":"400 мл","imageAlt":"Bubble Tea со вкусом ананаса"},"bubble-tea-strawberry":{"name":"Bubble Tea Strawberry","desc":"Чайный напиток с желейными шариками и вкусом клубники","weight":"400 мл","imageAlt":"Bubble Tea со вкусом клубники"},"bubble-tea-mango":{"name":"Bubble Tea Mango","desc":"Чайный напиток с желейными шариками и вкусом манго","weight":"400 мл","imageAlt":"Bubble Tea со вкусом манго"},"bubble-tea-banana":{"name":"Bubble Tea Banana","desc":"Чайный напиток с желейными шариками и вкусом банана","weight":"400 мл","imageAlt":"Bubble Tea со вкусом банана"},"milkshake-classic":{"name":"Classic","desc":"Классический нежный шейк с ванилью","weight":"350 мл","imageAlt":"Классический милкшейк"},"milkshake-chocolate":{"name":"Chocolate","desc":"Насыщенный шоколадный вкус в каждом глотке","weight":"350 мл","imageAlt":"Шоколадный милкшейк"},"milkshake-banana":{"name":"Banana","desc":"Освежающий напиток со спелыми бананами, молоком и мороженым","weight":"350 мл","imageAlt":"Банановый милкшейк"},"milkshake-strawberry":{"name":"Strawberry","desc":"С настоящей свежей клубникой — яркий и ароматный","weight":"350 мл","imageAlt":"Клубничный милкшейк"},"milkshake-oreo":{"name":"Oreo","desc":"Коктейль с кусочками печенья, оценят и взрослые, и дети","weight":"350 мл","imageAlt":"Милкшейк Орео"},"lemonade-mojito":{"name":"Mojito","desc":"Лайм, мята и газированная вода — вечная классика","weight":"400 мл","imageAlt":"Лимонад Мохито"},"lemonade-berry":{"name":"Berry","desc":"Освежающий летний напиток, сочетающий свежевыжатый лимонный сок, ягодный джем и газированную воду","weight":"400 мл","imageAlt":"Ягодный лимонад"},"lemonade-tropic":{"name":"Tropic","desc":"Безалкогольный коктейль с фруктовой смесью манго, граната и лимона","weight":"400 мл","imageAlt":"Тропический лимонад"},"cheesecake-caramel":{"name":"Cheesecake Caramel","desc":"Сливочный десерт, состоящий из основы из печенья и бархатистой начинки, покрытой карамелью","weight":"120 г","imageAlt":"Чизкейк с карамелью"},"cheesecake-mac":{"name":"Cheesecake Mac","desc":"Песочная основа с нежной начинкой из творога и мака, покрытая шоколадом, миндальной крошкой и посыпкой","weight":"120 г","imageAlt":"Чизкейк с маком"},"smetannik":{"name":"Smetannik","desc":"Тонкие медовые коржи, покрытые нежным кремом из сметаны, ядер грецких орехов и вишни","weight":"120 г","imageAlt":"Торт Сметанник"},"donuts":{"name":"Donuts","desc":"Популярное кондитерское изделие из сладкого дрожжевого теста, покрытое глазурью","weight":"1 шт","imageAlt":"Пончик с глазурью"},"jack-daniels-honey":{"name":"Jack Daniel's Honey","desc":"Популярный ликёр на основе классического теннессийского виски","weight":"50 мл","imageAlt":"Jack Daniel's Honey"},"jack-daniels-apple":{"name":"Jack Daniel's Apple","desc":"Популярный ликёр на основе классического теннессийского виски","weight":"50 мл","imageAlt":"Jack Daniel's Apple"},"crema-kick-mango":{"name":"Crema Kick The Rules Mango","desc":"Авторский коктейль на основе текилы с манго","weight":"50 мл","imageAlt":"Коктейль Crema Kick Mango"},"crema-kick-watermelon":{"name":"Crema Kick The Rules Watermelon","desc":"Авторский коктейль на основе текилы с арбузом","weight":"50 мл","imageAlt":"Коктейль Crema Kick Watermelon"},"johnnie-walker-red":{"name":"Johnnie Walker Red Label","desc":"Шотландский виски, известный своим насыщенным, пряным вкусом с дымными нотками","weight":"50 мл","imageAlt":"Johnnie Walker Red Label"},"jagermeister":{"name":"Jägermeister","desc":"Немецкий крепкий ликёр, известный своим уникальным составом из 56 тщательно отобранных трав, кореньев, фруктов и специй","weight":"50 мл","imageAlt":"Ягермайстер"},"omelette":{"name":"Омлет","desc":"Классический омлет из свежих яиц (плейсхолдер — уточнить состав)","weight":"200 г","imageAlt":"Омлет на тарелке"},"omelette-cheese":{"name":"Омлет с сыром","desc":"Омлет с добавлением сыра (плейсхолдер — уточнить состав)","weight":"220 г","imageAlt":"Омлет с сыром"},"burrito-chicken":{"name":"Буррито с курицей","desc":"Буррито с куриным филе и овощами (плейсхолдер — уточнить состав)","weight":"350 г","imageAlt":"Буррито с курицей"},"tacos-beef":{"name":"Тако с говядиной","desc":"Тако с говядиной и овощами (плейсхолдер — уточнить состав)","weight":"300 г","imageAlt":"Тако с говядиной"}},"modifiers":{"sauces":{"groupLabel":"Соусы"},"ketchup":{"name":"Кетчуп"}},"cart":{"title":"Корзина","subtitle":"Всё, что вы заказываете","cutlery":"Приборы","cutleryFeeNote":"Первый прибор на каждую позицию — бесплатно, далее +2 лея за штуку","total":"Итого к оплате","empty":"Добавьте что-нибудь для заказа","backToMenu":"Вернуться к меню","checkout":"Заказать","freeDeliveryHint":"Добавьте ещё на {amount} лей до бесплатной доставки","freeDeliveryReached":"Бесплатная доставка по Бельцам!","itemUnavailable":"Позиции больше нет в наличии","itemClosedNow":"Сейчас недоступно для заказа"},"checkout":{"formTitle":"Оформление заказа","name":"Имя","phone":"Номер телефона","delivery":"Доставка (+60 лей)","pickup":"Самовывоз","city":"Город","street":"Улица","building":"Дом/блок","entrance":"Подъезд","floor":"Этаж","apartment":"Квартира","paymentTitle":"Оплата при получении","cash":"Наличкой","card":"Картой","ageConfirm":"Подтверждаю, что мне есть 18 лет","consent":"Нажимая кнопку «Оформить заказ», вы соглашаетесь с обработкой персональных данных в соответствии с политикой заведения","submit":"Оформить заказ","loading":"Оформляем заказ…","success":"Заказ оформлен, ожидайте звонка для подтверждения заказа","error":"Не удалось оформить заказ, попробуйте снова","workingHoursClosed":"Приём заказов на доставку временно закрыт. Мы работаем с {time}","validation":{"required":"Обязательное поле","phoneFormat":"Введите номер в формате +373 (__) ___-___","ageConfirmRequired":"Необходимо подтвердить возраст"}},"footer":{"tagline":"Место, где каждый день начинается с идеальной чашки кофе","locationTitle":"Местоположение","hoursTitle":"График работы","hoursCafe":"Кафе/бар 7–22, кухня 9–22","deliveryHoursTitle":"График доставки","deliveryHours":"Кафе/бар — 7–22, кухня — 9–02","contactsTitle":"Контакты","socialsTitle":"Мы в соцсетях","privacyTitle":"Политика конфиденциальности","rights":"© 2026 Crema. Все права защищены."},"privacy":{"title":"Политика конфиденциальности","text":"Это временный текст-заглушка. Здесь будет размещена политика обработки персональных данных заведения: какие данные мы собираем при оформлении заказа (имя, телефон, адрес), для чего они используются и как хранятся. Реальный юридический текст будет добавлен позже."},"common":{"backToTop":"Наверх","close":"Закрыть","add":"Добавить"}},"ro":{"meta":{"title":"Crema — кофейня в Бэлць","description":"Авторский кофе, десерты и кухня с доставкой по Бэлць. Смотрите меню и заказывайте онлайн."},"header":{"logoAlt":"Логотип Crema","phone":"+373 (60) 319-994","deliverySchedule":"График доставки","langLabel":"Язык"},"hero":{"eyebrow":"Добро пожаловать в","title":"Crema","tagline":"Где каждый глоток — это маленькое удовольствие. Авторский кофе, уют и атмосфера, созданная для вас.","cta":"Смотреть меню","scrollHint":"Листайте вниз"},"menu":{"eyebrow":"Наше меню","title":"Всё, что вы любите","desc":"Каждый напиток приготовлен с заботой из лучших ингредиентов"},"categories":{"special-offers":"Спец. предложения","cafe":"Кафе","kitchen":"Кухня"},"specialOffers":{"loyaltyBadge":"-20%","loyaltyTitle":"Скидочная карта","loyaltyText":"Постоянные гости могут получить скидочную карту на −20% на все кофейные напитки. Подробности и условия получения — узнавайте у наших сотрудников в заведении.","loyaltyTime":"Навсегда"},"subcategories":{"promo-permanent":{"title":"Постоянные","desc":"Предложения, которые действуют всегда"},"promo-seasonal":{"title":"Сезонные","desc":"Ограниченные по времени сезонные предложения"},"promo-new":{"title":"Новинки","desc":"Только что появилось в меню"},"coffee":{"title":"Coffee","desc":"Зёрна из лучших плантаций мира, обжаренные для идеального баланса вкуса и аромата"},"ice-coffee":{"title":"Ice Coffee","desc":"Освежающий кофейный напиток, заряжающий бодростью и энергией"},"tea":{"title":"Tea","desc":"Изысканные чайные купажи со всего мира для тех, кто ценит гармонию вкуса"},"bubble-tea":{"title":"Bubble Tea","desc":"Напиток на чае или молоке с желейными шариками с соком внутри"},"milkshakes":{"title":"Милкшейки","desc":"Густые сливочные коктейли из натурального мороженого и свежих ингредиентов"},"lemonades":{"title":"Лимонады","desc":"Освежающие авторские лимонады на натуральных фруктах и ягодах"},"desserts":{"title":"Десерты","desc":"Удовлетворите свою тягу к сладкому нашими кондитерскими шедеврами и авторской выпечкой"},"alcohol":{"title":"Алкогольные напитки","desc":"Популярные коктейли и отдельный алкоголь. Продажа только лицам старше 18 лет"},"breakfast":{"title":"Завтраки","desc":"Сытный старт дня — свежеприготовленные завтраки"},"mexican":{"title":"Мексиканская кухня","desc":"Яркие блюда мексиканской кухни с насыщенным вкусом"},"full-menu":{"title":"Полное меню","text":"На сайте представлены лишь те напитки/блюда, которые можно заказать. Если хотите ознакомиться с полным меню, нажмите «здесь» или отсканируйте QR-код на экране.","linkText":"здесь"}},"items":{"combo-latte-sandwich":{"name":"Комбо: Латте/Капучино + сэндвич","desc":"Выгодное предложение дня — ароматный кофе и свежий сэндвич по специальной цене","weight":"","imageAlt":"Латте и сэндвич"},"espresso":{"name":"Espresso","desc":"Классический концентрированный кофе с насыщенным вкусом","weight":"30 мл","imageAlt":"Чашка эспрессо"},"americano":{"name":"Americano","desc":"Эспрессо с горячей водой — мягкий и ароматный","weight":"180 мл","imageAlt":"Американо в чашке"},"doppio":{"name":"Doppio","desc":"Двойная порция эспрессо","weight":"60 мл","imageAlt":"Двойной эспрессо"},"cortado":{"name":"Cortado","desc":"Эспрессо с небольшим количеством тёплого молока","weight":"120 мл","imageAlt":"Кортадо в стакане"},"cappuccino":{"name":"Cappuccino","desc":"Эспрессо с нежной бархатистой молочной пенкой","weight":"180 мл","imageAlt":"Капучино с пенкой"},"grand-cappuccino":{"name":"Grand Cappuccino","desc":"Двойная порция эспрессо с большим количеством вспененного молока","weight":"300 мл","imageAlt":"Большой капучино"},"latte":{"name":"Latte","desc":"Мягкий кофе с большим количеством вспененного молока","weight":"250 мл","imageAlt":"Латте в чашке"},"flat-white":{"name":"Flat White","desc":"Двойной эспрессо с бархатным микропенным молоком","weight":"180 мл","imageAlt":"Флэт уайт"},"moccacino":{"name":"Moccacino","desc":"Капучино с добавлением горячего шоколада","weight":"220 мл","imageAlt":"Моккачино"},"raf-coffee":{"name":"Raf Coffee","desc":"Кофе со сливками и ванилью","weight":"200 мл","imageAlt":"Раф кофе"},"hot-chocolate":{"name":"Hot Chocolate","desc":"Горячий напиток, приготовленный из тёртого шоколада и подогретого молока","weight":"220 мл","imageAlt":"Горячий шоколад"},"iced-latte":{"name":"Ice Latte","desc":"Кофейный напиток на основе эспрессо, молока и льда, который подаётся холодным. Не только вкусно, но и эстетично","weight":"300 мл","imageAlt":"Айс латте в стакане"},"frappe":{"name":"Frappe","desc":"Покрытый взбитыми сливками холодный кофейный напиток греческого происхождения","weight":"300 мл","imageAlt":"Фраппе со сливками"},"espresso-tonic":{"name":"Espresso Tonic","desc":"Безалкогольный напиток, приготовленный путём смешивания эспрессо, льда и тонизирующей воды, обладающий горьковато-освежающим вкусом","weight":"300 мл","imageAlt":"Эспрессо тоник"},"bumblebee":{"name":"Bumblebee","desc":"Напиток из эспрессо, апельсинового сока и сиропа. Ингредиенты добавляются слоями, благодаря чему получается коктейль, напоминающий расцветкой шмеля","weight":"300 мл","imageAlt":"Коктейль Bumblebee"},"bubble-coffee":{"name":"Bubble Coffee","desc":"Кофе с шариками тапиоки — идеальный освежающий напиток со льдом","weight":"350 мл","imageAlt":"Кофе с тапиокой"},"tea-julius-cup":{"name":"Tea Julius Meinl (чашка)","desc":"Насыщенный чай с глубоким вкусом","weight":"чашка","imageAlt":"Чай Julius Meinl в чашке"},"tea-julius-pot":{"name":"Tea Julius Meinl (чайничек)","desc":"Насыщенный чай с глубоким вкусом","weight":"чайничек","imageAlt":"Чай Julius Meinl в чайничке"},"tea-handmade-cup":{"name":"Tea handmade/aftor (чашка)","desc":"Чай с джемом из натуральных фруктов, ягод и растений с добавлением сахара — настоящее удовольствие с пользой для здоровья","weight":"чашка","imageAlt":"Авторский чай в чашке"},"tea-handmade-pot":{"name":"Tea handmade/aftor (чайничек)","desc":"Чай с джемом из натуральных фруктов, ягод и растений с добавлением сахара — настоящее удовольствие с пользой для здоровья","weight":"чайничек","imageAlt":"Авторский чай в чайничке"},"ice-tea":{"name":"Ice Tea","desc":"Холодный чай — отличный способ освежиться в жару","weight":"350 мл","imageAlt":"Холодный чай со льдом"},"bubble-tea-kiwi":{"name":"Bubble Tea Kiwi","desc":"Чайный напиток с желейными шариками и вкусом киви","weight":"400 мл","imageAlt":"Bubble Tea со вкусом киви"},"bubble-tea-pineapple":{"name":"Bubble Tea Pineapple","desc":"Чайный напиток с желейными шариками и вкусом ананаса","weight":"400 мл","imageAlt":"Bubble Tea со вкусом ананаса"},"bubble-tea-strawberry":{"name":"Bubble Tea Strawberry","desc":"Чайный напиток с желейными шариками и вкусом клубники","weight":"400 мл","imageAlt":"Bubble Tea со вкусом клубники"},"bubble-tea-mango":{"name":"Bubble Tea Mango","desc":"Чайный напиток с желейными шариками и вкусом манго","weight":"400 мл","imageAlt":"Bubble Tea со вкусом манго"},"bubble-tea-banana":{"name":"Bubble Tea Banana","desc":"Чайный напиток с желейными шариками и вкусом банана","weight":"400 мл","imageAlt":"Bubble Tea со вкусом банана"},"milkshake-classic":{"name":"Classic","desc":"Классический нежный шейк с ванилью","weight":"350 мл","imageAlt":"Классический милкшейк"},"milkshake-chocolate":{"name":"Chocolate","desc":"Насыщенный шоколадный вкус в каждом глотке","weight":"350 мл","imageAlt":"Шоколадный милкшейк"},"milkshake-banana":{"name":"Banana","desc":"Освежающий напиток со спелыми бананами, молоком и мороженым","weight":"350 мл","imageAlt":"Банановый милкшейк"},"milkshake-strawberry":{"name":"Strawberry","desc":"С настоящей свежей клубникой — яркий и ароматный","weight":"350 мл","imageAlt":"Клубничный милкшейк"},"milkshake-oreo":{"name":"Oreo","desc":"Коктейль с кусочками печенья, оценят и взрослые, и дети","weight":"350 мл","imageAlt":"Милкшейк Орео"},"lemonade-mojito":{"name":"Mojito","desc":"Лайм, мята и газированная вода — вечная классика","weight":"400 мл","imageAlt":"Лимонад Мохито"},"lemonade-berry":{"name":"Berry","desc":"Освежающий летний напиток, сочетающий свежевыжатый лимонный сок, ягодный джем и газированную воду","weight":"400 мл","imageAlt":"Ягодный лимонад"},"lemonade-tropic":{"name":"Tropic","desc":"Безалкогольный коктейль с фруктовой смесью манго, граната и лимона","weight":"400 мл","imageAlt":"Тропический лимонад"},"cheesecake-caramel":{"name":"Cheesecake Caramel","desc":"Сливочный десерт, состоящий из основы из печенья и бархатистой начинки, покрытой карамелью","weight":"120 г","imageAlt":"Чизкейк с карамелью"},"cheesecake-mac":{"name":"Cheesecake Mac","desc":"Песочная основа с нежной начинкой из творога и мака, покрытая шоколадом, миндальной крошкой и посыпкой","weight":"120 г","imageAlt":"Чизкейк с маком"},"smetannik":{"name":"Smetannik","desc":"Тонкие медовые коржи, покрытые нежным кремом из сметаны, ядер грецких орехов и вишни","weight":"120 г","imageAlt":"Торт Сметанник"},"donuts":{"name":"Donuts","desc":"Популярное кондитерское изделие из сладкого дрожжевого теста, покрытое глазурью","weight":"1 шт","imageAlt":"Пончик с глазурью"},"jack-daniels-honey":{"name":"Jack Daniel's Honey","desc":"Популярный ликёр на основе классического теннессийского виски","weight":"50 мл","imageAlt":"Jack Daniel's Honey"},"jack-daniels-apple":{"name":"Jack Daniel's Apple","desc":"Популярный ликёр на основе классического теннессийского виски","weight":"50 мл","imageAlt":"Jack Daniel's Apple"},"crema-kick-mango":{"name":"Crema Kick The Rules Mango","desc":"Авторский коктейль на основе текилы с манго","weight":"50 мл","imageAlt":"Коктейль Crema Kick Mango"},"crema-kick-watermelon":{"name":"Crema Kick The Rules Watermelon","desc":"Авторский коктейль на основе текилы с арбузом","weight":"50 мл","imageAlt":"Коктейль Crema Kick Watermelon"},"johnnie-walker-red":{"name":"Johnnie Walker Red Label","desc":"Шотландский виски, известный своим насыщенным, пряным вкусом с дымными нотками","weight":"50 мл","imageAlt":"Johnnie Walker Red Label"},"jagermeister":{"name":"Jägermeister","desc":"Немецкий крепкий ликёр, известный своим уникальным составом из 56 тщательно отобранных трав, кореньев, фруктов и специй","weight":"50 мл","imageAlt":"Ягермайстер"},"omelette":{"name":"Омлет","desc":"Классический омлет из свежих яиц (плейсхолдер — уточнить состав)","weight":"200 г","imageAlt":"Омлет на тарелке"},"omelette-cheese":{"name":"Омлет с сыром","desc":"Омлет с добавлением сыра (плейсхолдер — уточнить состав)","weight":"220 г","imageAlt":"Омлет с сыром"},"burrito-chicken":{"name":"Буррито с курицей","desc":"Буррито с куриным филе и овощами (плейсхолдер — уточнить состав)","weight":"350 г","imageAlt":"Буррито с курицей"},"tacos-beef":{"name":"Тако с говядиной","desc":"Тако с говядиной и овощами (плейсхолдер — уточнить состав)","weight":"300 г","imageAlt":"Тако с говядиной"}},"modifiers":{"sauces":{"groupLabel":"Соусы"},"ketchup":{"name":"Кетчуп"}},"cart":{"title":"Корзина","subtitle":"Всё, что вы заказываете","cutlery":"Приборы","cutleryFeeNote":"Первый прибор на каждую позицию — бесплатно, далее +2 лея за штуку","total":"Итого к оплате","empty":"Добавьте что-нибудь для заказа","backToMenu":"Вернуться к меню","checkout":"Заказать","freeDeliveryHint":"Добавьте ещё на {amount} лей до бесплатной доставки","freeDeliveryReached":"Бесплатная доставка по Бельцам!","itemUnavailable":"Позиции больше нет в наличии","itemClosedNow":"Сейчас недоступно для заказа"},"checkout":{"formTitle":"Оформление заказа","name":"Имя","phone":"Номер телефона","delivery":"Доставка (+60 лей)","pickup":"Самовывоз","city":"Город","street":"Улица","building":"Дом/блок","entrance":"Подъезд","floor":"Этаж","apartment":"Квартира","paymentTitle":"Оплата при получении","cash":"Наличкой","card":"Картой","ageConfirm":"Подтверждаю, что мне есть 18 лет","consent":"Нажимая кнопку «Оформить заказ», вы соглашаетесь с обработкой персональных данных в соответствии с политикой заведения","submit":"Оформить заказ","loading":"Оформляем заказ…","success":"Заказ оформлен, ожидайте звонка для подтверждения заказа","error":"Не удалось оформить заказ, попробуйте снова","workingHoursClosed":"Приём заказов на доставку временно закрыт. Мы работаем с {time}","validation":{"required":"Обязательное поле","phoneFormat":"Введите номер в формате +373 (__) ___-___","ageConfirmRequired":"Необходимо подтвердить возраст"}},"footer":{"tagline":"Место, где каждый день начинается с идеальной чашки кофе","locationTitle":"Местоположение","hoursTitle":"График работы","hoursCafe":"Кафе/бар 7–22, кухня 9–22","deliveryHoursTitle":"График доставки","deliveryHours":"Кафе/бар — 7–22, кухня — 9–02","contactsTitle":"Контакты","socialsTitle":"Мы в соцсетях","privacyTitle":"Политика конфиденциальности","rights":"© 2026 Crema. Все права защищены."},"privacy":{"title":"Политика конфиденциальности","text":"Это временный текст-заглушка. Здесь будет размещена политика обработки персональных данных заведения: какие данные мы собираем при оформлении заказа (имя, телефон, адрес), для чего они используются и как хранятся. Реальный юридический текст будет добавлен позже."},"common":{"backToTop":"Наверх","close":"Закрыть","add":"Добавить"}},"en":{"meta":{"title":"Crema — кофейня в Бэлць","description":"Авторский кофе, десерты и кухня с доставкой по Бэлць. Смотрите меню и заказывайте онлайн."},"header":{"logoAlt":"Логотип Crema","phone":"+373 (60) 319-994","deliverySchedule":"График доставки","langLabel":"Язык"},"hero":{"eyebrow":"Добро пожаловать в","title":"Crema","tagline":"Где каждый глоток — это маленькое удовольствие. Авторский кофе, уют и атмосфера, созданная для вас.","cta":"Смотреть меню","scrollHint":"Листайте вниз"},"menu":{"eyebrow":"Наше меню","title":"Всё, что вы любите","desc":"Каждый напиток приготовлен с заботой из лучших ингредиентов"},"categories":{"special-offers":"Спец. предложения","cafe":"Кафе","kitchen":"Кухня"},"specialOffers":{"loyaltyBadge":"-20%","loyaltyTitle":"Скидочная карта","loyaltyText":"Постоянные гости могут получить скидочную карту на −20% на все кофейные напитки. Подробности и условия получения — узнавайте у наших сотрудников в заведении.","loyaltyTime":"Навсегда"},"subcategories":{"promo-permanent":{"title":"Постоянные","desc":"Предложения, которые действуют всегда"},"promo-seasonal":{"title":"Сезонные","desc":"Ограниченные по времени сезонные предложения"},"promo-new":{"title":"Новинки","desc":"Только что появилось в меню"},"coffee":{"title":"Coffee","desc":"Зёрна из лучших плантаций мира, обжаренные для идеального баланса вкуса и аромата"},"ice-coffee":{"title":"Ice Coffee","desc":"Освежающий кофейный напиток, заряжающий бодростью и энергией"},"tea":{"title":"Tea","desc":"Изысканные чайные купажи со всего мира для тех, кто ценит гармонию вкуса"},"bubble-tea":{"title":"Bubble Tea","desc":"Напиток на чае или молоке с желейными шариками с соком внутри"},"milkshakes":{"title":"Милкшейки","desc":"Густые сливочные коктейли из натурального мороженого и свежих ингредиентов"},"lemonades":{"title":"Лимонады","desc":"Освежающие авторские лимонады на натуральных фруктах и ягодах"},"desserts":{"title":"Десерты","desc":"Удовлетворите свою тягу к сладкому нашими кондитерскими шедеврами и авторской выпечкой"},"alcohol":{"title":"Алкогольные напитки","desc":"Популярные коктейли и отдельный алкоголь. Продажа только лицам старше 18 лет"},"breakfast":{"title":"Завтраки","desc":"Сытный старт дня — свежеприготовленные завтраки"},"mexican":{"title":"Мексиканская кухня","desc":"Яркие блюда мексиканской кухни с насыщенным вкусом"},"full-menu":{"title":"Полное меню","text":"На сайте представлены лишь те напитки/блюда, которые можно заказать. Если хотите ознакомиться с полным меню, нажмите «здесь» или отсканируйте QR-код на экране.","linkText":"здесь"}},"items":{"combo-latte-sandwich":{"name":"Комбо: Латте/Капучино + сэндвич","desc":"Выгодное предложение дня — ароматный кофе и свежий сэндвич по специальной цене","weight":"","imageAlt":"Латте и сэндвич"},"espresso":{"name":"Espresso","desc":"Классический концентрированный кофе с насыщенным вкусом","weight":"30 мл","imageAlt":"Чашка эспрессо"},"americano":{"name":"Americano","desc":"Эспрессо с горячей водой — мягкий и ароматный","weight":"180 мл","imageAlt":"Американо в чашке"},"doppio":{"name":"Doppio","desc":"Двойная порция эспрессо","weight":"60 мл","imageAlt":"Двойной эспрессо"},"cortado":{"name":"Cortado","desc":"Эспрессо с небольшим количеством тёплого молока","weight":"120 мл","imageAlt":"Кортадо в стакане"},"cappuccino":{"name":"Cappuccino","desc":"Эспрессо с нежной бархатистой молочной пенкой","weight":"180 мл","imageAlt":"Капучино с пенкой"},"grand-cappuccino":{"name":"Grand Cappuccino","desc":"Двойная порция эспрессо с большим количеством вспененного молока","weight":"300 мл","imageAlt":"Большой капучино"},"latte":{"name":"Latte","desc":"Мягкий кофе с большим количеством вспененного молока","weight":"250 мл","imageAlt":"Латте в чашке"},"flat-white":{"name":"Flat White","desc":"Двойной эспрессо с бархатным микропенным молоком","weight":"180 мл","imageAlt":"Флэт уайт"},"moccacino":{"name":"Moccacino","desc":"Капучино с добавлением горячего шоколада","weight":"220 мл","imageAlt":"Моккачино"},"raf-coffee":{"name":"Raf Coffee","desc":"Кофе со сливками и ванилью","weight":"200 мл","imageAlt":"Раф кофе"},"hot-chocolate":{"name":"Hot Chocolate","desc":"Горячий напиток, приготовленный из тёртого шоколада и подогретого молока","weight":"220 мл","imageAlt":"Горячий шоколад"},"iced-latte":{"name":"Ice Latte","desc":"Кофейный напиток на основе эспрессо, молока и льда, который подаётся холодным. Не только вкусно, но и эстетично","weight":"300 мл","imageAlt":"Айс латте в стакане"},"frappe":{"name":"Frappe","desc":"Покрытый взбитыми сливками холодный кофейный напиток греческого происхождения","weight":"300 мл","imageAlt":"Фраппе со сливками"},"espresso-tonic":{"name":"Espresso Tonic","desc":"Безалкогольный напиток, приготовленный путём смешивания эспрессо, льда и тонизирующей воды, обладающий горьковато-освежающим вкусом","weight":"300 мл","imageAlt":"Эспрессо тоник"},"bumblebee":{"name":"Bumblebee","desc":"Напиток из эспрессо, апельсинового сока и сиропа. Ингредиенты добавляются слоями, благодаря чему получается коктейль, напоминающий расцветкой шмеля","weight":"300 мл","imageAlt":"Коктейль Bumblebee"},"bubble-coffee":{"name":"Bubble Coffee","desc":"Кофе с шариками тапиоки — идеальный освежающий напиток со льдом","weight":"350 мл","imageAlt":"Кофе с тапиокой"},"tea-julius-cup":{"name":"Tea Julius Meinl (чашка)","desc":"Насыщенный чай с глубоким вкусом","weight":"чашка","imageAlt":"Чай Julius Meinl в чашке"},"tea-julius-pot":{"name":"Tea Julius Meinl (чайничек)","desc":"Насыщенный чай с глубоким вкусом","weight":"чайничек","imageAlt":"Чай Julius Meinl в чайничке"},"tea-handmade-cup":{"name":"Tea handmade/aftor (чашка)","desc":"Чай с джемом из натуральных фруктов, ягод и растений с добавлением сахара — настоящее удовольствие с пользой для здоровья","weight":"чашка","imageAlt":"Авторский чай в чашке"},"tea-handmade-pot":{"name":"Tea handmade/aftor (чайничек)","desc":"Чай с джемом из натуральных фруктов, ягод и растений с добавлением сахара — настоящее удовольствие с пользой для здоровья","weight":"чайничек","imageAlt":"Авторский чай в чайничке"},"ice-tea":{"name":"Ice Tea","desc":"Холодный чай — отличный способ освежиться в жару","weight":"350 мл","imageAlt":"Холодный чай со льдом"},"bubble-tea-kiwi":{"name":"Bubble Tea Kiwi","desc":"Чайный напиток с желейными шариками и вкусом киви","weight":"400 мл","imageAlt":"Bubble Tea со вкусом киви"},"bubble-tea-pineapple":{"name":"Bubble Tea Pineapple","desc":"Чайный напиток с желейными шариками и вкусом ананаса","weight":"400 мл","imageAlt":"Bubble Tea со вкусом ананаса"},"bubble-tea-strawberry":{"name":"Bubble Tea Strawberry","desc":"Чайный напиток с желейными шариками и вкусом клубники","weight":"400 мл","imageAlt":"Bubble Tea со вкусом клубники"},"bubble-tea-mango":{"name":"Bubble Tea Mango","desc":"Чайный напиток с желейными шариками и вкусом манго","weight":"400 мл","imageAlt":"Bubble Tea со вкусом манго"},"bubble-tea-banana":{"name":"Bubble Tea Banana","desc":"Чайный напиток с желейными шариками и вкусом банана","weight":"400 мл","imageAlt":"Bubble Tea со вкусом банана"},"milkshake-classic":{"name":"Classic","desc":"Классический нежный шейк с ванилью","weight":"350 мл","imageAlt":"Классический милкшейк"},"milkshake-chocolate":{"name":"Chocolate","desc":"Насыщенный шоколадный вкус в каждом глотке","weight":"350 мл","imageAlt":"Шоколадный милкшейк"},"milkshake-banana":{"name":"Banana","desc":"Освежающий напиток со спелыми бананами, молоком и мороженым","weight":"350 мл","imageAlt":"Банановый милкшейк"},"milkshake-strawberry":{"name":"Strawberry","desc":"С настоящей свежей клубникой — яркий и ароматный","weight":"350 мл","imageAlt":"Клубничный милкшейк"},"milkshake-oreo":{"name":"Oreo","desc":"Коктейль с кусочками печенья, оценят и взрослые, и дети","weight":"350 мл","imageAlt":"Милкшейк Орео"},"lemonade-mojito":{"name":"Mojito","desc":"Лайм, мята и газированная вода — вечная классика","weight":"400 мл","imageAlt":"Лимонад Мохито"},"lemonade-berry":{"name":"Berry","desc":"Освежающий летний напиток, сочетающий свежевыжатый лимонный сок, ягодный джем и газированную воду","weight":"400 мл","imageAlt":"Ягодный лимонад"},"lemonade-tropic":{"name":"Tropic","desc":"Безалкогольный коктейль с фруктовой смесью манго, граната и лимона","weight":"400 мл","imageAlt":"Тропический лимонад"},"cheesecake-caramel":{"name":"Cheesecake Caramel","desc":"Сливочный десерт, состоящий из основы из печенья и бархатистой начинки, покрытой карамелью","weight":"120 г","imageAlt":"Чизкейк с карамелью"},"cheesecake-mac":{"name":"Cheesecake Mac","desc":"Песочная основа с нежной начинкой из творога и мака, покрытая шоколадом, миндальной крошкой и посыпкой","weight":"120 г","imageAlt":"Чизкейк с маком"},"smetannik":{"name":"Smetannik","desc":"Тонкие медовые коржи, покрытые нежным кремом из сметаны, ядер грецких орехов и вишни","weight":"120 г","imageAlt":"Торт Сметанник"},"donuts":{"name":"Donuts","desc":"Популярное кондитерское изделие из сладкого дрожжевого теста, покрытое глазурью","weight":"1 шт","imageAlt":"Пончик с глазурью"},"jack-daniels-honey":{"name":"Jack Daniel's Honey","desc":"Популярный ликёр на основе классического теннессийского виски","weight":"50 мл","imageAlt":"Jack Daniel's Honey"},"jack-daniels-apple":{"name":"Jack Daniel's Apple","desc":"Популярный ликёр на основе классического теннессийского виски","weight":"50 мл","imageAlt":"Jack Daniel's Apple"},"crema-kick-mango":{"name":"Crema Kick The Rules Mango","desc":"Авторский коктейль на основе текилы с манго","weight":"50 мл","imageAlt":"Коктейль Crema Kick Mango"},"crema-kick-watermelon":{"name":"Crema Kick The Rules Watermelon","desc":"Авторский коктейль на основе текилы с арбузом","weight":"50 мл","imageAlt":"Коктейль Crema Kick Watermelon"},"johnnie-walker-red":{"name":"Johnnie Walker Red Label","desc":"Шотландский виски, известный своим насыщенным, пряным вкусом с дымными нотками","weight":"50 мл","imageAlt":"Johnnie Walker Red Label"},"jagermeister":{"name":"Jägermeister","desc":"Немецкий крепкий ликёр, известный своим уникальным составом из 56 тщательно отобранных трав, кореньев, фруктов и специй","weight":"50 мл","imageAlt":"Ягермайстер"},"omelette":{"name":"Омлет","desc":"Классический омлет из свежих яиц (плейсхолдер — уточнить состав)","weight":"200 г","imageAlt":"Омлет на тарелке"},"omelette-cheese":{"name":"Омлет с сыром","desc":"Омлет с добавлением сыра (плейсхолдер — уточнить состав)","weight":"220 г","imageAlt":"Омлет с сыром"},"burrito-chicken":{"name":"Буррито с курицей","desc":"Буррито с куриным филе и овощами (плейсхолдер — уточнить состав)","weight":"350 г","imageAlt":"Буррито с курицей"},"tacos-beef":{"name":"Тако с говядиной","desc":"Тако с говядиной и овощами (плейсхолдер — уточнить состав)","weight":"300 г","imageAlt":"Тако с говядиной"}},"modifiers":{"sauces":{"groupLabel":"Соусы"},"ketchup":{"name":"Кетчуп"}},"cart":{"title":"Корзина","subtitle":"Всё, что вы заказываете","cutlery":"Приборы","cutleryFeeNote":"Первый прибор на каждую позицию — бесплатно, далее +2 лея за штуку","total":"Итого к оплате","empty":"Добавьте что-нибудь для заказа","backToMenu":"Вернуться к меню","checkout":"Заказать","freeDeliveryHint":"Добавьте ещё на {amount} лей до бесплатной доставки","freeDeliveryReached":"Бесплатная доставка по Бельцам!","itemUnavailable":"Позиции больше нет в наличии","itemClosedNow":"Сейчас недоступно для заказа"},"checkout":{"formTitle":"Оформление заказа","name":"Имя","phone":"Номер телефона","delivery":"Доставка (+60 лей)","pickup":"Самовывоз","city":"Город","street":"Улица","building":"Дом/блок","entrance":"Подъезд","floor":"Этаж","apartment":"Квартира","paymentTitle":"Оплата при получении","cash":"Наличкой","card":"Картой","ageConfirm":"Подтверждаю, что мне есть 18 лет","consent":"Нажимая кнопку «Оформить заказ», вы соглашаетесь с обработкой персональных данных в соответствии с политикой заведения","submit":"Оформить заказ","loading":"Оформляем заказ…","success":"Заказ оформлен, ожидайте звонка для подтверждения заказа","error":"Не удалось оформить заказ, попробуйте снова","workingHoursClosed":"Приём заказов на доставку временно закрыт. Мы работаем с {time}","validation":{"required":"Обязательное поле","phoneFormat":"Введите номер в формате +373 (__) ___-___","ageConfirmRequired":"Необходимо подтвердить возраст"}},"footer":{"tagline":"Место, где каждый день начинается с идеальной чашки кофе","locationTitle":"Местоположение","hoursTitle":"График работы","hoursCafe":"Кафе/бар 7–22, кухня 9–22","deliveryHoursTitle":"График доставки","deliveryHours":"Кафе/бар — 7–22, кухня — 9–02","contactsTitle":"Контакты","socialsTitle":"Мы в соцсетях","privacyTitle":"Политика конфиденциальности","rights":"© 2026 Crema. Все права защищены."},"privacy":{"title":"Политика конфиденциальности","text":"Это временный текст-заглушка. Здесь будет размещена политика обработки персональных данных заведения: какие данные мы собираем при оформлении заказа (имя, телефон, адрес), для чего они используются и как хранятся. Реальный юридический текст будет добавлен позже."},"common":{"backToTop":"Наверх","close":"Закрыть","add":"Добавить"}}};
+      window.__CREMA_DEFAULT_LANG__ = "ru";
+    </script>
+    <script src="js/i18n.js" defer></script>
+    <script src="js/main.js" defer></script>
   </body>
 </html>

@@ -134,9 +134,19 @@
         opacity: 0.85;
       }
 
-      .logo__icon {
-        font-size: 1.5rem;
-        line-height: 1;
+      .logo__mark {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--gold);
+        color: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-head);
+        font-size: 1rem;
+        font-weight: 700;
+        flex-shrink: 0;
       }
 
       .logo__text {
@@ -184,6 +194,213 @@
 
       .nav__link:hover::after {
         transform: scaleX(1);
+      }
+
+      /* ─── HEADER ACTIONS (обёртка: контакты+язык / корзина / бургер) ─── */
+      .header__actions {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+
+      /* ─── КОРЗИНА В ШАПКЕ (счётчик; сам попап корзины — п.7 плана) ─── */
+      .header__cart {
+        position: relative;
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        color: var(--cream-2);
+        cursor: pointer;
+        transition: color var(--transition);
+        flex-shrink: 0;
+      }
+
+      .header__cart:hover {
+        color: var(--gold-light);
+      }
+
+      .header__cart svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      .header__cart-count {
+        position: absolute;
+        top: -2px;
+        right: -4px;
+        min-width: 17px;
+        height: 17px;
+        padding: 0 4px;
+        border-radius: 999px;
+        background: var(--gold);
+        color: var(--bg);
+        font-size: 0.65rem;
+        font-weight: 700;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* ─── БУРГЕР (мобильное меню; скрыт от 769px — там инлайн-шапка) ─── */
+      .burger {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 28px;
+        height: 18px;
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .burger__line {
+        display: block;
+        width: 100%;
+        height: 2px;
+        border-radius: 2px;
+        background: var(--cream-2);
+        transition: transform var(--transition), opacity var(--transition);
+      }
+
+      .burger[aria-expanded="true"] .burger__line:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+      }
+
+      .burger[aria-expanded="true"] .burger__line:nth-child(2) {
+        opacity: 0;
+      }
+
+      .burger[aria-expanded="true"] .burger__line:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+      }
+
+      /* ─── ВЫПАДАЮЩИЙ СПИСОК ЯЗЫКА (десктоп) ─── */
+      .lang-switcher {
+        position: relative;
+      }
+
+      .lang-switcher__toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.35rem 0.75rem;
+        color: var(--cream-2);
+        font-family: var(--font-body);
+        font-size: 0.8rem;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        transition: all var(--transition);
+      }
+
+      .lang-switcher__toggle:hover {
+        border-color: var(--gold-dark);
+        color: var(--gold-light);
+      }
+
+      .lang-switcher__arrow {
+        font-size: 0.65rem;
+        opacity: 0.8;
+      }
+
+      .lang-switcher__list {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        list-style: none;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 0.35rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        min-width: 64px;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+        z-index: 10;
+      }
+
+      .lang-switcher__list li {
+        list-style: none;
+      }
+
+      .lang-switcher__list[hidden] {
+        display: none;
+      }
+
+      .lang-option {
+        background: none;
+        border: none;
+        color: var(--text-2);
+        font-family: var(--font-body);
+        font-size: 0.8rem;
+        padding: 0.35rem 0.5rem;
+        border-radius: var(--radius);
+        text-align: left;
+        cursor: pointer;
+        transition: all var(--transition);
+      }
+
+      .lang-switcher__list .lang-option:hover {
+        background: var(--surface-2);
+        color: var(--gold-light);
+      }
+
+      .lang-switcher__list .lang-option--active {
+        color: var(--gold-light);
+        background: rgba(200, 150, 74, 0.15);
+      }
+
+      /* ─── МОБИЛЬНОЕ МЕНЮ (бургер-панель: телефон → график доставки → язык) ─── */
+      .mobile-menu {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
+        z-index: 99;
+        background: var(--bg-2);
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+        padding: 1rem 1.25rem 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+      }
+
+      .mobile-menu[hidden] {
+        display: none;
+      }
+
+      .mobile-menu__link {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--cream-2);
+        padding: 0.4rem 0;
+        border-bottom: 1px solid var(--border);
+        transition: color var(--transition);
+      }
+
+      .mobile-menu__link:last-of-type {
+        border-bottom: none;
+      }
+
+      .mobile-menu__link:hover {
+        color: var(--gold-light);
+      }
+
+      .mobile-menu__lang {
+        display: flex;
+        gap: 0.5rem;
+        padding-top: 0.25rem;
       }
 
       /* ─── BUTTON ─── */
@@ -517,8 +734,8 @@
         color: var(--text-3);
         line-height: 1.4;
         display: -webkit-box;
-        line-clamp: 2;
         -webkit-line-clamp: 2;
+        line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
       }
@@ -743,6 +960,41 @@
         text-align: center;
       }
 
+      /* ─── КНОПКА "НАВЕРХ" (появляется при скролле — см. main.js) ─── */
+      .back-to-top {
+        position: fixed;
+        bottom: 1.25rem;
+        right: 1.25rem;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--gold);
+        color: var(--bg);
+        border: none;
+        font-size: 1.1rem;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+        z-index: 90;
+        opacity: 0;
+        transform: translateY(8px);
+        pointer-events: none;
+        transition: opacity var(--transition), transform var(--transition), background var(--transition);
+      }
+
+      .back-to-top--visible {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      .back-to-top:hover {
+        background: var(--gold-light);
+      }
+
       /* ═══════════════════════════════════════════════════════════════
          RESPONSIVE (mobile-first: min-width) — база выше = мобильный вид.
 
@@ -754,10 +1006,6 @@
       @media (min-width: 481px) {
         .container {
           padding: 0 2rem;
-        }
-
-        .nav {
-          display: flex;
         }
 
         .hero__title {
@@ -785,7 +1033,20 @@
         }
 
         .nav {
+          display: flex;
           gap: 2rem;
+        }
+
+        .header__actions {
+          gap: 1.5rem;
+        }
+
+        .burger {
+          display: none;
+        }
+
+        .mobile-menu {
+          display: none;
         }
 
         .nav__link {
@@ -889,30 +1150,70 @@
   <body>
 
     <!--
-      ПРИМЕЧАНИЕ (Этап 1, п.2 плана): этот файл — ИСХОДНЫЙ шаблон для build.js.
-      Шапка/hero/футер ниже пока оставлены как в старой версии сайта —
-      их переделка (бургер-меню, карусель, новый футер) запланирована
-      отдельными пунктами плана (4, 5, 9). build.js на этом шаге трогает
-      только секцию <section class="menu" id="menu">: он подставляет туда
+      ПРИМЕЧАНИЕ: этот файл — ИСХОДНЫЙ шаблон для build.js.
+      build.js подставляет в секцию <section class="menu" id="menu">
       сгенерированные из data/menu.json категории/подкатегории/товары
-      вместо плейсхолдеров {{MENU_PILLS}} и {{MENU_CATEGORIES}}.
+      вместо плейсхолдеров {{MENU_PILLS}} и {{MENU_CATEGORIES}}, а перед
+      </body> — вставляет все 3 языка (ru/ro/en) как window.__CREMA_I18N__
+      вместо плейсхолдера {{I18N_DATA}} (см. js/i18n.js — почему это
+      сделано так, а не через fetch()).
       Не редактируй сгенерированный ../index.html руками — он перезатирается
       при каждом запуске `node build/build.js`. Правь этот template.html
-      или data/menu.json / data/i18n/*.json.
+      или data/menu.json / data/i18n/*.json / js/*.js.
+
+      Шапка (п.4 плана) уже переделана: лого-заглушка, телефон/якорь на
+      график доставки вместо старого nav, переключатель языка RU/RO/EN,
+      иконка корзины со счётчиком, бургер-меню на мобильном, кнопка
+      "наверх" (см. .back-to-top в конце body). Hero и футер пока
+      оставлены как в старой версии сайта — их переделка (карусель,
+      новый футер) запланирована отдельными пунктами плана (5, 9).
     -->
 
     <header class="header" id="top">
       <div class="header__inner">
         <a href="#top" class="logo">
-          <span class="logo__icon">☕</span>
+          <span class="logo__mark" aria-hidden="true">C</span>
           <span class="logo__text">Crema</span>
         </a>
-        <nav class="nav">
-          <a href="#menu" class="nav__link">Меню</a>
-          <a href="#coffee" class="nav__link">Кофе</a>
-          <a href="#promotions" class="nav__link">Акции</a>
-          <a href="#footer" class="nav__link">Контакты</a>
-        </nav>
+        <div class="header__actions">
+          <nav class="nav">
+            <a href="tel:+37360319994" class="nav__link" data-i18n-key="header.phone">+373 (60) 319-994</a>
+            <a href="#footer" class="nav__link" data-i18n-key="header.deliverySchedule">График доставки</a>
+            <div class="lang-switcher" id="langSwitcher">
+              <button type="button" class="lang-switcher__toggle" id="langToggle" aria-haspopup="listbox" aria-expanded="false">
+                <span id="langCurrent">RU</span>
+                <span class="lang-switcher__arrow" aria-hidden="true">▾</span>
+              </button>
+              <ul class="lang-switcher__list" id="langList" role="listbox" hidden>
+                <li role="presentation"><button type="button" class="lang-option" role="option" data-lang="ru">RU</button></li>
+                <li role="presentation"><button type="button" class="lang-option" role="option" data-lang="ro">RO</button></li>
+                <li role="presentation"><button type="button" class="lang-option" role="option" data-lang="en">EN</button></li>
+              </ul>
+            </div>
+          </nav>
+          <button type="button" class="header__cart" id="cartButton" aria-label="Корзина" title="Корзина">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="19" cy="21" r="1"></circle>
+              <path d="M2.5 3h2l2.6 12.6a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 7H6"></path>
+            </svg>
+            <span class="header__cart-count" id="cartCount">0</span>
+          </button>
+          <button type="button" class="burger" id="burgerButton" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobileMenu">
+            <span class="burger__line"></span>
+            <span class="burger__line"></span>
+            <span class="burger__line"></span>
+          </button>
+        </div>
+      </div>
+      <div class="mobile-menu" id="mobileMenu" hidden>
+        <a href="tel:+37360319994" class="mobile-menu__link" data-i18n-key="header.phone">+373 (60) 319-994</a>
+        <a href="#footer" class="mobile-menu__link" data-i18n-key="header.deliverySchedule">График доставки</a>
+        <div class="mobile-menu__lang" role="group" aria-label="Язык">
+          <button type="button" class="pill lang-option" data-lang="ru">RU</button>
+          <button type="button" class="pill lang-option" data-lang="ro">RO</button>
+          <button type="button" class="pill lang-option" data-lang="en">EN</button>
+        </div>
       </div>
     </header>
 
@@ -949,7 +1250,7 @@
       <div class="footer__inner">
         <div class="footer__brand">
           <a href="#top" class="logo logo--footer">
-            <span class="logo__icon">☕</span>
+            <span class="logo__mark" aria-hidden="true">C</span>
             <span class="logo__text">Crema</span>
           </a>
           <p class="footer__tagline">Место, где каждый день начинается с идеальной чашки кофе</p>
@@ -982,5 +1283,13 @@
         <p>© 2026 Crema. Все права защищены.</p>
       </div>
     </footer>
+
+    <button type="button" class="back-to-top" id="backToTop" aria-label="Наверх" title="Наверх">
+      <span aria-hidden="true">↑</span>
+    </button>
+
+    <!--{{I18N_DATA}}-->
+    <script src="js/i18n.js" defer></script>
+    <script src="js/main.js" defer></script>
   </body>
 </html>
