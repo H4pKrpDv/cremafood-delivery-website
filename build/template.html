@@ -429,87 +429,182 @@
         box-shadow: 0 8px 32px rgba(200, 150, 74, 0.35);
       }
 
-      /* ─── HERO ─── */
+      /* ─── HERO ───
+         Этап 1, п.5 плана: над текстовым блоком добавлена карусель-баннер
+         (см. .hero__carousel ниже). Раньше весь .hero был фоновой фотографией
+         на всю высоту экрана с текстом-оверлеем поверх (position:absolute) —
+         теперь карусель занимает верхнюю часть секции как обычный блок в
+         потоке (не на весь vh, как и требовалось), а текстовый блок идёт
+         под ней на обычном тёмном фоне сайта, поэтому старые .hero__overlay
+         и background-image на .hero больше не нужны — убраны. */
       .hero {
         position: relative;
         min-height: 100vh;
         display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        background-image: url('/img/hero-backround-img.webp');
-        background-size: cover;
-        background-position: center;
-        /* fixed-attachment глючит/тормозит на мобильных браузерах —
-           включаем его только на десктопе (см. медиа-блок ниже) */
-        background-attachment: scroll;
+        flex-direction: column;
+        background: var(--bg);
         overflow: hidden;
       }
 
-      .hero__overlay {
+      /* ─── HERO CAROUSEL (баннер-карусель, п.5) ───
+         3-4 слайда-плейсхолдера (см. .hero__carousel-slide--N — цветные
+         градиенты вместо реальных фото, заменишь на <img>/background-image
+         когда появятся реальные баннеры), автопрокрутка ~7 сек, стрелки,
+         свайп и точки — логика в js/gallery.js. Высота фиксирована по vh
+         с ограничителями min/max, чтобы карусель не "съедала" весь экран
+         и под ней оставалось место на текстовый блок в первом экране. */
+      .hero__carousel {
+        position: relative;
+        width: 100%;
+        flex-shrink: 0;
+        overflow: hidden;
+        height: clamp(200px, 32vh, 260px);
+      }
+
+      .hero__carousel-track {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.5s ease;
+      }
+
+      .hero__carousel-slide {
+        position: relative;
+        flex: 0 0 100%;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: flex-end;
+        padding: 1rem 1.1rem;
+      }
+
+      /* Плейсхолдер-градиенты (заменить на реальные фото позже) */
+      .hero__carousel-slide--1 { background: linear-gradient(135deg, var(--gold-dark), var(--bg-3)); }
+      .hero__carousel-slide--2 { background: linear-gradient(135deg, var(--surface-2), var(--bg-2)); }
+      .hero__carousel-slide--3 { background: linear-gradient(135deg, var(--gold), var(--surface)); }
+      .hero__carousel-slide--4 { background: linear-gradient(135deg, var(--bg-2), var(--gold-dark)); }
+
+      .hero__carousel-caption {
+        position: relative;
+        z-index: 1;
+        font-family: var(--font-head);
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--cream);
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+        max-width: 85%;
+      }
+
+      .hero__carousel-arrow {
         position: absolute;
-        inset: 0;
-        background: linear-gradient(
-          to bottom,
-          rgba(19, 14, 9, 0.65) 0%,
-          rgba(19, 14, 9, 0.78) 60%,
-          rgba(19, 14, 9, 0.95) 100%
-        );
+        top: 50%;
+        transform: translateY(-50%);
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: rgba(19, 14, 9, 0.55);
+        border: 1px solid rgba(232, 185, 106, 0.4);
+        color: var(--cream);
+        font-size: 1rem;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background var(--transition), border-color var(--transition);
+        z-index: 2;
+      }
+
+      .hero__carousel-arrow:hover {
+        background: rgba(19, 14, 9, 0.8);
+        border-color: var(--gold);
+      }
+
+      .hero__carousel-arrow--prev { left: 0.5rem; }
+      .hero__carousel-arrow--next { right: 0.5rem; }
+
+      .hero__carousel-dots {
+        position: absolute;
+        bottom: 0.55rem;
+        right: 0.65rem;
+        z-index: 2;
+        display: flex;
+        gap: 0.35rem;
+      }
+
+      .hero__carousel-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: rgba(245, 230, 208, 0.4);
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        transition: background var(--transition), transform var(--transition);
+      }
+
+      .hero__carousel-dot--active {
+        background: var(--gold);
+        transform: scale(1.3);
+      }
+
+      /* ─── HERO CONTENT (под каруселью) ─── */
+      .hero__content-wrap {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 1.1rem 1.25rem 1rem;
       }
 
       .hero__content {
-        position: relative;
-        z-index: 2;
         max-width: 680px;
-        padding: 0 1.5rem;
       }
 
       .hero__eyebrow {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
         font-weight: 400;
         letter-spacing: 0.2em;
         text-transform: uppercase;
         color: var(--gold);
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.5rem;
         opacity: 0.9;
       }
 
       .hero__title {
         font-family: var(--font-head);
-        font-size: 4rem;
+        font-size: 2.5rem;
         font-weight: 700;
         line-height: 0.95;
         color: var(--cream);
         letter-spacing: -0.01em;
-        margin-bottom: 1.5rem;
+        margin-bottom: 0.75rem;
       }
 
       .hero__tagline {
-        font-size: 0.95rem;
+        font-size: 0.85rem;
         font-weight: 300;
         color: var(--cream-2);
-        line-height: 1.7;
-        margin-bottom: 2.5rem;
+        line-height: 1.55;
+        margin-bottom: 1.25rem;
       }
 
       .hero__scroll {
-        position: absolute;
-        bottom: 2.5rem;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 2;
+        margin-top: 1.25rem;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 0.4rem;
+        gap: 0.3rem;
         color: var(--text-3);
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         letter-spacing: 0.1em;
         text-transform: uppercase;
       }
 
       .hero__arrow {
-        font-size: 1.1rem;
+        font-size: 1rem;
         animation: bounce 2s ease-in-out infinite;
       }
 
@@ -1008,12 +1103,16 @@
           padding: 0 2rem;
         }
 
+        .hero__carousel {
+          height: clamp(220px, 34vh, 300px);
+        }
+
         .hero__title {
-          font-size: clamp(4.5rem, 12vw, 9rem);
+          font-size: clamp(3rem, 9vw, 5.5rem);
         }
 
         .hero__tagline {
-          font-size: 1.1rem;
+          font-size: 1rem;
         }
 
         .menu-pills {
@@ -1053,9 +1152,21 @@
           font-size: 0.9rem;
         }
 
-        .hero {
-          /* fixed-attachment только на десктопе — на мобильном отключён выше */
-          background-attachment: fixed;
+        .hero__carousel {
+          height: clamp(280px, 38vh, 380px);
+        }
+
+        .hero__carousel-caption {
+          font-size: 1.1rem;
+        }
+
+        .hero__title {
+          font-size: clamp(4rem, 8vw, 6.5rem);
+        }
+
+        .hero__tagline {
+          font-size: 1.05rem;
+          margin-bottom: 1.75rem;
         }
 
         .menu {
@@ -1134,6 +1245,10 @@
       }
 
       @media (min-width: 1025px) {
+        .hero__carousel {
+          height: clamp(320px, 40vh, 440px);
+        }
+
         .items-grid {
           grid-template-columns: repeat(4, 1fr);
           gap: 1.5rem;
@@ -1164,9 +1279,12 @@
       Шапка (п.4 плана) уже переделана: лого-заглушка, телефон/якорь на
       график доставки вместо старого nav, переключатель языка RU/RO/EN,
       иконка корзины со счётчиком, бургер-меню на мобильном, кнопка
-      "наверх" (см. .back-to-top в конце body). Hero и футер пока
-      оставлены как в старой версии сайта — их переделка (карусель,
-      новый футер) запланирована отдельными пунктами плана (5, 9).
+      "наверх" (см. .back-to-top в конце body).
+      Hero (п.5 плана) тоже переделан: карусель-баннер (.hero__carousel,
+      логика в js/gallery.js) сверху + текстовый блок под ней на обычном
+      тёмном фоне сайта (раньше текст лежал оверлеем на фоновой фотографии
+      на весь экран — теперь фото только в карусели). Футер пока оставлен
+      как в старой версии сайта — его переделка запланирована п.9 плана.
     -->
 
     <header class="header" id="top">
@@ -1218,16 +1336,48 @@
     </header>
 
     <section class="hero">
-      <div class="hero__overlay"></div>
-      <div class="hero__content">
-        <p class="hero__eyebrow" data-i18n-key="hero.eyebrow">Добро пожаловать в</p>
-        <h1 class="hero__title" data-i18n-key="hero.title">Crema</h1>
-        <p class="hero__tagline" data-i18n-key="hero.tagline">Где каждый глоток — это маленькое удовольствие. Авторский кофе, уют и атмосфера, созданная для вас.</p>
-        <a href="#menu" class="btn btn--primary" data-i18n-key="hero.cta">Смотреть меню</a>
+      <div
+        class="hero__carousel"
+        id="heroCarousel"
+        role="region"
+        aria-roledescription="carousel"
+        aria-label="Карусель с новостями и акциями"
+        data-i18n-attr-aria-label="heroCarousel.ariaLabel"
+      >
+        <div class="hero__carousel-track" id="heroCarouselTrack">
+          <div class="hero__carousel-slide hero__carousel-slide--1" role="group" aria-roledescription="slide" aria-label="1 / 4">
+            <p class="hero__carousel-caption" data-i18n-key="heroCarousel.slide1.caption">Новинки сезона</p>
+          </div>
+          <div class="hero__carousel-slide hero__carousel-slide--2" role="group" aria-roledescription="slide" aria-label="2 / 4">
+            <p class="hero__carousel-caption" data-i18n-key="heroCarousel.slide2.caption">Скидка −20% для постоянных гостей</p>
+          </div>
+          <div class="hero__carousel-slide hero__carousel-slide--3" role="group" aria-roledescription="slide" aria-label="3 / 4">
+            <p class="hero__carousel-caption" data-i18n-key="heroCarousel.slide3.caption">Авторские десерты и напитки</p>
+          </div>
+          <div class="hero__carousel-slide hero__carousel-slide--4" role="group" aria-roledescription="slide" aria-label="4 / 4">
+            <p class="hero__carousel-caption" data-i18n-key="heroCarousel.slide4.caption">Доставка по всему городу</p>
+          </div>
+        </div>
+        <button type="button" class="hero__carousel-arrow hero__carousel-arrow--prev" id="heroCarouselPrev" aria-label="Предыдущий слайд" data-i18n-attr-aria-label="heroCarousel.prevSlide">‹</button>
+        <button type="button" class="hero__carousel-arrow hero__carousel-arrow--next" id="heroCarouselNext" aria-label="Следующий слайд" data-i18n-attr-aria-label="heroCarousel.nextSlide">›</button>
+        <div class="hero__carousel-dots" id="heroCarouselDots" role="tablist" aria-label="Выбор слайда">
+          <button type="button" class="hero__carousel-dot hero__carousel-dot--active" data-slide="0" role="tab" aria-selected="true" aria-label="Слайд 1" data-i18n-attr-aria-label="heroCarousel.dot1"></button>
+          <button type="button" class="hero__carousel-dot" data-slide="1" role="tab" aria-selected="false" aria-label="Слайд 2" data-i18n-attr-aria-label="heroCarousel.dot2"></button>
+          <button type="button" class="hero__carousel-dot" data-slide="2" role="tab" aria-selected="false" aria-label="Слайд 3" data-i18n-attr-aria-label="heroCarousel.dot3"></button>
+          <button type="button" class="hero__carousel-dot" data-slide="3" role="tab" aria-selected="false" aria-label="Слайд 4" data-i18n-attr-aria-label="heroCarousel.dot4"></button>
+        </div>
       </div>
-      <div class="hero__scroll">
-        <span data-i18n-key="hero.scrollHint">Листайте вниз</span>
-        <span class="hero__arrow" aria-hidden="true">↓</span>
+      <div class="hero__content-wrap">
+        <div class="hero__content">
+          <p class="hero__eyebrow" data-i18n-key="hero.eyebrow">Добро пожаловать в</p>
+          <h1 class="hero__title" data-i18n-key="hero.title">Crema</h1>
+          <p class="hero__tagline" data-i18n-key="hero.tagline">Где каждый глоток — это маленькое удовольствие. Авторский кофе, уют и атмосфера, созданная для вас.</p>
+          <a href="#menu" class="btn btn--primary" data-i18n-key="hero.cta">Смотреть меню</a>
+        </div>
+        <div class="hero__scroll">
+          <span data-i18n-key="hero.scrollHint">Листайте вниз</span>
+          <span class="hero__arrow" aria-hidden="true">↓</span>
+        </div>
       </div>
     </section>
 
@@ -1291,5 +1441,6 @@
     <!--{{I18N_DATA}}-->
     <script src="js/i18n.js" defer></script>
     <script src="js/main.js" defer></script>
+    <script src="js/gallery.js" defer></script>
   </body>
 </html>
