@@ -391,16 +391,20 @@
   }
 
   // ---- Открытие/закрытие --------------------------------------------------
+  // Класс 'modal-open' на body (переименован из 'cart-modal-open' правкой
+  // от 19.09.2026, когда появился второй попап — оформление заказа,
+  // js/checkout.js) — общий для обоих попапов, блокирует прокрутку сайта
+  // позади активного попапа.
   function openCart() {
     renderCartModal();
     els.overlay.hidden = false;
-    document.body.classList.add('cart-modal-open');
+    document.body.classList.add('modal-open');
     if (els.closeBtn) els.closeBtn.focus();
   }
 
   function closeCart() {
     els.overlay.hidden = true;
-    document.body.classList.remove('cart-modal-open');
+    document.body.classList.remove('modal-open');
     if (els.cartButton) els.cartButton.focus();
   }
 
@@ -485,10 +489,15 @@
       }
 
       if (target.closest('#cartCheckout')) {
-        // Форма оформления заказа (п.8 плана) ещё не реализована — переход
-        // добавится, когда дойдём до этого пункта. Пока просто не даём
-        // кнопке ничего не делать молча — оставляем след в консоли.
-        console.log('[cart.js] Оформление заказа (п.8 плана) пока не реализовано.');
+        // Правка от 19.09.2026 (п.8 плана — форма оформления заказа):
+        // кнопка отключена (disabled), пока !summary.canCheckout, поэтому
+        // сюда попадаем только когда переход валиден. Закрываем попап
+        // корзины и открываем попап оформления заказа (js/checkout.js) —
+        // именно в таком порядке, чтобы не было двух открытых модалок
+        // одновременно (оба используют один и тот же класс body.modal-open
+        // для блокировки прокрутки).
+        closeCart();
+        if (window.CremaCheckout) window.CremaCheckout.open();
         return;
       }
 
@@ -546,4 +555,17 @@
     if (!els.overlay) return;
     initClickDelegation();
   });
+
+  // ---- Публичный экспорт для js/checkout.js (п.8 плана) --------------------
+  // computeSummary() уже считает всё, что нужно форме оформления заказа
+  // (строки корзины с ценами/приборами/модификаторами, подытог по доступным
+  // позициям, можно ли вообще оформлять) — чтобы не заводить второй источник
+  // правды по расчётам, форма (js/checkout.js) переиспользует именно эту
+  // функцию, а не пересчитывает сумму сама. Отдельное пространство имён
+  // (не window.CremaCart, который в main.js отвечает только за хранение
+  // localStorage) — т.к. это уже бизнес-логика попапа корзины, а не хранение.
+  window.CremaCartSummary = {
+    compute: computeSummary,
+    FREE_DELIVERY_THRESHOLD: FREE_DELIVERY_THRESHOLD
+  };
 })();

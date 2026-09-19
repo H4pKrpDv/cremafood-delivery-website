@@ -79,9 +79,12 @@
         min-width: 320px;
       }
 
-      /* Пока открыт попап корзины (п.7 плана) — блокируем прокрутку
-         основного сайта, класс вешает/снимает js/cart.js. */
-      body.cart-modal-open {
+      /* Пока открыт любой попап (корзина — п.7, оформление заказа — п.8) —
+         блокируем прокрутку основного сайта. Класс общий для обоих попапов
+         (переименован из body.cart-modal-open правкой от 19.09.2026, когда
+         появился второй попап — оформление заказа, js/checkout.js), вешает
+         и снимает его сам js каждого попапа (js/cart.js, js/checkout.js). */
+      body.modal-open {
         overflow: hidden;
       }
 
@@ -947,6 +950,355 @@
 
       .cart-modal__actions .btn[hidden] {
         display: none;
+      }
+
+      /* ─── ФОРМА ОФОРМЛЕНИЯ ЗАКАЗА (попап, п.8 плана) ───
+         Открытие/закрытие/маска телефона/переключатели/Zod-валидация/
+         заглушка отправки — js/checkout.js. Тот же паттерн оверлея+модалки,
+         что у .cart-overlay/.cart-modal (п.7) — открывается ПОВЕРХ страницы
+         после закрытия попапа корзины кликом по "Заказать". У модалки
+         оформления контента заметно больше, чем у корзины, поэтому внутри
+         неё есть свой скроллящийся блок .checkout-modal__scroll (шапка формы
+         и не скроллятся — только сами поля), а сама модалка чуть шире на
+         десктопе (см. медиа-запрос ниже). */
+      .checkout-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(8, 5, 3, 0.72);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        z-index: 1100;
+      }
+
+      .checkout-overlay[hidden] {
+        display: none;
+      }
+
+      .checkout-modal {
+        position: relative;
+        width: 100%;
+        max-width: 460px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem 1.25rem 1.25rem;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+      }
+
+      .checkout-modal__close {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        color: var(--text-2);
+        font-size: 1.1rem;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: color var(--transition), border-color var(--transition);
+      }
+
+      .checkout-modal__close:hover {
+        color: var(--gold-light);
+        border-color: var(--gold-dark);
+      }
+
+      .checkout-modal__title {
+        font-family: var(--font-head);
+        font-size: 1.4rem;
+        color: var(--cream);
+        text-align: center;
+        padding-right: 2rem;
+        margin-bottom: 1rem;
+        flex-shrink: 0;
+      }
+
+      /* Только этот блок скроллится (не вся модалка) — шапка/заголовок
+         остаётся на месте, та же идея, что у .cart-list в попапе корзины. */
+      .checkout-modal__scroll {
+        overflow-y: auto;
+        min-height: 0;
+        flex: 1;
+        scrollbar-width: thin;
+        scrollbar-color: var(--gold-dark) var(--bg-2);
+      }
+
+      .checkout-modal__scroll::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .checkout-modal__scroll::-webkit-scrollbar-thumb {
+        background: var(--gold-dark);
+        border-radius: 999px;
+      }
+
+      .checkout-field {
+        margin-bottom: 1rem;
+      }
+
+      .checkout-field__label {
+        display: block;
+        font-size: 0.78rem;
+        color: var(--text-2);
+        margin-bottom: 0.4rem;
+      }
+
+      .checkout-field__required {
+        color: var(--gold-light);
+      }
+
+      .checkout-field__input {
+        width: 100%;
+        padding: 0.7rem 0.85rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        transition: border-color var(--transition);
+      }
+
+      .checkout-field__input:focus {
+        outline: none;
+        border-color: var(--gold);
+      }
+
+      .checkout-field__input:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .checkout-field__input::placeholder {
+        color: var(--text-3);
+      }
+
+      /* Правило проекта: провал Zod-валидации → класс .input-error на инпут +
+         текст ошибки в <span> под ним, убирается при начале ввода. Тот же
+         класс используем и на группах кнопок-переключателей (способ
+         доставки/оплаты) ниже — это не <input>, но визуально тот же принцип
+         "поле в состоянии ошибки". */
+      .input-error {
+        border-color: #d9564a !important;
+      }
+
+      .checkout-field__error {
+        display: block;
+        font-size: 0.72rem;
+        color: #e06a5c;
+        margin-top: 0.35rem;
+      }
+
+      .checkout-field__error[hidden] {
+        display: none;
+      }
+
+      /* Группа кнопок-переключателей (доставка/самовывоз, наличка/карта) —
+         тот же визуальный язык, что у .pill (переключатель языка), но
+         крупнее, под форму. */
+      .checkout-toggle {
+        display: flex;
+        gap: 0.6rem;
+        border-radius: var(--radius);
+      }
+
+      .checkout-toggle--error {
+        outline: 1px solid #d9564a;
+        border-radius: var(--radius);
+      }
+
+      .checkout-toggle__btn {
+        flex: 1;
+        padding: 0.7rem 0.5rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--text-2);
+        font-family: var(--font-body);
+        font-size: 0.84rem;
+        cursor: pointer;
+        transition: all var(--transition);
+        text-align: center;
+      }
+
+      .checkout-toggle__btn:hover {
+        border-color: var(--gold-dark);
+      }
+
+      .checkout-toggle__btn--active {
+        background: rgba(200, 150, 74, 0.16);
+        border-color: var(--gold);
+        color: var(--gold-light);
+        font-weight: 600;
+      }
+
+      .checkout-address-fields {
+        margin-top: 0.9rem;
+        padding-top: 0.9rem;
+        border-top: 1px dashed var(--border);
+      }
+
+      .checkout-address-fields[hidden] {
+        display: none;
+      }
+
+      .checkout-address-fields__row {
+        display: flex;
+        gap: 0.6rem;
+      }
+
+      .checkout-address-fields__row .checkout-field {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .checkout-summary {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        padding: 0.85rem;
+        margin-bottom: 1rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-size: 0.82rem;
+        color: var(--text-2);
+      }
+
+      .checkout-summary__row {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .checkout-summary__row--total {
+        padding-top: 0.5rem;
+        border-top: 1px solid var(--border);
+        color: var(--cream);
+        font-weight: 600;
+        font-size: 0.92rem;
+      }
+
+      .checkout-summary__row--total .checkout-summary__amount {
+        font-family: var(--font-head);
+        color: var(--gold);
+        font-size: 1.05rem;
+      }
+
+      .checkout-hours-warning {
+        margin-bottom: 1rem;
+        padding: 0.7rem 0.85rem;
+        background: rgba(217, 86, 74, 0.12);
+        border: 1px solid #d9564a;
+        border-radius: var(--radius);
+        color: #e06a5c;
+        font-size: 0.8rem;
+      }
+
+      .checkout-hours-warning[hidden] {
+        display: none;
+      }
+
+      .checkout-consent {
+        font-size: 0.72rem;
+        color: var(--text-3);
+        line-height: 1.5;
+        margin-bottom: 1rem;
+        flex-shrink: 0;
+      }
+
+      .checkout-modal__submit-wrap {
+        flex-shrink: 0;
+      }
+
+      .checkout-modal__submit-wrap .btn {
+        width: 100%;
+        text-align: center;
+        border-radius: var(--radius);
+      }
+
+      /* ---- Состояния спиннера/успеха/ошибки (заглушка отправки) ----------
+         Заменяют собой всё содержимое модалки (форма скрывается) на время
+         имитации запроса к бекенду и после его "ответа". Бекенда пока нет
+         (Этап 2 плана) — см. js/checkout.js про то, как именно устроена
+         заглушка (всегда успех, кроме специального тестового номера). */
+      .checkout-state {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 1rem;
+        padding: 2rem 1rem;
+      }
+
+      .checkout-state[hidden] {
+        display: none;
+      }
+
+      .checkout-state p {
+        color: var(--text-2);
+        font-size: 0.95rem;
+        max-width: 30ch;
+      }
+
+      .checkout-state__order-number {
+        font-family: var(--font-head);
+        color: var(--gold);
+        font-size: 1.1rem;
+      }
+
+      .spinner {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 3px solid var(--border);
+        border-top-color: var(--gold);
+        animation: checkout-spin 0.8s linear infinite;
+      }
+
+      @keyframes checkout-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .checkout-state__icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+      }
+
+      .checkout-state--success .checkout-state__icon {
+        background: rgba(120, 180, 120, 0.15);
+        color: #8fce8f;
+      }
+
+      .checkout-state--error .checkout-state__icon {
+        background: rgba(217, 86, 74, 0.15);
+        color: #e06a5c;
+      }
+
+      @media (min-width: 769px) {
+        .checkout-modal {
+          max-width: 520px;
+          padding: 2rem 1.75rem 1.5rem;
+        }
       }
 
       /* ─── HERO ───
@@ -2092,6 +2444,157 @@
       </div>
     </div>
 
+    <!-- ─── ФОРМА ОФОРМЛЕНИЯ ЗАКАЗА (п.8 плана) ───
+         Логика открытия/закрытия/маски телефона/переключателей/Zod-валидации/
+         заглушки отправки — js/checkout.js. Открывается кликом по "Заказать"
+         в попапе корзины (js/cart.js закрывает попап корзины и вызывает
+         window.CremaCheckout.open()). Сумма заказа (подытог из корзины +
+         доставка, если выбрана) считается на лету через
+         window.CremaCartSummary.compute() — тот же расчёт, что использует
+         сам попап корзины, чтобы суммы нигде не разошлись.
+
+         Проверка рабочего времени доставки (кухня/бар, техничка) — ОТДЕЛЬНЫЙ
+         следующий шаг после этой правки (см. Context.md), блок
+         #checkoutHoursWarning уже в разметке и стилях, но пока не
+         показывается никаким скриптом — заглушка на будущее, чтобы не
+         переверстывать форму ещё раз, когда дойдём до этой проверки. -->
+    <div class="checkout-overlay" id="checkoutOverlay" hidden>
+      <div
+        class="checkout-modal"
+        id="checkoutModal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="checkoutTitle"
+      >
+        <button
+          type="button"
+          class="checkout-modal__close"
+          id="checkoutClose"
+          aria-label="Закрыть"
+          data-i18n-attr-aria-label="common.close"
+        >×</button>
+
+        <h2 class="checkout-modal__title" id="checkoutTitle" data-i18n-key="checkout.formTitle">Оформление заказа</h2>
+
+        <div class="checkout-modal__scroll">
+          <form id="checkoutForm" novalidate>
+            <div class="checkout-field">
+              <label class="checkout-field__label" for="checkoutName">
+                <span data-i18n-key="checkout.name">Имя</span> <span class="checkout-field__required">*</span>
+              </label>
+              <input type="text" class="checkout-field__input" id="checkoutName" name="name" autocomplete="name" />
+              <span class="checkout-field__error" id="checkoutNameError" hidden></span>
+            </div>
+
+            <div class="checkout-field">
+              <label class="checkout-field__label" for="checkoutPhone">
+                <span data-i18n-key="checkout.phone">Номер телефона</span> <span class="checkout-field__required">*</span>
+              </label>
+              <input type="tel" class="checkout-field__input" id="checkoutPhone" name="phone" inputmode="numeric" autocomplete="tel" />
+              <span class="checkout-field__error" id="checkoutPhoneError" hidden></span>
+            </div>
+
+            <div class="checkout-field">
+              <span class="checkout-field__label" data-i18n-key="checkout.method" id="checkoutMethodLabel">Способ получения</span>
+              <div class="checkout-toggle" id="checkoutMethodToggle" role="radiogroup" aria-labelledby="checkoutMethodLabel">
+                <button type="button" class="checkout-toggle__btn" data-method="delivery" data-i18n-key="checkout.delivery">Доставка (+60 лей)</button>
+                <button type="button" class="checkout-toggle__btn" data-method="pickup" data-i18n-key="checkout.pickup">Самовывоз</button>
+              </div>
+              <span class="checkout-field__error" id="checkoutMethodError" hidden></span>
+            </div>
+
+            <div class="checkout-address-fields" id="checkoutAddressFields" hidden>
+              <div class="checkout-field">
+                <label class="checkout-field__label" for="checkoutCity" data-i18n-key="checkout.city">Город</label>
+                <input type="text" class="checkout-field__input" id="checkoutCity" value="Balti" disabled />
+              </div>
+              <div class="checkout-field">
+                <label class="checkout-field__label" for="checkoutStreet">
+                  <span data-i18n-key="checkout.street">Улица</span> <span class="checkout-field__required">*</span>
+                </label>
+                <input type="text" class="checkout-field__input" id="checkoutStreet" name="street" autocomplete="street-address" />
+                <span class="checkout-field__error" id="checkoutStreetError" hidden></span>
+              </div>
+              <div class="checkout-field">
+                <label class="checkout-field__label" for="checkoutBuilding">
+                  <span data-i18n-key="checkout.building">Дом/блок</span> <span class="checkout-field__required">*</span>
+                </label>
+                <input type="text" class="checkout-field__input" id="checkoutBuilding" name="building" />
+                <span class="checkout-field__error" id="checkoutBuildingError" hidden></span>
+              </div>
+              <div class="checkout-address-fields__row">
+                <div class="checkout-field">
+                  <label class="checkout-field__label" for="checkoutEntrance" data-i18n-key="checkout.entrance">Подъезд</label>
+                  <input type="text" class="checkout-field__input" id="checkoutEntrance" name="entrance" />
+                </div>
+                <div class="checkout-field">
+                  <label class="checkout-field__label" for="checkoutFloor" data-i18n-key="checkout.floor">Этаж</label>
+                  <input type="text" class="checkout-field__input" id="checkoutFloor" name="floor" />
+                </div>
+                <div class="checkout-field">
+                  <label class="checkout-field__label" for="checkoutApartment" data-i18n-key="checkout.apartment">Квартира</label>
+                  <input type="text" class="checkout-field__input" id="checkoutApartment" name="apartment" />
+                </div>
+              </div>
+            </div>
+
+            <div class="checkout-field">
+              <span class="checkout-field__label" data-i18n-key="checkout.paymentTitle" id="checkoutPaymentLabel">Оплата при получении</span>
+              <div class="checkout-toggle" id="checkoutPaymentToggle" role="radiogroup" aria-labelledby="checkoutPaymentLabel">
+                <button type="button" class="checkout-toggle__btn" data-payment="cash" data-i18n-key="checkout.cash">Наличкой</button>
+                <button type="button" class="checkout-toggle__btn" data-payment="card" data-i18n-key="checkout.card">Картой</button>
+              </div>
+              <span class="checkout-field__error" id="checkoutPaymentError" hidden></span>
+            </div>
+
+            <div class="checkout-summary" id="checkoutSummary">
+              <div class="checkout-summary__row">
+                <span data-i18n-key="checkout.subtotal">Сумма заказа</span>
+                <span class="checkout-summary__amount" id="checkoutSummarySubtotal">0 MDL</span>
+              </div>
+              <div class="checkout-summary__row" id="checkoutSummaryDeliveryRow" hidden>
+                <span data-i18n-key="checkout.delivery">Доставка (+60 лей)</span>
+                <span class="checkout-summary__amount" id="checkoutSummaryDeliveryFee">60 MDL</span>
+              </div>
+              <div class="checkout-summary__row checkout-summary__row--total">
+                <span data-i18n-key="cart.total">Итого к оплате</span>
+                <span class="checkout-summary__amount" id="checkoutSummaryTotal">0 MDL</span>
+              </div>
+            </div>
+
+            <div class="checkout-hours-warning" id="checkoutHoursWarning" hidden data-i18n-key="checkout.workingHoursClosed">
+              Приём заказов на доставку временно закрыт. Мы работаем с 09:00
+            </div>
+
+            <p class="checkout-consent" data-i18n-key="checkout.consent">
+              Нажимая кнопку «Оформить заказ», вы соглашаетесь с обработкой персональных данных в соответствии с политикой заведения
+            </p>
+
+            <div class="checkout-modal__submit-wrap">
+              <button type="submit" class="btn btn--primary" id="checkoutSubmit" data-i18n-key="checkout.submit">Оформить заказ</button>
+            </div>
+          </form>
+
+          <div class="checkout-state checkout-state--loading" id="checkoutLoading" hidden>
+            <div class="spinner" aria-hidden="true"></div>
+            <p data-i18n-key="checkout.loading">Оформляем заказ…</p>
+          </div>
+
+          <div class="checkout-state checkout-state--success" id="checkoutSuccess" hidden>
+            <div class="checkout-state__icon" aria-hidden="true">✓</div>
+            <p data-i18n-key="checkout.success">Заказ оформлен, ожидайте звонка для подтверждения заказа</p>
+            <p class="checkout-state__order-number" id="checkoutOrderNumber"></p>
+          </div>
+
+          <div class="checkout-state checkout-state--error" id="checkoutError" hidden>
+            <div class="checkout-state__icon" aria-hidden="true">!</div>
+            <p data-i18n-key="checkout.error">Не удалось оформить заказ, попробуйте снова</p>
+            <button type="button" class="btn btn--secondary" id="checkoutRetry" data-i18n-key="checkout.submit">Оформить заказ</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <section class="hero">
       <div
         class="hero__carousel"
@@ -2204,5 +2707,12 @@
     <script src="js/gallery.js" defer></script>
     <script src="js/menu.js" defer></script>
     <script src="js/cart.js" defer></script>
+    <!-- vendor/zod-lite.js — см. его собственный комментарий (лёгкая
+         API-совместимая замена настоящего npm-пакета zod, т.к. у этой
+         рабочей среды нет доступа к npm/CDN; безболезненно заменяется на
+         настоящий Zod позже). Должен идти ДО js/checkout.js, который его
+         использует. -->
+    <script src="js/vendor/zod-lite.js" defer></script>
+    <script src="js/checkout.js" defer></script>
   </body>
 </html>
