@@ -31,9 +31,14 @@
  *    описано в Context.md — уберётся само, когда появится реальный fetch
  *    к /api/order (п.16 плана).
  *  - При успехе — корзина очищается (window.CremaCart.writeCart с пустыми
- *    items и ageConfirmed:false), попап закрывается, страница скроллится
- *    наверх — как и требовала техника ("вернуть пользователя на главный
- *    экран"). При ошибке — форма и корзина НЕ очищаются, кнопка
+ *    items и ageConfirmed:false), сообщение об успехе остаётся на экране,
+ *    пока пользователь сам не закроет попап (крестик/клик по оверлею вне
+ *    модалки/Escape — правка от 19.09.2026: раньше попап закрывался сам
+ *    через ~2.6 сек, пользователь мог отвлечься и не увидеть подтверждение
+ *    заказа; теперь авто-закрытия нет вовсе). При закрытии попапа именно
+ *    из состояния "успех" страница дополнительно скроллится наверх — как и
+ *    требовала техника ("вернуть пользователя на главный экран"), см.
+ *    closeCheckout(). При ошибке — форма и корзина НЕ очищаются, кнопка
  *    разблокируется, пользователь может поправить и нажать ещё раз.
  *
  * Проверка рабочего времени доставки (кухня 09:00-02:00 / бар 07:00-22:00,
@@ -50,14 +55,12 @@
   // страны — нули: "+373 (00) 000-000".
   var TEST_FAIL_DIGITS = '00000000';
   var SUBMIT_DELAY_MS = 1600;
-  var SUCCESS_AUTO_CLOSE_MS = 2600;
 
   var els = {};
   var state = {
     method: null, // 'delivery' | 'pickup' | null (ничего не выбрано)
     payment: null // 'cash' | 'card' | null
   };
-  var successCloseTimer = null;
 
   // ---- Мини-резолвер i18n-ключей (тот же паттерн, что в js/cart.js) -------
   function resolveKey(langData, key) {
@@ -146,6 +149,7 @@
     els.summaryDeliveryRow = document.getElementById('checkoutSummaryDeliveryRow');
     els.summaryDeliveryFee = document.getElementById('checkoutSummaryDeliveryFee');
     els.summaryTotal = document.getElementById('checkoutSummaryTotal');
+    els.deliveryFeeSuffix = document.getElementById('checkoutDeliveryFeeSuffix');
 
     els.hoursWarning = document.getElementById('checkoutHoursWarning');
     els.submitBtn = document.getElementById('checkoutSubmit');
@@ -245,13 +249,40 @@
     return window.CremaCartSummary.compute(cart);
   }
 
+  // Правка от 19.09.2026 (фикс по видео пользователя, см. Context.md):
+  // раньше при выборе "доставка" 60 лей прибавлялись к итогу всегда, даже
+  // если подытог уже достиг порога бесплатной доставки (399 MDL,
+  // summary.freeDeliveryReached из js/cart.js — тот же расчёт, что в
+  // попапе корзины). Теперь при freeDeliveryReached доставка не
+  // добавляется к total вовсе, а вместо суммы везде показывается
+  // "Бесплатно" (i18n-ключ checkout.free).
   function renderSummary() {
     var summary = getCartSummary();
-    var deliveryFee = state.method === 'delivery' ? DELIVERY_FEE : 0;
+    var isDelivery = state.method === 'delivery';
+    var freeDelivery = isDelivery && summary.freeDeliveryReached;
+    var deliveryFee = isDelivery && !freeDelivery ? DELIVERY_FEE : 0;
+
     els.summarySubtotal.textContent = formatMdl(summary.total);
-    els.summaryDeliveryRow.hidden = deliveryFee === 0;
-    els.summaryDeliveryFee.textContent = formatMdl(deliveryFee);
+    els.summaryDeliveryRow.hidden = !isDelivery;
+    els.summaryDeliveryFee.textContent = freeDelivery ? t('checkout.free') : formatMdl(deliveryFee);
+    els.summaryDeliveryFee.classList.toggle('checkout-summary__amount--free', freeDelivery);
     els.summaryTotal.textContent = formatMdl(summary.total + deliveryFee);
+
+    updateDeliveryToggleFeeSuffix(summary.freeDeliveryReached);
+  }
+
+  // Суффикс "(+60 MDL)" / "(Бесплатно)" на самой кнопке-переключателе
+  // "Доставка" — раньше он был частью статичного data-i18n-key текста
+  // кнопки ("Доставка (+60 лей)"), из-за чего не мог обновляться при
+  // достижении порога бесплатной доставки. Теперь это отдельный элемент
+  // (#checkoutDeliveryFeeSuffix), который обновляем сами при каждом
+  // renderSummary() — в том числе ДО того, как способ получения выбран,
+  // чтобы пользователь видел актуальную стоимость доставки заранее.
+  function updateDeliveryToggleFeeSuffix(freeDeliveryReached) {
+    if (!els.deliveryFeeSuffix) return;
+    els.deliveryFeeSuffix.textContent = freeDeliveryReached
+      ? '(' + t('checkout.free') + ')'
+      : '(+' + formatMdl(DELIVERY_FEE) + ')';
   }
 
   // ---- Zod-схема и валидация -------------------------------------------------
@@ -329,7 +360,11 @@
   function buildOrderPayload(formData, orderNumber) {
     var cart = window.CremaCart.readCart();
     var summary = window.CremaCartSummary.compute(cart);
-    var deliveryFee = formData.method === 'delivery' ? DELIVERY_FEE : 0;
+    // Тот же фикс бесплатной доставки, что и в renderSummary() выше —
+    // важно применить его и здесь, иначе реальная (будущая) отправка на
+    // сервер отправила бы неверную deliveryFee/total, даже если на экране
+    // пользователь уже видел "Бесплатно".
+    var deliveryFee = formData.method === 'delivery' && !summary.freeDeliveryReached ? DELIVERY_FEE : 0;
 
     return {
       orderNumber: orderNumber,
@@ -416,10 +451,9 @@
       // запись через window.CremaCart.writeCart.
       window.CremaCart.writeCart({ items: {}, ageConfirmed: false });
 
-      successCloseTimer = window.setTimeout(function () {
-        closeCheckout();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }, SUCCESS_AUTO_CLOSE_MS);
+      // Больше НЕТ авто-закрытия по таймеру (правка от 19.09.2026) —
+      // сообщение об успехе остаётся на экране, пока пользователь сам не
+      // закроет попап (см. закрытие + скролл наверх в closeCheckout()).
     }, SUBMIT_DELAY_MS);
   }
 
@@ -439,10 +473,6 @@
     clearAllErrors();
     els.submitBtn.disabled = false;
     showView('form');
-    if (successCloseTimer) {
-      window.clearTimeout(successCloseTimer);
-      successCloseTimer = null;
-    }
   }
 
   function open() {
@@ -462,11 +492,17 @@
 
   function closeCheckout() {
     if (!els.overlay) return;
+    // Раз попап закрывается именно из состояния "успех" (пользователь сам
+    // нажал крестик/кликнул по оверлею/Escape, увидев подтверждение
+    // заказа) — довыполняем то, что раньше делал авто-таймер: скроллим
+    // страницу наверх, как и требовала техника ("вернуть пользователя на
+    // главный экран"). Если попап закрывают из формы/ошибки — просто
+    // закрываем, без скролла.
+    var wasSuccess = !!(els.success && !els.success.hidden);
     els.overlay.hidden = true;
     document.body.classList.remove('modal-open');
-    if (successCloseTimer) {
-      window.clearTimeout(successCloseTimer);
-      successCloseTimer = null;
+    if (wasSuccess) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
 

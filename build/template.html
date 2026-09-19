@@ -1143,6 +1143,19 @@
         font-weight: 600;
       }
 
+      /* Правка от 19.09.2026 (фикс по видео пользователя, см. Context.md):
+         сумма доставки на кнопке "Доставка" раньше была вшита в тот же
+         статичный data-i18n-key текст ("Доставка (+60 лей)"), поэтому не
+         могла обновляться при достижении порога бесплатной доставки (399
+         MDL). Теперь это отдельный элемент, который js/checkout.js
+         подставляет и обновляет сам (см. updateDeliveryToggleFeeSuffix). */
+      .checkout-toggle__fee {
+        display: block;
+        margin-top: 0.15rem;
+        font-size: 0.72rem;
+        opacity: 0.8;
+      }
+
       .checkout-address-fields {
         margin-top: 0.9rem;
         padding-top: 0.9rem;
@@ -1195,6 +1208,15 @@
         font-size: 1.05rem;
       }
 
+      /* Правка от 19.09.2026: сумма доставки в строке .checkout-summary
+         показывает "Бесплатно" вместо цены, когда подытог заказа достиг
+         порога бесплатной доставки (399 MDL) — тот же зелёный оттенок,
+         что у иконки успешного оформления заказа (.checkout-state--success). */
+      .checkout-summary__amount--free {
+        color: #8fce8f;
+        font-weight: 600;
+      }
+
       .checkout-hours-warning {
         margin-bottom: 1rem;
         padding: 0.7rem 0.85rem;
@@ -1215,6 +1237,24 @@
         line-height: 1.5;
         margin-bottom: 1rem;
         flex-shrink: 0;
+      }
+
+      /* Правка от 19.09.2026: слово "политикой" в тексте согласия — теперь
+         ссылка (пока заглушка "#", реальный документ политики появится
+         позже). data-i18n-key всегда пишет через textContent (см.
+         js/i18n.js), поэтому <a> не может жить внутри одного общего
+         data-i18n-key элемента — текст согласия разбит на три отдельных
+         элемента (до ссылки / сама ссылка / после ссылки), см. разметку
+         .checkout-consent ниже и ключи checkout.consentBefore /
+         checkout.consentPolicyLink / checkout.consentAfter в i18n JSON. */
+      .checkout-consent__link {
+        color: var(--gold-light);
+        text-decoration: underline;
+      }
+
+      .checkout-consent__link:hover,
+      .checkout-consent__link:focus-visible {
+        color: var(--gold);
       }
 
       .checkout-modal__submit-wrap {
@@ -2497,7 +2537,10 @@
             <div class="checkout-field">
               <span class="checkout-field__label" data-i18n-key="checkout.method" id="checkoutMethodLabel">Способ получения</span>
               <div class="checkout-toggle" id="checkoutMethodToggle" role="radiogroup" aria-labelledby="checkoutMethodLabel">
-                <button type="button" class="checkout-toggle__btn" data-method="delivery" data-i18n-key="checkout.delivery">Доставка (+60 лей)</button>
+                <button type="button" class="checkout-toggle__btn" data-method="delivery">
+                  <span data-i18n-key="checkout.delivery">Доставка</span>
+                  <span class="checkout-toggle__fee" id="checkoutDeliveryFeeSuffix">(+60 MDL)</span>
+                </button>
                 <button type="button" class="checkout-toggle__btn" data-method="pickup" data-i18n-key="checkout.pickup">Самовывоз</button>
               </div>
               <span class="checkout-field__error" id="checkoutMethodError" hidden></span>
@@ -2553,7 +2596,7 @@
                 <span class="checkout-summary__amount" id="checkoutSummarySubtotal">0 MDL</span>
               </div>
               <div class="checkout-summary__row" id="checkoutSummaryDeliveryRow" hidden>
-                <span data-i18n-key="checkout.delivery">Доставка (+60 лей)</span>
+                <span data-i18n-key="checkout.delivery">Доставка</span>
                 <span class="checkout-summary__amount" id="checkoutSummaryDeliveryFee">60 MDL</span>
               </div>
               <div class="checkout-summary__row checkout-summary__row--total">
@@ -2566,8 +2609,10 @@
               Приём заказов на доставку временно закрыт. Мы работаем с 09:00
             </div>
 
-            <p class="checkout-consent" data-i18n-key="checkout.consent">
-              Нажимая кнопку «Оформить заказ», вы соглашаетесь с обработкой персональных данных в соответствии с политикой заведения
+            <p class="checkout-consent">
+              <span data-i18n-key="checkout.consentBefore">Нажимая кнопку «Оформить заказ», вы соглашаетесь с обработкой персональных данных в соответствии с</span>
+              <a href="#" class="checkout-consent__link" id="checkoutConsentPolicyLink" target="_blank" rel="noopener" data-i18n-key="checkout.consentPolicyLink">политикой</a>
+              <span data-i18n-key="checkout.consentAfter">заведения</span>
             </p>
 
             <div class="checkout-modal__submit-wrap">
