@@ -6,5 +6,9 @@
   "scripts": {
     "build": "node build/build.js"
   },
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "zod": "^4.6.5"
+  }
 }
