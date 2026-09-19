@@ -47,6 +47,30 @@ const SITE_URL = 'https://cremafood.md';
 // promo-seasonal/promo-new — заглушки без товаров, см. isSubRenderable).
 const DEFAULT_ACTIVE_CATEGORY = 'cafe';
 
+// Проверка рабочего времени доставки (Этап 1, отдельный шаг после п.8,
+// см. Context.md и js/hours.js). Какой ОТДЕЛ (кухня/бар) готовит позицию,
+// определяем ПО КАТЕГОРИИ автоматически: всё из "kitchen" готовит кухня,
+// всё из "cafe" (включая алкоголь — его наливает бар) готовит бар. Для
+// "special-offers" автоматика не подходит — там могут быть и кухонные, и
+// барные позиции в одном комбо (см. "Комбо: Латте + сэндвич"), поэтому у
+// позиций из special-offers "department" должен быть проставлен ВРУЧНУЮ в
+// data/menu.json (может быть строкой "bar"/"kitchen" или массивом из двух,
+// если позиция требует ОБА отдела одновременно).
+const CATEGORY_DEPARTMENT = {
+  cafe: 'bar',
+  kitchen: 'kitchen'
+};
+
+function resolveDepartment(item, categoryId) {
+  if (item.department) return item.department;
+  const auto = CATEGORY_DEPARTMENT[categoryId];
+  if (!auto) {
+    console.warn(`[build.js] Не удалось определить отдел (department) для позиции "${item.id}" (категория "${categoryId}") — укажи "department" явно в data/menu.json.`);
+    return null;
+  }
+  return auto;
+}
+
 // ---------------------------------------------------------------------
 // Загрузка данных
 // ---------------------------------------------------------------------
@@ -107,7 +131,7 @@ function span(key, className) {
 // Генерация карточки товара
 // ---------------------------------------------------------------------
 
-function renderItemCard(item, cutleryEligible) {
+function renderItemCard(item, cutleryEligible, categoryId) {
   const nameKey = `items.${item.id}.name`;
   const descKey = `items.${item.id}.desc`;
   const weightKey = `items.${item.id}.weight`;
@@ -132,9 +156,27 @@ function renderItemCard(item, cutleryEligible) {
   const availableAttr = item.available === false ? ' data-available="false"' : ' data-available="true"';
   const cardStateClass = item.available === false ? ' item-card--unavailable' : '';
 
+  // Проверка рабочего времени (отдельный шаг после п.8, см. Context.md и
+  // js/hours.js) — department может быть строкой ("bar"/"kitchen") или
+  // массивом из двух (позиция требует ОБА отдела одновременно, напр. комбо
+  // из спец.предложений), сериализуем массив в CSV-строку атрибута, js/hours.js
+  // и js/cart.js разбирают её обратно по запятой.
+  const department = resolveDepartment(item, categoryId);
+  const departmentValue = Array.isArray(department) ? department.join(',') : (department || '');
+  const departmentAttr = departmentValue ? ` data-department="${departmentValue}"` : '';
+  const hoursNoteId = `hours-note-${item.id}`;
+
   // Пока available:false нигде реально не используется (все товары сейчас
   // available:true), но логика должна работать уже сейчас — переключишь
   // поле в menu.json, пересоберёшь сайт, и карточка отрисуется без степпера.
+  //
+  // Для available:true позиций часы работы (в отличие от available:false)
+  // НЕ известны на этапе сборки — они зависят от текущего момента у
+  // посетителя в браузере, а не от статичных данных menu.json. Поэтому
+  // степпер всегда запекается в разметку как обычно, а рядом добавляется
+  // СКРЫТЫЙ по умолчанию параграф "будет доступно с HH:MM" — js/menu.js
+  // (js/hours.js) на клиенте решает в реальном времени, что показать:
+  // степпер (если отдел открыт) или этот параграф (если закрыт).
   const actionHtml = item.available === false
     ? `<p class="item-card__unavailable-note" data-i18n-key="cart.itemUnavailable">${escapeHtml(t('cart.itemUnavailable'))}</p>`
     : `<div class="item-card__stepper" data-stepper data-item-id="${item.id}" data-price="${item.price}">
@@ -143,7 +185,13 @@ function renderItemCard(item, cutleryEligible) {
                    при клике, и при загрузке страницы — если товар уже лежит в
                    localStorage["crema_cart"] (гидратация). Выбор соусов/модификаторов
                    для кухонных позиций — отдельный попап корзины, п.7 плана. -->
-            </div>`;
+            </div>
+            <p class="item-card__hours-note" id="${hoursNoteId}" hidden></p>
+            <!-- Текст сюда пишет js/menu.js в реальном времени (window.CremaHours) —
+                 без data-i18n-key, т.к. текст содержит подставляемое время
+                 "{time}" (та же причина, что и у #checkoutHoursWarning в
+                 checkout.js: i18n.js молча перезатирает textContent при смене
+                 языка, шаблонную подстановку он не делает). -->`;
 
   // Кнопка "ещё"/"свернуть" — по умолчанию скрыта атрибутом hidden; JS
   // показывает её только если описание реально обрезано до 2 строк
@@ -151,7 +199,7 @@ function renderItemCard(item, cutleryEligible) {
   const descToggleId = `desc-${item.id}`;
 
   return `
-          <article class="item-card${cardStateClass}" data-item-id="${item.id}"${modifiersAttr}${ageAttr}${cutleryAttr}${availableAttr}>
+          <article class="item-card${cardStateClass}" data-item-id="${item.id}"${modifiersAttr}${ageAttr}${cutleryAttr}${availableAttr}${departmentAttr}>
             <img class="item-card__img" src="${escapeHtml(item.image)}" alt="${imageAlt}" loading="lazy" width="600" height="450" />
             <div class="item-card__body">
               <h5 class="item-card__name" data-i18n-key="${nameKey}">${name}</h5>
@@ -210,7 +258,7 @@ function renderSubcategory(sub, index, categoryId) {
   const reversed = index % 2 === 1 ? ' category__header--rev' : '';
 
   const cutleryEligible = Boolean(sub.cutleryEligible);
-  const itemsHtml = (sub.items || []).map((item) => renderItemCard(item, cutleryEligible)).join('\n');
+  const itemsHtml = (sub.items || []).map((item) => renderItemCard(item, cutleryEligible, categoryId)).join('\n');
 
   // Карточка лояльности ("Скидочная карта −20%") живёт не отдельно, а как
   // последний элемент сетки товаров подкатегории "Постоянные" (promo-permanent)

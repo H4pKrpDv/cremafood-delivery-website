@@ -42,10 +42,18 @@
  *    разблокируется, пользователь может поправить и нажать ещё раз.
  *
  * Проверка рабочего времени доставки (кухня 09:00-02:00 / бар 07:00-22:00,
- * блокировка кнопки "Оформить заказ" вне этих часов) — сознательно
- * ОТЛОЖЕНА на отдельный следующий шаг (так решили с пользователем при
- * обсуждении плана на п.8) — блок #checkoutHoursWarning уже есть в
- * разметке и стилях, но пока не задействован ни одним скриптом.
+ * см. js/hours.js) — реализована функцией checkHoursGate() ниже. Позиции,
+ * закрытые прямо сейчас по часам работы отдела, уже исключены из суммы
+ * попапом корзины (js/cart.js, meta.orderable) точно так же, как и товар
+ * не в наличии — форма оформления не пересчитывает это заново, только
+ * проверяет: если ПОСЛЕ такого исключения в корзине не осталось ни одной
+ * заказываемой позиции (а причина именно в часах работы, а не в пустой
+ * корзине/недостающем подтверждении возраста — те случаи уже отдельно не
+ * пускают открыть сам попап оформления, см. open()) — показываем плашку
+ * #checkoutHoursWarning с временем, когда отдел снова откроется, и
+ * блокируем кнопку "Оформить заказ". Часы работы могут переключиться, пока
+ * форма уже открыта (см. crema:hourscheck в initEvents ниже) — тогда плашка
+ * появляется/исчезает сама, без действий пользователя.
  * ------------------------------------------------------------------
  */
 (function () {
@@ -269,6 +277,45 @@
     els.summaryTotal.textContent = formatMdl(summary.total + deliveryFee);
 
     updateDeliveryToggleFeeSuffix(summary.freeDeliveryReached);
+    checkHoursGate();
+  }
+
+  // Среди строк, заблокированных СЕЙЧАС именно часами работы отдела (товар
+  // в наличии, но department закрыт — meta.available && !meta.departmentOpen),
+  // берём самое ПОЗДНЕЕ время открытия. Та же логика, что внутри
+  // js/hours.js/getOpenTimeLabel() для одной позиции с несколькими
+  // отделами, только здесь — по всем строкам корзины сразу: заказ целиком
+  // станет валиден только когда откроется САМЫЙ последний из них.
+  function computeEarliestReopenLabel(summary) {
+    var labels = summary.lines
+      .filter(function (line) { return line.meta.available && !line.meta.departmentOpen; })
+      .map(function (line) { return line.meta.departmentOpenLabel; })
+      .filter(Boolean);
+    if (!labels.length) return '';
+    return labels.sort().slice(-1)[0];
+  }
+
+  // Блокирует кнопку "Оформить заказ" + показывает плашку
+  // #checkoutHoursWarning, если ПОСЛЕ исключения хоурс-блокированных строк
+  // (см. комментарий в шапке файла) в корзине не осталось ни одной
+  // заказываемой позиции. Возвращает true, если оформление разрешено
+  // (гейт пройден) — false, если заблокировано.
+  function checkHoursGate() {
+    var summary = getCartSummary();
+    var hasHoursBlockedLine = summary.lines.some(function (line) {
+      return line.meta.available && !line.meta.departmentOpen;
+    });
+    var shouldBlock = !summary.canCheckout && hasHoursBlockedLine;
+
+    if (els.hoursWarning) {
+      els.hoursWarning.hidden = !shouldBlock;
+      if (shouldBlock) {
+        var timeLabel = computeEarliestReopenLabel(summary);
+        els.hoursWarning.textContent = t('checkout.workingHoursClosed').replace('{time}', timeLabel);
+      }
+    }
+    if (els.submitBtn) els.submitBtn.disabled = shouldBlock;
+    return !shouldBlock;
   }
 
   // Суффикс "(+60 MDL)" / "(Бесплатно)" на самой кнопке-переключателе
@@ -386,7 +433,7 @@
       payment: { method: formData.payment },
       ageConfirmed: Boolean(cart.ageConfirmed),
       items: summary.lines
-        .filter(function (line) { return line.meta.available; })
+        .filter(function (line) { return line.meta.orderable; })
         .map(function (line) {
           return {
             id: line.itemId,
@@ -420,6 +467,11 @@
   function handleSubmit(event) {
     event.preventDefault();
     if (els.submitBtn.disabled) return; // защита от двойного клика во время запроса
+    // Защитная проверка часов работы прямо перед отправкой — на случай если
+    // отдел закрылся ровно между последним crema:hourscheck и кликом
+    // "Оформить заказ" (гонка, доли секунды). checkHoursGate() сама же
+    // покажет плашку и отключит кнопку, если сейчас действительно нельзя.
+    if (!checkHoursGate()) return;
 
     var formData = validateAndShowErrors();
     if (!formData) return;
@@ -545,6 +597,17 @@
     // на экране уже есть ошибки.
     document.addEventListener('crema:langchange', function () {
       if (!isOpen()) return;
+      renderSummary();
+    });
+
+    // Часы работы отдела могли переключиться, пока форма открыта (см.
+    // js/hours.js). Действуем ТОЛЬКО когда сейчас реально показана форма
+    // (не "загрузка"/"успех"/"ошибка") — иначе renderSummary() внутри
+    // checkHoursGate() могла бы разблокировать кнопку "Оформить заказ"
+    // прямо во время отправки заглушки, что было бы багом.
+    document.addEventListener('crema:hourscheck', function () {
+      if (!isOpen()) return;
+      if (els.form.hidden) return;
       renderSummary();
     });
   }

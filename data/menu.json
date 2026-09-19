@@ -12,7 +12,8 @@
               "price": 40,
               "image": "img/items/combo-latte-sandwich.jpg",
               "modifiers": [],
-              "available": true
+              "available": true,
+              "department": ["bar", "kitchen"]
             }
           ]
         },

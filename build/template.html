@@ -1867,6 +1867,22 @@
         padding: 0.4rem 0 0;
       }
 
+      /* "Будет доступно с HH:MM" — заполняет и показывает/прячет js/menu.js
+         (window.CremaHours), см. build.js/renderItemCard. Тот же визуальный
+         стиль, что и у постоянной пометки "нет в наличии" выше — читатель не
+         должен по виду отличать временную нехватку часов работы от реального
+         отсутствия товара, текст говорит об этом сам. */
+      .item-card__hours-note {
+        font-size: 0.8rem;
+        color: var(--text-3);
+        text-align: center;
+        padding: 0.4rem 0 0;
+      }
+
+      .item-card--closed-hours {
+        opacity: 0.7;
+      }
+
       .item-card__stepper {
         margin-top: 0.5rem;
       }
@@ -2493,11 +2509,11 @@
          window.CremaCartSummary.compute() — тот же расчёт, что использует
          сам попап корзины, чтобы суммы нигде не разошлись.
 
-         Проверка рабочего времени доставки (кухня/бар, техничка) — ОТДЕЛЬНЫЙ
-         следующий шаг после этой правки (см. Context.md), блок
-         #checkoutHoursWarning уже в разметке и стилях, но пока не
-         показывается никаким скриптом — заглушка на будущее, чтобы не
-         переверстывать форму ещё раз, когда дойдём до этой проверки. -->
+         Проверка рабочего времени доставки (кухня/бар) — реализована js/hours.js
+         + js/checkout.js (checkHoursGate()). Блок #checkoutHoursWarning ниже
+         управляется полностью из JS (текст со временем открытия подставляется
+         в реальном времени), поэтому у него нет data-i18n-key и нет статичного
+         текста-заглушки — см. комментарий в js/checkout.js. -->
     <div class="checkout-overlay" id="checkoutOverlay" hidden>
       <div
         class="checkout-modal"
@@ -2605,9 +2621,7 @@
               </div>
             </div>
 
-            <div class="checkout-hours-warning" id="checkoutHoursWarning" hidden data-i18n-key="checkout.workingHoursClosed">
-              Приём заказов на доставку временно закрыт. Мы работаем с 09:00
-            </div>
+            <div class="checkout-hours-warning" id="checkoutHoursWarning" hidden></div>
 
             <p class="checkout-consent">
               <span data-i18n-key="checkout.consentBefore">Нажимая кнопку «Оформить заказ», вы соглашаетесь с обработкой персональных данных в соответствии с</span>
@@ -2748,6 +2762,12 @@
     <!--{{I18N_DATA}}-->
     <!--{{MODIFIER_GROUPS_DATA}}-->
     <script src="js/i18n.js" defer></script>
+    <!-- js/hours.js — проверка рабочего времени отделов (кухня/бар), отдельный
+         шаг после п.8 (см. Context.md). Единый источник правды по часам
+         работы для карточки товара (js/menu.js), попапа корзины (js/cart.js)
+         и формы оформления заказа (js/checkout.js) — должен идти ДО них всех,
+         как и js/i18n.js выше. -->
+    <script src="js/hours.js" defer></script>
     <script src="js/main.js" defer></script>
     <script src="js/gallery.js" defer></script>
     <script src="js/menu.js" defer></script>

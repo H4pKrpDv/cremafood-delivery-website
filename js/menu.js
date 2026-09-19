@@ -230,6 +230,47 @@
       var qty = window.CremaCart.getItemQty(cart, itemId);
       renderStepper(container, qty);
     });
+    updateHoursNotes();
+  }
+
+  // ------------------------------------------------------------------
+  // Проверка рабочего времени отдела (кухня/бар) на карточках товара
+  // (отдельный шаг после п.8, см. Context.md и js/hours.js). Часы работы
+  // НЕ известны на этапе сборки (в отличие от available:false) — build.js
+  // всегда запекает степпер в разметку для available:true позиций, а рядом
+  // кладёт скрытый параграф #hours-note-<id> (см. renderItemCard в
+  // build/build.js). Здесь, на клиенте, в реальном времени решаем, что
+  // показать: степпер (отдел открыт) или этот параграф (отдел закрыт) —
+  // и наоборот, если отдел открылся, пока страница была открыта.
+  // ------------------------------------------------------------------
+  function parseDepartment(attrValue) {
+    if (!attrValue) return null;
+    return attrValue.indexOf(',') >= 0 ? attrValue.split(',') : attrValue;
+  }
+
+  function updateHoursNotes() {
+    if (!window.CremaHours) return; // js/hours.js почему-то не загрузился — не блокируем степперы по ошибке
+    var cards = document.querySelectorAll('.item-card[data-department]');
+    cards.forEach(function (cardEl) {
+      var stepperContainer = cardEl.querySelector('[data-stepper]');
+      if (!stepperContainer) return; // available:false — степпера и hours-note у такой карточки нет вовсе
+
+      var itemId = cardEl.getAttribute('data-item-id');
+      var noteEl = document.getElementById('hours-note-' + itemId);
+      var department = parseDepartment(cardEl.getAttribute('data-department'));
+      var isDeptOpen = window.CremaHours.isOpen(department);
+
+      cardEl.classList.toggle('item-card--closed-hours', !isDeptOpen);
+      stepperContainer.hidden = !isDeptOpen;
+
+      if (noteEl) {
+        noteEl.hidden = isDeptOpen;
+        if (!isDeptOpen) {
+          var timeLabel = window.CremaHours.getOpenTimeLabel(department);
+          noteEl.textContent = t('menu.availableFrom').replace('{time}', timeLabel);
+        }
+      }
+    });
   }
 
   function initSteppers() {
@@ -267,6 +308,18 @@
     // целиком или поменять количество не через карточку в сетке.
     // Пересинхронизируем ВСЕ степпера сетки по свежему состоянию корзины.
     document.addEventListener('crema:cartchange', hydrateSteppers);
+
+    // Часы работы отдела могли "переключиться" (открыться/закрыться), пока
+    // страница открыта в браузере — js/hours.js рассылает это раз в 30 сек
+    // и сразу при возврате на вкладку (см. его комментарий). Сам степпер
+    // (кол-во в корзине) при этом не меняется — перерисовываем только
+    // видимость степпер/hours-note, полный hydrateSteppers() здесь не нужен.
+    document.addEventListener('crema:hourscheck', updateHoursNotes);
+
+    // Смена языка — у #hours-note-<id> нет data-i18n-key (текст содержит
+    // подставляемое "{time}", см. build.js), поэтому js/i18n.js его не
+    // трогает — обновляем текст сами, если параграф сейчас показан.
+    document.addEventListener('crema:langchange', updateHoursNotes);
   }
 
   document.addEventListener('DOMContentLoaded', function () {

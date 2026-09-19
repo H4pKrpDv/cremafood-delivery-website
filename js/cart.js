@@ -95,12 +95,33 @@
     return window.__CREMA_MODIFIER_GROUPS__ || {};
   }
 
+  // Департамент (кухня/бар) может быть строкой ("bar") или CSV-строкой из
+  // двух ("bar,kitchen" — комбо из спец.предложений, требует ОБА отдела
+  // одновременно, см. build.js/renderItemCard и js/hours.js). window.CremaHours
+  // сам разбирает и строку, и массив — здесь просто приводим CSV к массиву,
+  // когда запятая есть, иначе оставляем строкой.
+  function parseDepartment(attrValue) {
+    if (!attrValue) return null;
+    return attrValue.indexOf(',') >= 0 ? attrValue.split(',') : attrValue;
+  }
+
   function getItemMeta(itemId) {
     var cardEl = document.querySelector('.item-card[data-item-id="' + itemId + '"]');
     if (!cardEl) {
       // Товар был в корзине, но исчез из menu.json (переименовали id и т.п.) —
       // редкий случай, показываем как недоступный, не даём сломать попап.
-      return { name: itemId, price: 0, available: false, modifierGroupIds: [], ageRestricted: false, cutleryEligible: false };
+      return {
+        name: itemId,
+        price: 0,
+        available: false,
+        modifierGroupIds: [],
+        ageRestricted: false,
+        cutleryEligible: false,
+        department: null,
+        departmentOpen: true,
+        departmentOpenLabel: '',
+        orderable: false
+      };
     }
     var stepperEl = cardEl.querySelector('[data-stepper]');
     var price = stepperEl ? parseFloat(stepperEl.getAttribute('data-price')) || 0 : 0;
@@ -109,6 +130,12 @@
     var modifierGroupIds = modifiersAttr ? modifiersAttr.split(',').filter(Boolean) : [];
     var ageRestricted = cardEl.getAttribute('data-age-restricted') === 'true';
     var cutleryEligible = cardEl.getAttribute('data-cutlery-eligible') === 'true';
+    var department = parseDepartment(cardEl.getAttribute('data-department'));
+    // Часы работы (отдельный шаг после п.8, см. Context.md/js/hours.js) —
+    // если js/hours.js почему-то не загрузился, по умолчанию считаем
+    // отдел открытым, чтобы не блокировать заказы по ошибке конфигурации.
+    var departmentOpen = window.CremaHours ? window.CremaHours.isOpen(department) : true;
+    var departmentOpenLabel = !departmentOpen && window.CremaHours ? window.CremaHours.getOpenTimeLabel(department) : '';
     var name = t('items.' + itemId + '.name') || itemId;
     return {
       name: name,
@@ -116,7 +143,15 @@
       available: available,
       modifierGroupIds: modifierGroupIds,
       ageRestricted: ageRestricted,
-      cutleryEligible: cutleryEligible
+      cutleryEligible: cutleryEligible,
+      department: department,
+      departmentOpen: departmentOpen,
+      departmentOpenLabel: departmentOpenLabel,
+      // Позиция реально заказываема, только если она И в наличии, И её отдел
+      // сейчас открыт — эти два признака дают разный текст причины (см.
+      // renderCartItemHtml ниже), но одинаково исключают строку из суммы/
+      // чекаута (computeSummary), поэтому здесь считаем один составной флаг.
+      orderable: available && departmentOpen
     };
   }
 
@@ -135,7 +170,10 @@
       if (qty <= 0) return;
 
       var meta = getItemMeta(itemId);
-      if (meta.available && meta.ageRestricted) hasAgeRestrictedLine = true;
+      // orderable (не available) — иначе позиция, закрытая сейчас по часам
+      // работы отдела, продолжила бы требовать подтверждение 18+, хотя сама
+      // она всё равно исключена из суммы/чекаута ниже.
+      if (meta.orderable && meta.ageRestricted) hasAgeRestrictedLine = true;
 
       var modifiersDetail = [];
       var modifiersCost = 0;
@@ -161,9 +199,11 @@
 
       // Доплата за приборы сложена прямо в lineTotal — благодаря этому
       // subtotal (и, соответственно, порог бесплатной доставки ниже)
-      // естественным образом включает стоимость приборов.
-      var lineTotal = meta.available ? meta.price * qty + modifiersCost + cutleryCost : 0;
-      if (meta.available) {
+      // естественным образом включает стоимость приборов. orderable (не
+      // available) — позиция, закрытая сейчас по часам работы отдела, не
+      // должна попадать в сумму точно так же, как и товар не в наличии.
+      var lineTotal = meta.orderable ? meta.price * qty + modifiersCost + cutleryCost : 0;
+      if (meta.orderable) {
         subtotal += lineTotal;
         totalCutleryCost += cutleryCost;
       }
@@ -180,8 +220,8 @@
       });
     });
 
-    var hasAvailableLine = lines.some(function (line) {
-      return line.meta.available;
+    var hasOrderableLine = lines.some(function (line) {
+      return line.meta.orderable;
     });
 
     var ageConfirmed = Boolean(cart.ageConfirmed);
@@ -190,13 +230,13 @@
     return {
       lines: lines,
       isEmpty: lines.length === 0,
-      hasAvailableLine: hasAvailableLine,
+      hasOrderableLine: hasOrderableLine,
       subtotal: subtotal,
       cutleryCost: totalCutleryCost,
       total: subtotal,
       hasAgeRestrictedLine: hasAgeRestrictedLine,
       ageConfirmed: ageConfirmed,
-      canCheckout: hasAvailableLine && ageOk,
+      canCheckout: hasOrderableLine && ageOk,
       freeDeliveryReached: subtotal >= FREE_DELIVERY_THRESHOLD,
       deliveryRemaining: Math.max(0, FREE_DELIVERY_THRESHOLD - subtotal)
     };
@@ -270,22 +310,36 @@
               escapeHtml(t('modifiers.' + detail.groupId + '.groupLabel')) +
               '</span>';
           }
-          return labelHtml + renderModifierRow(line.itemId, detail, meta.available);
+          return labelHtml + renderModifierRow(line.itemId, detail, meta.orderable);
         })
         .join('');
       modifiersHtml = '<div class="cart-item__modifiers">' + rows + '</div>';
     }
 
     var cutleryHtml = meta.cutleryEligible
-      ? '<div class="cart-item__modifiers">' + renderCutleryRow(line, meta.available) + '</div>'
+      ? '<div class="cart-item__modifiers">' + renderCutleryRow(line, meta.orderable) + '</div>'
       : '';
 
-    var unavailableHtml = !meta.available
-      ? '<span class="cart-item__unavailable-note" data-i18n-key="cart.itemUnavailable">' + escapeHtml(t('cart.itemUnavailable')) + '</span>'
-      : '';
+    // Два разных текста причины, почему строка не считается: товара реально
+    // нет в наличии (available:false, постоянно) — или отдел просто закрыт
+    // прямо сейчас по часам работы (available:true, временно, покажет когда
+    // откроется). Визуально (cardClass/itemStepperDisabled) обе ветки
+    // выглядят одинаково "неактивными" — разница только в тексте пояснения.
+    var unavailableHtml = '';
+    if (!meta.available) {
+      unavailableHtml = '<span class="cart-item__unavailable-note" data-i18n-key="cart.itemUnavailable">' + escapeHtml(t('cart.itemUnavailable')) + '</span>';
+    } else if (!meta.departmentOpen) {
+      // Без data-i18n-key: текст содержит подставленное "{time}" (та же
+      // причина, что и у #checkoutHoursWarning в js/checkout.js) — но здесь
+      // это не страшно, весь список позиций и так перерисовывается целиком
+      // при каждой смене языка (см. crema:langchange ниже), так что текст
+      // не "зависает" на старом языке.
+      var closedText = t('cart.itemClosedNow').replace('{time}', meta.departmentOpenLabel);
+      unavailableHtml = '<span class="cart-item__unavailable-note">' + escapeHtml(closedText) + '</span>';
+    }
 
-    var itemStepperDisabled = meta.available ? '' : ' disabled';
-    var cardClass = meta.available ? 'cart-item' : 'cart-item cart-item--unavailable';
+    var itemStepperDisabled = meta.orderable ? '' : ' disabled';
+    var cardClass = meta.orderable ? 'cart-item' : 'cart-item cart-item--unavailable';
 
     return (
       '<li class="' + cardClass + '" data-cart-item-id="' + line.itemId + '">' +
@@ -538,6 +592,13 @@
     // Любое изменение корзины (в том числе из степпера карточки товара в
     // сетке меню, js/menu.js) — перерисовываем попап, если он открыт.
     document.addEventListener('crema:cartchange', function () {
+      if (isOpen()) renderCartModal();
+    });
+
+    // Часы работы отдела могли переключиться, пока попап открыт (см.
+    // js/hours.js) — перерисовываем, чтобы позиция сама перешла из суммы в
+    // "будет доступно с..." и обратно, без действий пользователя.
+    document.addEventListener('crema:hourscheck', function () {
       if (isOpen()) renderCartModal();
     });
 
