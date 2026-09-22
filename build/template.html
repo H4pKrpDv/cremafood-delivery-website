@@ -5,6 +5,51 @@
     <link rel="icon" type="image/jpeg" href="img/crema-icon.jpg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!--
+      Этап 1, п.11 плана (изображения, 22.09.2026): пока в проекте физически
+      нет ни одной реальной фотографии (весь img/ — заглушки из техзадания,
+      см. Context.md, раздел "Требования к медиаконтенту") — каждый <img> на
+      странице 404-ит и браузер по умолчанию рисует некрасивую иконку
+      "битой картинки". Скрипт ниже подменяет её на аккуратную inline-SVG
+      заглушку.
+      Сделано ИНЛАЙН-скриптом прямо в <head> (не отдельным defer-файлом в
+      js/), т.к. у <img> событие "error" не всплывает (bubbles:false) — его
+      можно поймать только через capture-фазу на document, и на локальных
+      file:// путях оно может сработать почти мгновенно (файл просто не
+      найден), раньше, чем успеют выполниться отложенные (defer) внешние
+      скрипты. Поэтому слушатель вешается синхронно и как можно раньше.
+      Когда появятся реальные фото — скрипт просто перестанет что-либо
+      делать (событий "error" больше не будет), убирать его не придётся.
+    -->
+    <script>
+      (function () {
+        var PLACEHOLDER =
+          'data:image/svg+xml;charset=UTF-8,' +
+          encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 75">' +
+              '<rect width="100" height="75" fill="#3a2a1a"/>' +
+              '<g fill="none" stroke="#c8964a" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">' +
+              '<rect x="24" y="19" width="52" height="37" rx="2"/>' +
+              '<circle cx="37" cy="31" r="5.5"/>' +
+              '<path d="M24 49 L42 33 L54 45 L64 35 L76 47"/>' +
+              '</g>' +
+              '</svg>'
+          );
+
+        document.addEventListener(
+          'error',
+          function (event) {
+            var img = event.target;
+            if (!img || img.tagName !== 'IMG' || img.dataset.fallbackApplied) return;
+            img.dataset.fallbackApplied = 'true';
+            img.src = PLACEHOLDER;
+            img.removeAttribute('srcset');
+            img.classList.add('img-placeholder');
+          },
+          true
+        );
+      })();
+    </script>
+    <!--
       Этап 1, п.10 плана (SEO, 22.09.2026): title/description/canonical/OG/
       Twitter-теги больше не хардкод — build.js подставляет их из
       data/i18n/ru.json (meta.title/meta.description) и константы SITE_URL,
@@ -1389,7 +1434,16 @@
          когда появятся реальные баннеры), автопрокрутка ~7 сек, стрелки,
          свайп и точки — логика в js/gallery.js. Высота фиксирована по vh
          с ограничителями min/max, чтобы карусель не "съедала" весь экран
-         и под ней оставалось место на текстовый блок в первом экране. */
+         и под ней оставалось место на текстовый блок в первом экране.
+         Этап 1, п.11 плана (22.09.2026), на будущее: когда слайды станут
+         реальными <img>, у ПЕРВОГО слайда (он виден сразу при заходе на
+         сайт, ещё до скролла) loading="lazy" ставить НЕ нужно — lazy для
+         контента "первого экрана" не даёт эффекта (браузер и так грузит
+         его сразу же), а в некоторых браузерах даже слегка откладывает
+         старт загрузки. У 2-го/3-го/4-го слайдов (и вообще у всего, что
+         ниже первого экрана — баннеры категорий, карточки товара) —
+         loading="lazy" уже стоит, см. renderItemCard()/renderSubcategory()
+         в build.js. */
       .hero__carousel {
         position: relative;
         width: 100%;
@@ -1749,6 +1803,21 @@
 
       .category__img:hover {
         transform: scale(1.02);
+      }
+
+      /*
+        Этап 1, п.11 плана (22.09.2026): класс навешивается на <img> JS-ом
+        из <head> (см. скрипт-фоллбэк выше), когда реальный файл фото не
+        найден (сейчас — всегда, реальных фото ещё нет). object-fit меняем
+        на contain + добавляем паддинг и свой фон, чтобы декоративная
+        SVG-иконка не обрезалась и не растягивалась под object-fit:cover,
+        рассчитанный на настоящие фотографии.
+      */
+      .img-placeholder {
+        object-fit: contain;
+        background: var(--surface-2);
+        padding: 14%;
+        box-sizing: border-box;
       }
 
       .category__text {
@@ -3032,6 +3101,10 @@
     <!--{{I18N_DATA}}-->
     <!--{{MODIFIER_GROUPS_DATA}}-->
     <script src="js/i18n.js" defer></script>
+    <!-- js/analytics.js — заготовка под аналитику (п.12): window.CremaAnalytics.
+         trackEvent(name, data), сейчас только console.info. Должен идти ДО
+         js/checkout.js (единственный текущий вызов — ошибка отправки заказа). -->
+    <script src="js/analytics.js" defer></script>
     <!-- js/hours.js — проверка рабочего времени отделов (кухня/бар), отдельный
          шаг после п.8 (см. Context.md). Единый источник правды по часам
          работы для карточки товара (js/menu.js), попапа корзины (js/cart.js)

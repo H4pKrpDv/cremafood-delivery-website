@@ -494,6 +494,20 @@
       if (shouldFail) {
         els.submitBtn.disabled = false;
         showView('error');
+        // Этап 1, п.12 плана (заготовка под аналитику, 22.09.2026): ровно
+        // тот вызов, что заранее описан в Context.md ("Обработка сети при
+        // отправке заказа") — ошибки логируются в консоль и через
+        // trackEvent, чтобы в будущем сразу видеть проблему в аналитике.
+        // reason сейчас всегда 'stub_test_number' (единственный способ
+        // получить ошибку на этапе 1, п.8 — см. TEST_FAIL_DIGITS выше) —
+        // когда появится реальный fetch (п.16 плана), здесь же появятся и
+        // другие причины (timeout/network/http_5xx и т.п.).
+        if (window.CremaAnalytics && window.CremaAnalytics.trackEvent) {
+          window.CremaAnalytics.trackEvent('order_error', {
+            reason: 'stub_test_number',
+            orderNumber: orderNumber
+          });
+        }
         return;
       }
 
