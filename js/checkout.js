@@ -167,6 +167,8 @@
     els.orderNumberEl = document.getElementById('checkoutOrderNumber');
     els.error = document.getElementById('checkoutError');
     els.retryBtn = document.getElementById('checkoutRetry');
+
+    els.policyLink = document.getElementById('checkoutConsentPolicyLink');
   }
 
   function isOpen() {
@@ -589,6 +591,21 @@
 
     els.form.addEventListener('submit', handleSubmit);
     els.retryBtn.addEventListener('click', handleRetry);
+
+    // Ссылка "политикой" ведёт на якорный блок #privacy (см. п.9 плана),
+    // но пока попап оформления открыт, прокрутка страницы под ним
+    // заблокирована (body.modal-open, см. правило проекта про изоляцию
+    // модалки) — обычный переход по якорю просто молча ничего не даст
+    // увидеть. Поэтому сами закрываем попап и уже потом прокручиваем к
+    // блоку политики.
+    if (els.policyLink) {
+      els.policyLink.addEventListener('click', function (event) {
+        event.preventDefault();
+        closeCheckout();
+        var target = document.getElementById('privacy');
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      });
+    }
 
     // Смена языка, пока попап открыт, — перерисовываем сумму (текст меток
     // меняется через data-i18n-key сам, но текст ошибок, если они сейчас

@@ -1692,6 +1692,15 @@
         scroll-margin-top: 76px;
       }
 
+      /* Те же якоря, что и .category выше (переход по ссылке "график
+         доставки" в шапке и по ссылке "политикой" в форме оформления) —
+         чтобы фиксированная шапка не перекрывала заголовок блока при
+         прыжке по якорю. */
+      .privacy,
+      .footer__col-title--delivery {
+        scroll-margin-top: 76px;
+      }
+
       .category__header {
         display: grid;
         grid-template-columns: 1fr;
@@ -2124,6 +2133,46 @@
         color: var(--gold-light);
       }
 
+      .footer__subtitle {
+        font-size: 0.72rem;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--text-3);
+        margin: 1.25rem 0 0.75rem;
+      }
+
+      .footer__socials {
+        display: flex;
+        gap: 0.75rem;
+      }
+
+      .footer__social {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-2);
+        transition: color var(--transition), border-color var(--transition);
+      }
+
+      .footer__social svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .footer__social:hover {
+        color: var(--gold-light);
+        border-color: var(--gold-light);
+      }
+
+      .footer__col-title--delivery {
+        margin-top: 1.75rem;
+      }
+
       .footer__bottom {
         max-width: 1200px;
         margin: 0 auto;
@@ -2132,6 +2181,66 @@
         font-size: 0.8rem;
         color: var(--text-3);
         text-align: center;
+      }
+
+      /* ─── ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ (якорный блок #privacy, п.9) ─── */
+      .privacy {
+        background: var(--bg-2);
+        border-top: 1px solid var(--border);
+      }
+
+      .privacy__inner {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 3rem 1.25rem;
+      }
+
+      .privacy__title {
+        font-size: 1.25rem;
+        color: var(--cream-2);
+        margin-bottom: 1rem;
+      }
+
+      .privacy__text {
+        font-size: 0.9rem;
+        line-height: 1.75;
+        color: var(--text-2);
+      }
+
+      /* ─── КАРТА (секция перед футером, п.9) ─── */
+      .map-section {
+        background: var(--bg);
+        border-top: 1px solid var(--border);
+        padding: 2.5rem 1.25rem 3rem;
+        text-align: center;
+      }
+
+      .map-section__frame-wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        border-radius: var(--radius);
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+
+      .map-section__frame {
+        width: 100%;
+        height: clamp(220px, 55vw, 420px);
+        border: 0;
+        display: block;
+      }
+
+      .map-section__link {
+        display: inline-block;
+        margin-top: 1rem;
+        font-size: 0.9rem;
+        color: var(--gold-light);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+
+      .map-section__link:hover {
+        color: var(--gold);
       }
 
       /* ─── КНОПКА "НАВЕРХ" (появляется при скролле — см. main.js) ─── */
@@ -2274,6 +2383,11 @@
           scroll-margin-top: 90px;
         }
 
+        .privacy,
+        .footer__col-title--delivery {
+          scroll-margin-top: 90px;
+        }
+
         .category__header {
           grid-template-columns: 1fr 1fr;
           gap: 3.5rem;
@@ -2367,8 +2481,14 @@
       Hero (п.5 плана) тоже переделан: карусель-баннер (.hero__carousel,
       логика в js/gallery.js) сверху + текстовый блок под ней на обычном
       тёмном фоне сайта (раньше текст лежал оверлеем на фоновой фотографии
-      на весь экран — теперь фото только в карусели). Футер пока оставлен
-      как в старой версии сайта — его переделка запланирована п.9 плана.
+      на весь экран — теперь фото только в карусели).
+      Футер (п.9 плана) переделан: часы зала и часы доставки — раздельные
+      блоки (второй — с якорем id="delivery-hours", на него ведёт ссылка
+      "график доставки" в шапке), соцсети-заглушка (Instagram), весь
+      статический текст на data-i18n-key. Перед футером добавлены две
+      новые секции: якорный блок "Политика конфиденциальности" (#privacy,
+      текст-заглушка, на него ссылается форма оформления заказа) и карта
+      (Google Maps embed по адресу заведения, без API-ключа).
     -->
 
     <header class="header" id="top">
@@ -2380,7 +2500,7 @@
         <div class="header__actions">
           <nav class="nav">
             <a href="tel:+37360319994" class="nav__link" data-i18n-key="header.phone">+373 (60) 319-994</a>
-            <a href="#footer" class="nav__link" data-i18n-key="header.deliverySchedule">График доставки</a>
+            <a href="#delivery-hours" class="nav__link" data-i18n-key="header.deliverySchedule">График доставки</a>
             <div class="lang-switcher" id="langSwitcher">
               <button type="button" class="lang-switcher__toggle" id="langToggle" aria-haspopup="listbox" aria-expanded="false">
                 <span id="langCurrent">RU</span>
@@ -2410,7 +2530,7 @@
       </div>
       <div class="mobile-menu" id="mobileMenu" hidden>
         <a href="tel:+37360319994" class="mobile-menu__link" data-i18n-key="header.phone">+373 (60) 319-994</a>
-        <a href="#footer" class="mobile-menu__link" data-i18n-key="header.deliverySchedule">График доставки</a>
+        <a href="#delivery-hours" class="mobile-menu__link" data-i18n-key="header.deliverySchedule">График доставки</a>
         <div class="mobile-menu__lang" role="group" aria-label="Язык" data-i18n-attr-aria-label="header.langLabel">
           <button type="button" class="pill lang-option" data-lang="ru">RU</button>
           <button type="button" class="pill lang-option" data-lang="ro">RO</button>
@@ -2625,7 +2745,7 @@
 
             <p class="checkout-consent">
               <span data-i18n-key="checkout.consentBefore">Нажимая кнопку «Оформить заказ», вы соглашаетесь с обработкой персональных данных в соответствии с</span>
-              <a href="#" class="checkout-consent__link" id="checkoutConsentPolicyLink" target="_blank" rel="noopener" data-i18n-key="checkout.consentPolicyLink">политикой</a>
+              <a href="#privacy" class="checkout-consent__link" id="checkoutConsentPolicyLink" data-i18n-key="checkout.consentPolicyLink">политикой</a>
               <span data-i18n-key="checkout.consentAfter">заведения</span>
             </p>
 
@@ -2717,6 +2837,30 @@
       </div>
     </section>
 
+    <!-- ─── ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ (якорь #privacy, п.9 плана) ───
+         Текст пока временная заглушка (2-3 абзаца, см. privacy.text в
+         data/i18n/*.json) — реальный юридический текст добавится позже.
+         Ссылки на этот блок — из чекаут-формы (согласие под кнопкой
+         "Оформить заказ", js/checkout.js закрывает попап перед прыжком по
+         якорю) и из футера ниже. -->
+    <section class="privacy" id="privacy">
+      <div class="privacy__inner">
+        <h2 class="privacy__title" data-i18n-key="privacy.title">Политика конфиденциальности</h2>
+        <p class="privacy__text" data-i18n-key="privacy.text">Это временный текст-заглушка. Здесь будет размещена политика обработки персональных данных заведения: какие данные мы собираем при оформлении заказа (имя, телефон, адрес), для чего они используются и как хранятся. Реальный юридический текст будет добавлен позже.</p>
+      </div>
+    </section>
+
+    <!-- ─── КАРТА (секция перед футером, п.9 плана) ───
+         Встроена обычным Google Maps embed по адресу заведения (без
+         API-ключа, работает как обычный iframe). Ссылка под картой ведёт
+         на карточку заведения в Google Business Profile. -->
+    <section class="map-section" id="map">
+      <div class="map-section__frame-wrap">
+        <iframe class="map-section__frame" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2680.8141028871023!2d27.8978567!3d47.7850526!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40cb5f0006997305%3A0xb12512652bec706b!2sCR%20Crema%20Premium%20Coffee!5e0!3m2!1sru!2s!4v1790081627697!5m2!1sru!2s" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Crema на карте" data-i18n-attr-title="footer.mapTitle"></iframe>
+      </div>
+      <a href="https://share.google/cIC2PGKOn0GDHVoVd" class="map-section__link" target="_blank" rel="noopener" data-i18n-key="footer.mapLink">Открыть в Google Maps</a>
+    </section>
+
     <footer class="footer" id="footer">
       <div class="footer__inner">
         <div class="footer__brand">
@@ -2724,34 +2868,49 @@
             <span class="logo__mark" aria-hidden="true">C</span>
             <span class="logo__text">Crema</span>
           </a>
-          <p class="footer__tagline">Место, где каждый день начинается с идеальной чашки кофе</p>
+          <p class="footer__tagline" data-i18n-key="footer.tagline">Место, где каждый день начинается с идеальной чашки кофе</p>
         </div>
         <div class="footer__col">
-          <h5 class="footer__col-title">Местоположение</h5>
+          <h5 class="footer__col-title" data-i18n-key="footer.locationTitle">Местоположение</h5>
           <address class="footer__address">
             <p>Bălți, Moldova</p>
             <p>Alexandru cel Bun 1A</p>
           </address>
         </div>
         <div class="footer__col">
-          <h5 class="footer__col-title">График работы</h5>
+          <h5 class="footer__col-title" data-i18n-key="footer.hoursTitle">График работы</h5>
           <div class="hours">
             <div class="hours__row">
-              <span>Ежедневно</span>
-              <span class="hours__time">С 7:00 до 22:00</span>
+              <span class="hours__time" data-i18n-key="footer.hoursCafe">Кафе/бар 7–22, кухня 9–22</span>
+            </div>
+          </div>
+          <h5 class="footer__col-title footer__col-title--delivery" id="delivery-hours" data-i18n-key="footer.deliveryHoursTitle">График доставки</h5>
+          <div class="hours">
+            <div class="hours__row">
+              <span class="hours__time" data-i18n-key="footer.deliveryHours">Кафе/бар — 7–22, кухня — 9–02</span>
             </div>
           </div>
         </div>
         <div class="footer__col">
-          <h5 class="footer__col-title">Контакты</h5>
+          <h5 class="footer__col-title" data-i18n-key="footer.contactsTitle">Контакты</h5>
           <div class="footer__contacts">
             <a href="tel:+37360319994" class="footer__contact">+373 (60) 319-994</a>
             <a href="mailto:hello@crema.cafe" class="footer__contact">hello@crema.cafe</a>
           </div>
+          <h6 class="footer__subtitle" data-i18n-key="footer.socialsTitle">Мы в соцсетях</h6>
+          <div class="footer__socials">
+            <a href="https://instagram.com/crema.md" class="footer__social" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram" data-i18n-attr-aria-label="footer.instagramLabel" data-i18n-attr-title="footer.instagramLabel">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+                <circle cx="12" cy="12" r="4.2"></circle>
+                <circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"></circle>
+              </svg>
+            </a>
+          </div>
         </div>
       </div>
       <div class="footer__bottom">
-        <p>© 2026 Crema. Все права защищены.</p>
+        <p data-i18n-key="footer.rights">© 2026 Crema. Все права защищены.</p>
       </div>
     </footer>
 
