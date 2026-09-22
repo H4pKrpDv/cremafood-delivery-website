@@ -1692,11 +1692,11 @@
         scroll-margin-top: 76px;
       }
 
-      /* Те же якоря, что и .category выше (переход по ссылке "график
-         доставки" в шапке и по ссылке "политикой" в форме оформления) —
-         чтобы фиксированная шапка не перекрывала заголовок блока при
-         прыжке по якорю. */
-      .privacy,
+      /* Тот же якорь, что и .category выше (переход по ссылке "график
+         доставки" в шапке) — чтобы фиксированная шапка не перекрывала
+         заголовок блока при прыжке по якорю. (Политика конфиденциальности
+         с 22.09.2026 — попап, не якорный блок, поэтому здесь больше не
+         участвует.) */
       .footer__col-title--delivery {
         scroll-margin-top: 76px;
       }
@@ -2181,27 +2181,98 @@
         font-size: 0.8rem;
         color: var(--text-3);
         text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
       }
 
-      /* ─── ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ (якорный блок #privacy, п.9) ─── */
-      .privacy {
+      .footer__privacy-link {
+        color: var(--text-3);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        transition: color var(--transition);
+      }
+
+      .footer__privacy-link:hover {
+        color: var(--gold-light);
+      }
+
+      @media (min-width: 481px) {
+        .footer__bottom {
+          flex-direction: row;
+          justify-content: center;
+          gap: 1rem;
+        }
+      }
+
+      /* ─── ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ (попап, п.9 — 22.09.2026: заменён
+         с якорного блока на странице на попап той же схемы, что и корзина/
+         чекаут (.cart-overlay/.cart-modal), — по просьбе пользователя,
+         чтобы объёмный юридический текст не занимал место на самом
+         лендинге. Открывается по ссылке в футере и по слову "политикой" в
+         тексте согласия чекаут-формы, js/privacy.js. ─── */
+      .privacy-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(8, 5, 3, 0.72);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        z-index: 1000;
+      }
+
+      .privacy-overlay[hidden] {
+        display: none;
+      }
+
+      .privacy-modal {
+        position: relative;
+        width: 100%;
+        max-width: 520px;
+        max-height: 82vh;
+        overflow-y: auto;
         background: var(--bg-2);
-        border-top: 1px solid var(--border);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1.75rem 1.5rem 1.5rem;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
       }
 
-      .privacy__inner {
-        max-width: 760px;
-        margin: 0 auto;
-        padding: 3rem 1.25rem;
+      .privacy-modal__close {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        color: var(--text-2);
+        font-size: 1.1rem;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: color var(--transition), border-color var(--transition);
       }
 
-      .privacy__title {
+      .privacy-modal__close:hover {
+        color: var(--gold-light);
+        border-color: var(--gold-dark);
+      }
+
+      .privacy-modal__title {
+        font-family: var(--font-head);
         font-size: 1.25rem;
-        color: var(--cream-2);
+        color: var(--cream);
+        padding-right: 2rem;
         margin-bottom: 1rem;
       }
 
-      .privacy__text {
+      .privacy-modal__text {
         font-size: 0.9rem;
         line-height: 1.75;
         color: var(--text-2);
@@ -2383,7 +2454,6 @@
           scroll-margin-top: 90px;
         }
 
-        .privacy,
         .footer__col-title--delivery {
           scroll-margin-top: 90px;
         }
@@ -2499,7 +2569,7 @@
         </a>
         <div class="header__actions">
           <nav class="nav">
-            <a href="tel:+37360319994" class="nav__link" data-i18n-key="header.phone">+373 (60) 319-994</a>
+            <a href="tel:+37361088777" class="nav__link" data-i18n-key="header.phone">+373 (61) 088-777</a>
             <a href="#delivery-hours" class="nav__link" data-i18n-key="header.deliverySchedule">График доставки</a>
             <div class="lang-switcher" id="langSwitcher">
               <button type="button" class="lang-switcher__toggle" id="langToggle" aria-haspopup="listbox" aria-expanded="false">
@@ -2529,7 +2599,7 @@
         </div>
       </div>
       <div class="mobile-menu" id="mobileMenu" hidden>
-        <a href="tel:+37360319994" class="mobile-menu__link" data-i18n-key="header.phone">+373 (60) 319-994</a>
+        <a href="tel:+37361088777" class="mobile-menu__link" data-i18n-key="header.phone">+373 (61) 088-777</a>
         <a href="#delivery-hours" class="mobile-menu__link" data-i18n-key="header.deliverySchedule">График доставки</a>
         <div class="mobile-menu__lang" role="group" aria-label="Язык" data-i18n-attr-aria-label="header.langLabel">
           <button type="button" class="pill lang-option" data-lang="ru">RU</button>
@@ -2745,7 +2815,7 @@
 
             <p class="checkout-consent">
               <span data-i18n-key="checkout.consentBefore">Нажимая кнопку «Оформить заказ», вы соглашаетесь с обработкой персональных данных в соответствии с</span>
-              <a href="#privacy" class="checkout-consent__link" id="checkoutConsentPolicyLink" data-i18n-key="checkout.consentPolicyLink">политикой</a>
+              <a href="#" class="checkout-consent__link" id="checkoutConsentPolicyLink" data-i18n-key="checkout.consentPolicyLink">политикой</a>
               <span data-i18n-key="checkout.consentAfter">заведения</span>
             </p>
 
@@ -2837,26 +2907,13 @@
       </div>
     </section>
 
-    <!-- ─── ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ (якорь #privacy, п.9 плана) ───
-         Текст пока временная заглушка (2-3 абзаца, см. privacy.text в
-         data/i18n/*.json) — реальный юридический текст добавится позже.
-         Ссылки на этот блок — из чекаут-формы (согласие под кнопкой
-         "Оформить заказ", js/checkout.js закрывает попап перед прыжком по
-         якорю) и из футера ниже. -->
-    <section class="privacy" id="privacy">
-      <div class="privacy__inner">
-        <h2 class="privacy__title" data-i18n-key="privacy.title">Политика конфиденциальности</h2>
-        <p class="privacy__text" data-i18n-key="privacy.text">Это временный текст-заглушка. Здесь будет размещена политика обработки персональных данных заведения: какие данные мы собираем при оформлении заказа (имя, телефон, адрес), для чего они используются и как хранятся. Реальный юридический текст будет добавлен позже.</p>
-      </div>
-    </section>
-
     <!-- ─── КАРТА (секция перед футером, п.9 плана) ───
          Встроена обычным Google Maps embed по адресу заведения (без
          API-ключа, работает как обычный iframe). Ссылка под картой ведёт
          на карточку заведения в Google Business Profile. -->
     <section class="map-section" id="map">
       <div class="map-section__frame-wrap">
-        <iframe class="map-section__frame" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2680.8141028871023!2d27.8978567!3d47.7850526!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40cb5f0006997305%3A0xb12512652bec706b!2sCR%20Crema%20Premium%20Coffee!5e0!3m2!1sru!2s!4v1790081627697!5m2!1sru!2s" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Crema на карте" data-i18n-attr-title="footer.mapTitle"></iframe>
+        <iframe class="map-section__frame" src="https://www.google.com/maps?q=B%C4%83l%C8%9Bi,+Alexandru+cel+Bun+1A&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Crema на карте" data-i18n-attr-title="footer.mapTitle"></iframe>
       </div>
       <a href="https://share.google/cIC2PGKOn0GDHVoVd" class="map-section__link" target="_blank" rel="noopener" data-i18n-key="footer.mapLink">Открыть в Google Maps</a>
     </section>
@@ -2894,8 +2951,8 @@
         <div class="footer__col">
           <h5 class="footer__col-title" data-i18n-key="footer.contactsTitle">Контакты</h5>
           <div class="footer__contacts">
-            <a href="tel:+37360319994" class="footer__contact">+373 (60) 319-994</a>
-            <a href="mailto:hello@crema.cafe" class="footer__contact">hello@crema.cafe</a>
+            <a href="tel:+37361088777" class="footer__contact">+373 (61) 088-777</a>
+            <a href="mailto:cremafood.md@gmail.com" class="footer__contact">cremafood.md@gmail.com</a>
           </div>
           <h6 class="footer__subtitle" data-i18n-key="footer.socialsTitle">Мы в соцсетях</h6>
           <div class="footer__socials">
@@ -2911,8 +2968,37 @@
       </div>
       <div class="footer__bottom">
         <p data-i18n-key="footer.rights">© 2026 Crema. Все права защищены.</p>
+        <a href="#" class="footer__privacy-link" data-open-privacy data-i18n-key="footer.privacyTitle">Политика конфиденциальности</a>
       </div>
     </footer>
+
+    <!-- ─── ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ (попап, п.9 — 22.09.2026) ───
+         Заменил собой прежний якорный блок #privacy на странице: пользователь
+         посчитал объёмный юридический текст избыточным контентом прямо на
+         лендинге и попросил вынести его в попап — та же схема модалки, что
+         у корзины/чекаута (оверлей + блокировка скролла body + закрытие по
+         крестику/клику вне/Escape). Открывается по ссылке в футере выше
+         (data-open-privacy) и по слову "политикой" в тексте согласия
+         чекаут-формы (там своя логика в js/checkout.js — сначала закрывает
+         сам попап чекаута, чтобы не накладывать одну модалку на другую).
+         Логика открытия/закрытия — js/privacy.js. -->
+    <div class="privacy-overlay" id="privacyOverlay" hidden>
+      <div class="privacy-modal" id="privacyModal" role="dialog" aria-modal="true" aria-labelledby="privacyModalTitle">
+        <button
+          type="button"
+          class="privacy-modal__close"
+          id="privacyClose"
+          aria-label="Закрыть"
+          title="Закрыть"
+          data-i18n-attr-aria-label="common.close"
+          data-i18n-attr-title="common.close"
+        >
+          ×
+        </button>
+        <h2 class="privacy-modal__title" id="privacyModalTitle" data-i18n-key="privacy.title">Политика конфиденциальности</h2>
+        <p class="privacy-modal__text" data-i18n-key="privacy.text">Это временный текст-заглушка. Здесь будет размещена политика обработки персональных данных заведения: какие данные мы собираем при оформлении заказа (имя, телефон, адрес), для чего они используются и как хранятся. Реальный юридический текст будет добавлен позже.</p>
+      </div>
+    </div>
 
     <button type="button" class="back-to-top" id="backToTop" aria-label="Наверх" title="Наверх">
       <span aria-hidden="true">↑</span>
@@ -2928,6 +3014,11 @@
          как и js/i18n.js выше. -->
     <script src="js/hours.js" defer></script>
     <script src="js/main.js" defer></script>
+    <!-- js/privacy.js — попап "Политика конфиденциальности" (п.9,
+         22.09.2026). Простой попап без зависимостей от корзины/чекаута,
+         но должен идти ДО js/checkout.js, т.к. тот вызывает
+         window.CremaPrivacy.open() из своего обработчика ссылки "политикой". -->
+    <script src="js/privacy.js" defer></script>
     <script src="js/gallery.js" defer></script>
     <script src="js/menu.js" defer></script>
     <script src="js/cart.js" defer></script>

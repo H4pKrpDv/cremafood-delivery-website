@@ -592,18 +592,17 @@
     els.form.addEventListener('submit', handleSubmit);
     els.retryBtn.addEventListener('click', handleRetry);
 
-    // Ссылка "политикой" ведёт на якорный блок #privacy (см. п.9 плана),
-    // но пока попап оформления открыт, прокрутка страницы под ним
-    // заблокирована (body.modal-open, см. правило проекта про изоляцию
-    // модалки) — обычный переход по якорю просто молча ничего не даст
-    // увидеть. Поэтому сами закрываем попап и уже потом прокручиваем к
-    // блоку политики.
+    // Ссылка "политикой" открывает попап "Политика конфиденциальности"
+    // (js/privacy.js, см. правку от 22.09.2026 — раньше это была прокрутка
+    // к якорному блоку #privacy на странице, теперь сама политика тоже
+    // попап). Раз попап оформления уже открыт (body.modal-open) — сначала
+    // закрываем его, чтобы не накладывать одну модалку на другую, и только
+    // потом открываем попап политики.
     if (els.policyLink) {
       els.policyLink.addEventListener('click', function (event) {
         event.preventDefault();
         closeCheckout();
-        var target = document.getElementById('privacy');
-        if (target) target.scrollIntoView({ behavior: 'smooth' });
+        if (window.CremaPrivacy) window.CremaPrivacy.open();
       });
     }
 
