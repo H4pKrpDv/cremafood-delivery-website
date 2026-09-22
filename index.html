@@ -4,16 +4,676 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/jpeg" href="img/crema-icon.jpg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CR Crema Premium Coffee</title>
+    <!--
+      Этап 1, п.10 плана (SEO, 22.09.2026): title/description/canonical/OG/
+      Twitter-теги больше не хардкод — build.js подставляет их из
+      data/i18n/ru.json (meta.title/meta.description) и константы SITE_URL,
+      чтобы редактировать их можно было в одном месте, а не в 6 разных тегах
+      сразу. Раньше <title> вообще не совпадал с meta.title из JSON (визуально
+      никто не замечал разницу — заголовок вкладки браузера не связан с тем,
+      что показывают в превью соцсети/поиске), а <meta name="description">
+      отсутствовал вовсе (были только og:image/twitter:*, без og:title/
+      og:description/og:url/canonical) — сейчас всё это заведено на общий
+      источник и генерируется build.js (buildMetaTags() + buildJsonLd()).
+      Разметка ниже — только скелет с плейсхолдерами, сама сборка — в
+      build/build.js.
+    -->
+    <title>Crema — кофейня в Бэлць</title>
+    <meta name="description" content="Авторский кофе, десерты и кухня с доставкой по Бэлць. Смотрите меню и заказывайте онлайн." />
+    <link rel="canonical" href="https://cremafood.md/" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
-    <meta property="og:image" content="img/og_default.png">
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Crema" />
+    <meta property="og:title" content="Crema — кофейня в Бэлць" />
+    <meta property="og:description" content="Авторский кофе, десерты и кухня с доставкой по Бэлць. Смотрите меню и заказывайте онлайн." />
+    <meta property="og:url" content="https://cremafood.md/" />
+    <meta property="og:image" content="https://cremafood.md/img/og_default.png" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:locale:alternate" content="ro_MD" />
+    <meta property="og:locale:alternate" content="en_US" />
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="img/og_default.png">
+    <meta name="twitter:image" content="https://cremafood.md/img/og_default.png">
     <meta name="twitter:image:alt" content="Cafe Crema Balti">
-    <meta name="twitter:title" content="CR Crema Balti Premium Coffee">
-    <meta name="twitter:description" content="Наше меню. Каждый напиток приготовлен с заботой из лучших ингредиентов">
+    <meta name="twitter:title" content="Crema — кофейня в Бэлць">
+    <meta name="twitter:description" content="Авторский кофе, десерты и кухня с доставкой по Бэлць. Смотрите меню и заказывайте онлайн.">
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": [
+    "Restaurant",
+    "CafeOrCoffeeShop"
+  ],
+  "name": "Crema",
+  "url": "https://cremafood.md/",
+  "image": "https://cremafood.md/img/og_default.png",
+  "telephone": "+37361088777",
+  "email": "cremafood.md@gmail.com",
+  "servesCuisine": [
+    "Coffee",
+    "Mexican",
+    "Breakfast",
+    "Desserts"
+  ],
+  "priceRange": "20–70 MDL",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Alexandru cel Bun 1A",
+    "addressLocality": "Bălți",
+    "addressCountry": "MD"
+  },
+  "hasMap": "https://share.google/cIC2PGKOn0GDHVoVd",
+  "sameAs": [
+    "https://instagram.com/crema.md"
+  ],
+  "openingHoursSpecification": {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "opens": "07:00",
+    "closes": "22:00"
+  },
+  "hasMenu": {
+    "@type": "Menu",
+    "name": "Crema — кофейня в Бэлць",
+    "hasMenuSection": [
+      {
+        "@type": "MenuSection",
+        "name": "Спец. предложения",
+        "hasMenuSection": [
+          {
+            "@type": "MenuSection",
+            "name": "Постоянные",
+            "description": "Предложения, которые действуют всегда",
+            "hasMenuItem": [
+              {
+                "@type": "MenuItem",
+                "name": "Комбо: Латте/Капучино + сэндвич",
+                "description": "Выгодное предложение дня — ароматный кофе и свежий сэндвич по специальной цене",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "40",
+                  "priceCurrency": "MDL"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@type": "MenuSection",
+        "name": "Кафе",
+        "hasMenuSection": [
+          {
+            "@type": "MenuSection",
+            "name": "Coffee",
+            "description": "Зёрна из лучших плантаций мира, обжаренные для идеального баланса вкуса и аромата",
+            "hasMenuItem": [
+              {
+                "@type": "MenuItem",
+                "name": "Espresso",
+                "description": "Классический концентрированный кофе с насыщенным вкусом",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "23",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Americano",
+                "description": "Эспрессо с горячей водой — мягкий и ароматный",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "23",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Doppio",
+                "description": "Двойная порция эспрессо",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "30",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Cortado",
+                "description": "Эспрессо с небольшим количеством тёплого молока",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "26",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Cappuccino",
+                "description": "Эспрессо с нежной бархатистой молочной пенкой",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "27",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Grand Cappuccino",
+                "description": "Двойная порция эспрессо с большим количеством вспененного молока",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "35",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Latte",
+                "description": "Мягкий кофе с большим количеством вспененного молока",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "30",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Flat White",
+                "description": "Двойной эспрессо с бархатным микропенным молоком",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "30",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Moccacino",
+                "description": "Капучино с добавлением горячего шоколада",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "35",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Raf Coffee",
+                "description": "Кофе со сливками и ванилью",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "35",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Hot Chocolate",
+                "description": "Горячий напиток, приготовленный из тёртого шоколада и подогретого молока",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "30",
+                  "priceCurrency": "MDL"
+                }
+              }
+            ]
+          },
+          {
+            "@type": "MenuSection",
+            "name": "Ice Coffee",
+            "description": "Освежающий кофейный напиток, заряжающий бодростью и энергией",
+            "hasMenuItem": [
+              {
+                "@type": "MenuItem",
+                "name": "Ice Latte",
+                "description": "Кофейный напиток на основе эспрессо, молока и льда, который подаётся холодным. Не только вкусно, но и эстетично",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "40",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Frappe",
+                "description": "Покрытый взбитыми сливками холодный кофейный напиток греческого происхождения",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "45",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Espresso Tonic",
+                "description": "Безалкогольный напиток, приготовленный путём смешивания эспрессо, льда и тонизирующей воды, обладающий горьковато-освежающим вкусом",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "50",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Bumblebee",
+                "description": "Напиток из эспрессо, апельсинового сока и сиропа. Ингредиенты добавляются слоями, благодаря чему получается коктейль, напоминающий расцветкой шмеля",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "55",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Bubble Coffee",
+                "description": "Кофе с шариками тапиоки — идеальный освежающий напиток со льдом",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "60",
+                  "priceCurrency": "MDL"
+                }
+              }
+            ]
+          },
+          {
+            "@type": "MenuSection",
+            "name": "Tea",
+            "description": "Изысканные чайные купажи со всего мира для тех, кто ценит гармонию вкуса",
+            "hasMenuItem": [
+              {
+                "@type": "MenuItem",
+                "name": "Tea Julius Meinl (чашка)",
+                "description": "Насыщенный чай с глубоким вкусом",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "25",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Tea Julius Meinl (чайничек)",
+                "description": "Насыщенный чай с глубоким вкусом",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "40",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Tea handmade/aftor (чашка)",
+                "description": "Чай с джемом из натуральных фруктов, ягод и растений с добавлением сахара — настоящее удовольствие с пользой для здоровья",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "35",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Tea handmade/aftor (чайничек)",
+                "description": "Чай с джемом из натуральных фруктов, ягод и растений с добавлением сахара — настоящее удовольствие с пользой для здоровья",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "60",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Ice Tea",
+                "description": "Холодный чай — отличный способ освежиться в жару",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "45",
+                  "priceCurrency": "MDL"
+                }
+              }
+            ]
+          },
+          {
+            "@type": "MenuSection",
+            "name": "Bubble Tea",
+            "description": "Напиток на чае или молоке с желейными шариками с соком внутри",
+            "hasMenuItem": [
+              {
+                "@type": "MenuItem",
+                "name": "Bubble Tea Kiwi",
+                "description": "Чайный напиток с желейными шариками и вкусом киви",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "60",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Bubble Tea Pineapple",
+                "description": "Чайный напиток с желейными шариками и вкусом ананаса",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "60",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Bubble Tea Strawberry",
+                "description": "Чайный напиток с желейными шариками и вкусом клубники",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "60",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Bubble Tea Mango",
+                "description": "Чайный напиток с желейными шариками и вкусом манго",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "60",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Bubble Tea Banana",
+                "description": "Чайный напиток с желейными шариками и вкусом банана",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "60",
+                  "priceCurrency": "MDL"
+                }
+              }
+            ]
+          },
+          {
+            "@type": "MenuSection",
+            "name": "Милкшейки",
+            "description": "Густые сливочные коктейли из натурального мороженого и свежих ингредиентов",
+            "hasMenuItem": [
+              {
+                "@type": "MenuItem",
+                "name": "Classic",
+                "description": "Классический нежный шейк с ванилью",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "35",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Chocolate",
+                "description": "Насыщенный шоколадный вкус в каждом глотке",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "40",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Banana",
+                "description": "Освежающий напиток со спелыми бананами, молоком и мороженым",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "45",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Strawberry",
+                "description": "С настоящей свежей клубникой — яркий и ароматный",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "45",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Oreo",
+                "description": "Коктейль с кусочками печенья, оценят и взрослые, и дети",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "45",
+                  "priceCurrency": "MDL"
+                }
+              }
+            ]
+          },
+          {
+            "@type": "MenuSection",
+            "name": "Лимонады",
+            "description": "Освежающие авторские лимонады на натуральных фруктах и ягодах",
+            "hasMenuItem": [
+              {
+                "@type": "MenuItem",
+                "name": "Mojito",
+                "description": "Лайм, мята и газированная вода — вечная классика",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "50",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Berry",
+                "description": "Освежающий летний напиток, сочетающий свежевыжатый лимонный сок, ягодный джем и газированную воду",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "50",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Tropic",
+                "description": "Безалкогольный коктейль с фруктовой смесью манго, граната и лимона",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "45",
+                  "priceCurrency": "MDL"
+                }
+              }
+            ]
+          },
+          {
+            "@type": "MenuSection",
+            "name": "Десерты",
+            "description": "Удовлетворите свою тягу к сладкому нашими кондитерскими шедеврами и авторской выпечкой",
+            "hasMenuItem": [
+              {
+                "@type": "MenuItem",
+                "name": "Cheesecake Caramel",
+                "description": "Сливочный десерт, состоящий из основы из печенья и бархатистой начинки, покрытой карамелью",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "55",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Cheesecake Mac",
+                "description": "Песочная основа с нежной начинкой из творога и мака, покрытая шоколадом, миндальной крошкой и посыпкой",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "55",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Smetannik",
+                "description": "Тонкие медовые коржи, покрытые нежным кремом из сметаны, ядер грецких орехов и вишни",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "55",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Donuts",
+                "description": "Популярное кондитерское изделие из сладкого дрожжевого теста, покрытое глазурью",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "20",
+                  "priceCurrency": "MDL"
+                }
+              }
+            ]
+          },
+          {
+            "@type": "MenuSection",
+            "name": "Алкогольные напитки",
+            "description": "Популярные коктейли и отдельный алкоголь. Продажа только лицам старше 18 лет",
+            "hasMenuItem": [
+              {
+                "@type": "MenuItem",
+                "name": "Jack Daniel's Honey",
+                "description": "Популярный ликёр на основе классического теннессийского виски",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "50",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Jack Daniel's Apple",
+                "description": "Популярный ликёр на основе классического теннессийского виски",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "50",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Crema Kick The Rules Mango",
+                "description": "Авторский коктейль на основе текилы с манго",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "50",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Crema Kick The Rules Watermelon",
+                "description": "Авторский коктейль на основе текилы с арбузом",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "50",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Johnnie Walker Red Label",
+                "description": "Шотландский виски, известный своим насыщенным, пряным вкусом с дымными нотками",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "50",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Jägermeister",
+                "description": "Немецкий крепкий ликёр, известный своим уникальным составом из 56 тщательно отобранных трав, кореньев, фруктов и специй",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "50",
+                  "priceCurrency": "MDL"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "@type": "MenuSection",
+        "name": "Кухня",
+        "hasMenuSection": [
+          {
+            "@type": "MenuSection",
+            "name": "Завтраки",
+            "description": "Сытный старт дня — свежеприготовленные завтраки",
+            "hasMenuItem": [
+              {
+                "@type": "MenuItem",
+                "name": "Омлет",
+                "description": "Классический омлет из свежих яиц (плейсхолдер — уточнить состав)",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "45",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Омлет с сыром",
+                "description": "Омлет с добавлением сыра (плейсхолдер — уточнить состав)",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "55",
+                  "priceCurrency": "MDL"
+                }
+              }
+            ]
+          },
+          {
+            "@type": "MenuSection",
+            "name": "Мексиканская кухня",
+            "description": "Яркие блюда мексиканской кухни с насыщенным вкусом",
+            "hasMenuItem": [
+              {
+                "@type": "MenuItem",
+                "name": "Буррито с курицей",
+                "description": "Буррито с куриным филе и овощами (плейсхолдер — уточнить состав)",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "65",
+                  "priceCurrency": "MDL"
+                }
+              },
+              {
+                "@type": "MenuItem",
+                "name": "Тако с говядиной",
+                "description": "Тако с говядиной и овощами (плейсхолдер — уточнить состав)",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "70",
+                  "priceCurrency": "MDL"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+    </script>
     <style>
       /*
         Этап 1, п.3 плана: CSS переписан на mobile-first (min-width).

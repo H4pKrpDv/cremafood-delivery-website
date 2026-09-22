@@ -40,6 +40,37 @@ const ROOT = path.join(__dirname, '..');
 const DEFAULT_LANG = 'ru';
 const SITE_URL = 'https://cremafood.md';
 
+// ---------------------------------------------------------------------
+// Реквизиты заведения для SEO-тегов и JSON-LD (Этап 1, п.10 плана,
+// 22.09.2026). Эти факты уже "запечены" отдельно в build/template.html
+// (телефон/email/адрес в футере, ссылка на Instagram, ссылка на карточку
+// Google Maps) — здесь они продублированы намеренно (одним местом для
+// генерации SEO-тегов и JSON-LD-разметки было бы правильнее подключить их
+// оттуда же, но футер — это сгенерированная разметка, а не структурированные
+// данные, парсить HTML ради этого избыточно). ВАЖНО: если адрес/телефон/
+// соцсети поменяются — обновить оба места (footer в template.html И
+// константы ниже), иначе структурированные данные разойдутся с видимым
+// футером сайта.
+const BUSINESS = {
+  name: 'Crema',
+  telephone: '+37361088777',
+  email: 'cremafood.md@gmail.com',
+  streetAddress: 'Alexandru cel Bun 1A',
+  addressLocality: 'Bălți',
+  addressCountry: 'MD',
+  sameAs: ['https://instagram.com/crema.md'],
+  hasMap: 'https://share.google/cIC2PGKOn0GDHVoVd',
+  // Часы зала (footer.hoursCafe в i18n) — "Кафе/бар 7–22, кухня 9–22".
+  // Для JSON-LD openingHoursSpecification берём самый широкий интервал,
+  // когда в заведение реально можно зайти (бар открывается раньше кухни и
+  // закрывается одновременно с ней) — это часы ДЛЯ ОЧНОГО визита, не часы
+  // доставки (те см. footer.deliveryHours, они уже отдельно показаны в
+  // футере и специально не дублируются в JSON-LD Restaurant — это поле
+  // предназначено для физического визита в заведение, а не для курьерской
+  // доставки).
+  openingHours: { opens: '07:00', closes: '22:00' }
+};
+
 // Какой верхнеуровневый таб (Спец.предложения/Кафе/Кухня) открыт по умолчанию
 // при первой загрузке страницы (п.6 плана). Выбрали "Кафе" — это самая
 // богатая контентом категория (напитки/десерты), а "Спец.предложения" сейчас
@@ -395,6 +426,137 @@ function buildModifierGroupsDataScript() {
 }
 
 // ---------------------------------------------------------------------
+// SEO-теги <head> (Этап 1, п.10 плана, 22.09.2026): title/description/
+// canonical/OG-картинка — единый источник (data/i18n/ru.json + SITE_URL),
+// подставляется в build/template.html вместо прежнего хардкода (см.
+// комментарий в самом template.html). Названия ключей meta.title/
+// meta.description существовали в i18n с самого п.1, но раньше никуда не
+// подключались — <title> был отдельным хардкодом, а <meta name="description">
+// не было вовсе.
+// ---------------------------------------------------------------------
+
+function buildMetaTagValues() {
+  return {
+    title: escapeHtml(t('meta.title')),
+    description: escapeHtml(t('meta.description')),
+    canonicalUrl: `${SITE_URL}/`,
+    ogImageUrl: `${SITE_URL}/img/og_default.png`
+  };
+}
+
+// ---------------------------------------------------------------------
+// JSON-LD структурированные данные (Этап 1, п.10 плана, 22.09.2026):
+// schema.org Restaurant + вложенное меню (hasMenu -> Menu -> hasMenuSection
+// -> hasMenuItem -> offers). Собирается из тех же data/menu.json + i18n/
+// ru.json, что и видимая разметка меню — цены/названия/описания не
+// дублируются вручную, значит не могут разойтись с тем, что реально видно
+// на странице. Реквизиты заведения (адрес/телефон/соцсети) — из константы
+// BUSINESS выше (см. её комментарий о ручной синхронизации с футером).
+//
+// @type: ["Restaurant", "CafeOrCoffeeShop"] — в терминах plan.md это
+// "Restaurant" (см. Context.md п.10), но у schema.org есть более точный
+// соседний тип CafeOrCoffeeShop (оба — подтипы FoodEstablishment, не один
+// внутри другого) — заведение работает и как кофейня, и подаёт блюда кухни,
+// поэтому оба типа через массив (стандартный способ multi-typing в JSON-LD)
+// точнее, чем только один из двух.
+//
+// Позиции с available:false осознанно пропускаются — JSON-LD должен
+// отражать то, что реально можно заказать сейчас, а не архив всего, что
+// когда-либо было в menu.json (то же решение, что уже действует для видимой
+// разметки степпера). Товары "Полное меню"/карта лояльности (не настоящие
+// заказываемые позиции) в meню JSON-LD тоже не попадают — isSubRenderable()
+// их не касается напрямую, здесь используется отдельный, более простой
+// фильтр (sub.items && sub.items.length), т.к. хватает одного условия.
+// ---------------------------------------------------------------------
+
+function buildJsonLd() {
+  const menuSections = menu.categories
+    .map((category) => {
+      const subSections = (category.subcategories || [])
+        .filter((sub) => sub.items && sub.items.length > 0)
+        .map((sub) => {
+          const menuItems = sub.items
+            .filter((item) => item.available !== false)
+            .map((item) => ({
+              '@type': 'MenuItem',
+              name: t(`items.${item.id}.name`, item.id),
+              description: t(`items.${item.id}.desc`, ''),
+              offers: {
+                '@type': 'Offer',
+                price: String(item.price),
+                priceCurrency: 'MDL'
+              }
+            }));
+          if (menuItems.length === 0) return null;
+          return {
+            '@type': 'MenuSection',
+            name: t(`subcategories.${sub.id}.title`, sub.id),
+            description: t(`subcategories.${sub.id}.desc`, ''),
+            hasMenuItem: menuItems
+          };
+        })
+        .filter(Boolean);
+      if (subSections.length === 0) return null;
+      return {
+        '@type': 'MenuSection',
+        name: t(`categories.${category.id}`, category.id),
+        hasMenuSection: subSections
+      };
+    })
+    .filter(Boolean);
+
+  // Диапазон цен по всем реально заказываемым позициям — для priceRange
+  // (Google/соцсети показывают его как ценовую категорию заведения).
+  const allPrices = menu.categories
+    .flatMap((category) => (category.subcategories || []))
+    .flatMap((sub) => sub.items || [])
+    .filter((item) => item.available !== false)
+    .map((item) => item.price);
+  const priceRange = allPrices.length
+    ? `${Math.min(...allPrices)}–${Math.max(...allPrices)} MDL`
+    : undefined;
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': ['Restaurant', 'CafeOrCoffeeShop'],
+    name: BUSINESS.name,
+    url: `${SITE_URL}/`,
+    image: `${SITE_URL}/img/og_default.png`,
+    telephone: BUSINESS.telephone,
+    email: BUSINESS.email,
+    servesCuisine: ['Coffee', 'Mexican', 'Breakfast', 'Desserts'],
+    priceRange,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: BUSINESS.streetAddress,
+      addressLocality: BUSINESS.addressLocality,
+      addressCountry: BUSINESS.addressCountry
+    },
+    hasMap: BUSINESS.hasMap,
+    sameAs: BUSINESS.sameAs,
+    openingHoursSpecification: {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: [
+        'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+      ],
+      opens: BUSINESS.openingHours.opens,
+      closes: BUSINESS.openingHours.closes
+    },
+    hasMenu: {
+      '@type': 'Menu',
+      name: t('meta.title'),
+      hasMenuSection: menuSections
+    }
+  };
+
+  const json = JSON.stringify(jsonLd, null, 2)
+    // защита от преждевременного закрытия <script>, та же причина, что и
+    // у buildI18nDataScript/buildModifierGroupsDataScript выше
+    .replace(/</g, '\\u003c');
+  return `<script type="application/ld+json">\n${json}\n    </script>`;
+}
+
+// ---------------------------------------------------------------------
 // Сборка index.html из шаблона
 // ---------------------------------------------------------------------
 
@@ -407,12 +569,21 @@ function buildIndexHtml() {
   const menuPillsHtml = renderPills();
   const i18nDataScript = buildI18nDataScript();
   const modifierGroupsDataScript = buildModifierGroupsDataScript();
+  const metaTags = buildMetaTagValues();
+  const jsonLdScript = buildJsonLd();
 
   html = html.replace('<!--{{CATEGORY_TABS}}-->', categoryTabsHtml);
   html = html.replace('<!--{{MENU_PILLS}}-->', menuPillsHtml);
   html = html.replace('<!--{{MENU_CATEGORIES}}-->', menuCategoriesHtml);
   html = html.replace('<!--{{I18N_DATA}}-->', i18nDataScript);
   html = html.replace('<!--{{MODIFIER_GROUPS_DATA}}-->', modifierGroupsDataScript);
+  // {{META_TITLE}}/{{OG_IMAGE_URL}} каждый встречается в head несколько раз
+  // (title + og:title + twitter:title и т.д.) — replaceAll, не replace.
+  html = html.replaceAll('{{META_TITLE}}', metaTags.title);
+  html = html.replaceAll('{{META_DESCRIPTION}}', metaTags.description);
+  html = html.replaceAll('{{CANONICAL_URL}}', metaTags.canonicalUrl);
+  html = html.replaceAll('{{OG_IMAGE_URL}}', metaTags.ogImageUrl);
+  html = html.replace('<!--{{JSON_LD}}-->', jsonLdScript);
 
   const outputPath = path.join(ROOT, 'index.html');
   fs.writeFileSync(outputPath, html, 'utf-8');

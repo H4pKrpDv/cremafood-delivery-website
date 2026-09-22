@@ -4,16 +4,41 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/jpeg" href="img/crema-icon.jpg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CR Crema Premium Coffee</title>
+    <!--
+      Этап 1, п.10 плана (SEO, 22.09.2026): title/description/canonical/OG/
+      Twitter-теги больше не хардкод — build.js подставляет их из
+      data/i18n/ru.json (meta.title/meta.description) и константы SITE_URL,
+      чтобы редактировать их можно было в одном месте, а не в 6 разных тегах
+      сразу. Раньше <title> вообще не совпадал с meta.title из JSON (визуально
+      никто не замечал разницу — заголовок вкладки браузера не связан с тем,
+      что показывают в превью соцсети/поиске), а <meta name="description">
+      отсутствовал вовсе (были только og:image/twitter:*, без og:title/
+      og:description/og:url/canonical) — сейчас всё это заведено на общий
+      источник и генерируется build.js (buildMetaTags() + buildJsonLd()).
+      Разметка ниже — только скелет с плейсхолдерами, сама сборка — в
+      build/build.js.
+    -->
+    <title>{{META_TITLE}}</title>
+    <meta name="description" content="{{META_DESCRIPTION}}" />
+    <link rel="canonical" href="{{CANONICAL_URL}}" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
-    <meta property="og:image" content="img/og_default.png">
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Crema" />
+    <meta property="og:title" content="{{META_TITLE}}" />
+    <meta property="og:description" content="{{META_DESCRIPTION}}" />
+    <meta property="og:url" content="{{CANONICAL_URL}}" />
+    <meta property="og:image" content="{{OG_IMAGE_URL}}" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:locale:alternate" content="ro_MD" />
+    <meta property="og:locale:alternate" content="en_US" />
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="img/og_default.png">
+    <meta name="twitter:image" content="{{OG_IMAGE_URL}}">
     <meta name="twitter:image:alt" content="Cafe Crema Balti">
-    <meta name="twitter:title" content="CR Crema Balti Premium Coffee">
-    <meta name="twitter:description" content="Наше меню. Каждый напиток приготовлен с заботой из лучших ингредиентов">
+    <meta name="twitter:title" content="{{META_TITLE}}">
+    <meta name="twitter:description" content="{{META_DESCRIPTION}}">
+    <!--{{JSON_LD}}-->
     <style>
       /*
         Этап 1, п.3 плана: CSS переписан на mobile-first (min-width).
