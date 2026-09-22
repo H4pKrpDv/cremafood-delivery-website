@@ -2,7 +2,7 @@
   "name": "crema-delivery-website",
   "version": "0.1.0",
   "private": true,
-  "description": "Crema — сайт-меню кафе с доставкой (Балць, Молдова)",
+  "description": "Crema Food — сайт-меню кафе с доставкой (Балць, Молдова)",
   "scripts": {
     "build": "node build/build.js"
   },

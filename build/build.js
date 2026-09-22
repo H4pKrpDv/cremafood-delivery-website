@@ -52,7 +52,7 @@ const SITE_URL = 'https://cremafood.md';
 // константы ниже), иначе структурированные данные разойдутся с видимым
 // футером сайта.
 const BUSINESS = {
-  name: 'Crema',
+  name: 'Crema Food',
   telephone: '+37361088777',
   email: 'cremafood.md@gmail.com',
   streetAddress: 'Alexandru cel Bun 1A',

@@ -2,7 +2,15 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/jpeg" href="img/crema-icon.jpg" />
+    <!--
+      Ребрендинг Crema -> Crema Food (22.09.2026): фавикон теперь тот же
+      файл, что и лого в шапке/футере (img/logo.png — круглый золотой
+      эмблема-логотип на прозрачном фоне, предоставлен заказчиком и
+      обрезан в круг по уже имеющемуся на изображении кольцу). Один файл
+      на обе роли, чтобы не плодить дубликаты одного и того же лого —
+      браузер сам масштабирует PNG под нужный размер вкладки/закладки.
+    -->
+    <link rel="icon" type="image/png" href="img/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!--
       Этап 1, п.11 плана (изображения, 22.09.2026): пока в проекте физически
@@ -70,7 +78,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Crema" />
+    <meta property="og:site_name" content="Crema Food" />
     <meta property="og:title" content="{{META_TITLE}}" />
     <meta property="og:description" content="{{META_DESCRIPTION}}" />
     <meta property="og:url" content="{{CANONICAL_URL}}" />
@@ -80,7 +88,7 @@
     <meta property="og:locale:alternate" content="en_US" />
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="{{OG_IMAGE_URL}}">
-    <meta name="twitter:image:alt" content="Cafe Crema Balti">
+    <meta name="twitter:image:alt" content="Cafe Crema Food Balti">
     <meta name="twitter:title" content="{{META_TITLE}}">
     <meta name="twitter:description" content="{{META_DESCRIPTION}}">
     <!--{{JSON_LD}}-->
@@ -213,18 +221,20 @@
         opacity: 0.85;
       }
 
+      /* Ребрендинг (22.09.2026): раньше .logo__mark была золотой заглушкой-
+         кругом с буквой "C" на чистом CSS (без файла изображения). Теперь
+         заказчик прислал реальный логотип (img/logo.png, уже круглый,
+         с прозрачным фоном) — .logo__mark применяется к <img>, а не к
+         <span>: border-radius/overflow подстраховывают круглую форму (на
+         случай если PNG обрежется не идеально), object-fit:cover не даёт
+         логотипу искажаться при масштабировании. */
       .logo__mark {
         width: 34px;
         height: 34px;
         border-radius: 50%;
-        background: var(--gold);
-        color: var(--bg);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: var(--font-head);
-        font-size: 1rem;
-        font-weight: 700;
+        overflow: hidden;
+        object-fit: cover;
+        display: block;
         flex-shrink: 0;
       }
 
@@ -2658,8 +2668,8 @@
     <header class="header" id="top">
       <div class="header__inner">
         <a href="#top" class="logo">
-          <span class="logo__mark" aria-hidden="true">C</span>
-          <span class="logo__text">Crema</span>
+          <img class="logo__mark" src="img/logo.png" alt="" aria-hidden="true" width="34" height="34" />
+          <span class="logo__text">Crema Food</span>
         </a>
         <div class="header__actions">
           <nav class="nav">
@@ -2973,7 +2983,7 @@
       <div class="hero__content-wrap">
         <div class="hero__content">
           <p class="hero__eyebrow" data-i18n-key="hero.eyebrow">Добро пожаловать в</p>
-          <h1 class="hero__title" data-i18n-key="hero.title">Crema</h1>
+          <h1 class="hero__title" data-i18n-key="hero.title">Crema Food</h1>
           <p class="hero__tagline" data-i18n-key="hero.tagline">Где каждый глоток — это маленькое удовольствие. Авторский кофе, уют и атмосфера, созданная для вас.</p>
           <a href="#menu" class="btn btn--primary" data-i18n-key="hero.cta">Смотреть меню</a>
         </div>
@@ -3007,7 +3017,7 @@
          на карточку заведения в Google Business Profile. -->
     <section class="map-section" id="map">
       <div class="map-section__frame-wrap">
-        <iframe class="map-section__frame" src="https://www.google.com/maps?q=B%C4%83l%C8%9Bi,+Alexandru+cel+Bun+1A&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Crema на карте" data-i18n-attr-title="footer.mapTitle"></iframe>
+        <iframe class="map-section__frame" src="https://www.google.com/maps?q=B%C4%83l%C8%9Bi,+Alexandru+cel+Bun+1A&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Crema Food на карте" data-i18n-attr-title="footer.mapTitle"></iframe>
       </div>
       <a href="https://share.google/cIC2PGKOn0GDHVoVd" class="map-section__link" target="_blank" rel="noopener" data-i18n-key="footer.mapLink">Открыть в Google Maps</a>
     </section>
@@ -3016,8 +3026,8 @@
       <div class="footer__inner">
         <div class="footer__brand">
           <a href="#top" class="logo logo--footer">
-            <span class="logo__mark" aria-hidden="true">C</span>
-            <span class="logo__text">Crema</span>
+            <img class="logo__mark" src="img/logo.png" alt="" aria-hidden="true" width="34" height="34" />
+            <span class="logo__text">Crema Food</span>
           </a>
           <p class="footer__tagline" data-i18n-key="footer.tagline">Место, где каждый день начинается с идеальной чашки кофе</p>
         </div>
@@ -3061,7 +3071,7 @@
         </div>
       </div>
       <div class="footer__bottom">
-        <p data-i18n-key="footer.rights">© 2026 Crema. Все права защищены.</p>
+        <p data-i18n-key="footer.rights">© 2026 Crema Food. Все права защищены.</p>
         <a href="#" class="footer__privacy-link" data-open-privacy data-i18n-key="footer.privacyTitle">Политика конфиденциальности</a>
       </div>
     </footer>
