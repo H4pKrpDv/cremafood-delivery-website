@@ -1,14 +1,28 @@
 {
-  "name": "crema-delivery-website",
+  "name": "cremafood-nextjs-1",
   "version": "0.1.0",
   "private": true,
-  "description": "Crema Food — сайт-меню кафе с доставкой (Балць, Молдова)",
   "scripts": {
-    "build": "node build/build.js"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
   },
-  "license": "UNLICENSED",
-  "devDependencies": {
-    "esbuild": "^0.28.2",
+  "dependencies": {
+    "next": "16.3.6",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "zustand": "^5.0.3",
     "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
