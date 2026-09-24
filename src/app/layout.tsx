@@ -19,6 +19,18 @@ import { SITE_URL, buildMetaTagValues, buildJsonLd } from '@/lib/seo';
 // одностраничный, язык переключается на клиенте, см. комментарий в
 // lib/seo.ts) — async-функция здесь не даёт ничего сверх статичного
 // объекта.
+//
+// Фавикон: раньше был указан вручную как `icons: { icon: '/img/logo.png' }`
+// (файл в public/) — не отображался у части пользователей, потому что
+// многие браузеры и краулеры запрашивают классический /favicon.ico
+// НАПРЯМУЮ, независимо от <link rel="icon"> в <head> (та же логика, что
+// требует любой сайт), а такого файла не было вовсе. Теперь используется
+// file-convention Next.js: app/icon.png (современный <link rel="icon">
+// с правильными sizes/type, генерируется автоматически) + app/favicon.ico
+// (тот самый классический путь, мультиразмерный ICO 16/32/48 — Next.js сам
+// отдаёт его по адресу /favicon.ico). Оба файла — тот же img/logo.png,
+// просто подготовленный под каждый формат. Ручной `icons` больше не нужен
+// и убран, чтобы не плодить дублирующиеся/конфликтующие теги.
 const seo = buildMetaTagValues();
 
 export const metadata: Metadata = {
@@ -26,7 +38,6 @@ export const metadata: Metadata = {
   title: seo.title,
   description: seo.description,
   alternates: { canonical: seo.canonicalUrl },
-  icons: { icon: '/img/logo.png' },
   openGraph: {
     type: 'website',
     siteName: 'Crema Food',
