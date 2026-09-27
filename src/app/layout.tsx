@@ -12,6 +12,7 @@ import { PrivacyModal } from '@/components/PrivacyModal';
 import { ModalManager } from '@/components/ModalManager';
 import { BackToTop } from '@/components/BackToTop';
 import { SITE_URL, buildMetaTagValues, buildJsonLd } from '@/lib/seo';
+import { Analytics } from "@vercel/analytics/next"
 
 // Шрифты — раньше подключались обычным <link> на fonts.googleapis.com
 // (перенесено как есть из build/template.html вместе со всем остальным
@@ -160,6 +161,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ModalManager />
           <BackToTop />
         </I18nProvider>
+        <Analytics />
       </body>
     </html>
   );
