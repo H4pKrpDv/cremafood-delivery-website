@@ -53,8 +53,16 @@
         --text-3:      #8a6e52;
         --white:       #ffffff;
 
-        --font-head: 'Playfair Display', Georgia, serif;
-        --font-body: 'Inter', system-ui, sans-serif;
+        /* Шрифты грузятся через next/font/google (см. app/layout.tsx) —
+           он сам генерирует @font-face с self-hosted файлами и кладёт
+           итоговое имя шрифта в CSS-переменные --font-head-google/
+           --font-body-google на <html>. Здесь эти переменные просто
+           подставляются с тем же фолбэком, что был при обычном
+           <link>-подключении Google Fonts — сам --font-head/--font-body
+           и все ~20 мест их использования ниже по файлу менять не
+           понадобилось. */
+        --font-head: var(--font-head-google), Georgia, serif;
+        --font-body: var(--font-body-google), system-ui, sans-serif;
 
         --radius:    12px;
         --radius-lg: 20px;
