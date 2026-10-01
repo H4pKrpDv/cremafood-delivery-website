@@ -12,6 +12,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { useI18n } from '@/i18n/I18nProvider';
 import { useCartStore, useCartHydrated } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
@@ -64,11 +65,11 @@ export function Header() {
   return (
     <header className="header" id="top">
       <div className="header__inner">
-        <a href="#top" className="logo">
+        <Link href="/" className="logo">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className="logo__mark" src="/img/logo.png" alt="" aria-hidden="true" width={34} height={34} />
           <span className="logo__text">Crema Food</span>
-        </a>
+        </Link>
         <div className="header__actions">
           <nav className="nav">
             <a href="tel:+37361088777" className="nav__link">

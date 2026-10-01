@@ -11,6 +11,7 @@
 
 'use client';
 
+import Link from 'next/link';
 import { useI18n } from '@/i18n/I18nProvider';
 import { useUIStore } from '@/store/uiStore';
 import { SocialLinks } from '@/components/SocialLinks';
@@ -23,11 +24,11 @@ export function Footer() {
     <footer className="footer" id="footer">
       <div className="footer__inner">
         <div className="footer__brand">
-          <a href="#top" className="logo logo--footer">
+          <Link href="/" className="logo logo--footer">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img className="logo__mark" src="/img/logo.png" alt="" aria-hidden="true" width={34} height={34} />
             <span className="logo__text">Crema Food</span>
-          </a>
+          </Link>
           <p className="footer__tagline">{t('footer.tagline')}</p>
         </div>
         <div className="footer__col">
