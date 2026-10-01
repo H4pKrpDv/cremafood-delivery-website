@@ -18,6 +18,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '@/i18n/I18nProvider';
 import { useCartStore, useCartHydrated } from '@/store/cartStore';
 import { useItemMeta } from '@/lib/useItemMeta';
+import { useImageFallback } from '@/lib/useImageFallback';
 import { itemMetaIndex, publicImagePath } from '@/lib/data';
 
 export function ItemCard({ itemId }: { itemId: string }) {
@@ -27,6 +28,12 @@ export function ItemCard({ itemId }: { itemId: string }) {
   const hydrated = useCartHydrated();
   const qty = useCartStore((s) => (hydrated ? s.getItemQty(itemId) : 0));
   const setItemQty = useCartStore((s) => s.setItemQty);
+  // base может быть undefined (неизвестный itemId) — ниже есть ранний
+  // return null, но хуки обязаны вызываться безусловно и в одном и том же
+  // порядке на каждый рендер, поэтому передаём пустую строку, когда base
+  // ещё не определён (безопасное значение-заглушка, компонент всё равно
+  // сразу рендерит null в этом случае).
+  const img = useImageFallback(base ? publicImagePath(base.image) : '', base?.hasImage ?? false);
 
   const [expanded, setExpanded] = useState(false);
   const [showToggle, setShowToggle] = useState(false);
@@ -98,7 +105,15 @@ export function ItemCard({ itemId }: { itemId: string }) {
   return (
     <article className={cardClasses.join(' ')}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className="item-card__img" src={publicImagePath(base.image)} alt={imageAlt} loading="lazy" width={600} height={450} />
+      <img
+        className={`item-card__img${img.imgClassName ? ` ${img.imgClassName}` : ''}`}
+        src={img.src}
+        alt={imageAlt}
+        loading="lazy"
+        width={600}
+        height={450}
+        onError={img.onError}
+      />
       <div className="item-card__body">
         <h5 className="item-card__name">{name}</h5>
         <p ref={descRef} className={`item-card__desc${expanded ? ' item-card__desc--expanded' : ''}`}>

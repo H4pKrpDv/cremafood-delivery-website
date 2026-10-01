@@ -42,3 +42,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# generated: см. scripts/generate-image-manifest.mjs — пересобирается
+# автоматически перед dev/build/start (predev/prebuild/prestart)
+/src/data/imageManifest.json

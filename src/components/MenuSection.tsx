@@ -18,7 +18,8 @@
 
 import { useState } from 'react';
 import { useI18n } from '@/i18n/I18nProvider';
-import { menuData, DEFAULT_ACTIVE_CATEGORY, publicImagePath } from '@/lib/data';
+import { menuData, DEFAULT_ACTIVE_CATEGORY, publicImagePath, hasRealImage } from '@/lib/data';
+import { useImageFallback } from '@/lib/useImageFallback';
 import { isFullMenuSubcategory, isSubRenderable, type MenuSubcategory } from '@/types/menu';
 import { ItemCard } from './ItemCard';
 
@@ -74,6 +75,14 @@ function Subcategory({
   categoryId: string;
 }) {
   const { t } = useI18n();
+  // Хуки обязаны вызываться безусловно и в одном и том же порядке на каждый
+  // рендер — поэтому useImageFallback() идёт раньше раннего return у
+  // карточки "Полное меню" (у неё нет своего баннера, но компонент Subcategory
+  // всё равно должен каждый раз вызывать один и тот же набор хуков).
+  const img = useImageFallback(
+    isFullMenuSubcategory(sub) ? '' : publicImagePath(sub.image),
+    isFullMenuSubcategory(sub) ? false : hasRealImage(sub.image)
+  );
   if (isFullMenuSubcategory(sub)) return <FullMenuCard sub={sub} categoryId={categoryId} />;
 
   const titleKey = `subcategories.${sub.id}.title`;
@@ -84,7 +93,13 @@ function Subcategory({
     <div className="category" id={sub.id}>
       <div className={`category__header${reversed ? ' category__header--rev' : ''}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={publicImagePath(sub.image)} alt={t(titleKey)} className="category__img" loading="lazy" />
+        <img
+          src={img.src}
+          alt={t(titleKey)}
+          className={`category__img${img.imgClassName ? ` ${img.imgClassName}` : ''}`}
+          loading="lazy"
+          onError={img.onError}
+        />
         <div className="category__text">
           <h4 className="category__title">{t(titleKey)}</h4>
           <p className="category__desc">{t(descKey)}</p>

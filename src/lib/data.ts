@@ -17,9 +17,28 @@
  */
 
 import menuJson from '@/data/menu.json';
+import imageManifest from '@/data/imageManifest.json';
 import type { MenuData, MenuItem, DepartmentValue } from '@/types/menu';
 
 export const menuData = menuJson as unknown as MenuData;
+
+// 01.10.2026. Множество путей (вида "img/items/espresso.jpg", без ведущего
+// слэша — тот же формат, что в menu.json), для которых в public/ РЕАЛЬНО
+// лежит файл. Генерируется автоматически скриптом scripts/generate-image-
+// manifest.mjs перед dev/build/start (см. его подробный комментарий —
+// там же разбор самого бага, который это чинит: гонка на ~80 одновременных
+// запросах заведомо несуществующих картинок при переключении категории).
+// Импорт обычного JSON (не fs!) — специально, чтобы безопасно попадать и в
+// серверный, и в клиентский бандл: 'node:fs' в клиентском бандле собрать
+// нельзя, а этот модуль (lib/data.ts) импортируется и из 'use client'
+// компонентов (MenuSection.tsx, ItemCard.tsx).
+const existingImagePaths = new Set<string>(imageManifest as string[]);
+
+// Есть ли у пути РЕАЛЬНЫЙ файл в public/ прямо сейчас. path — в том же
+// формате, что image-поля в menu.json (без ведущего слэша).
+export function hasRealImage(path: string): boolean {
+  return existingImagePaths.has(path);
+}
 
 // Департамент (кухня/бар) определяется по категории автоматически — то же
 // правило, что CATEGORY_DEPARTMENT в build.js нативной версии. Для
@@ -39,6 +58,7 @@ export interface ItemMetaBase {
   id: string;
   price: number;
   image: string;
+  hasImage: boolean;
   available: boolean;
   modifierGroupIds: string[];
   ageRestricted: boolean;
@@ -58,6 +78,7 @@ function buildItemMetaIndex(): Record<string, ItemMetaBase> {
           id: item.id,
           price: item.price,
           image: item.image,
+          hasImage: hasRealImage(item.image),
           available: item.available !== false,
           modifierGroupIds: item.modifiers ?? [],
           ageRestricted: Boolean(item.ageRestricted),

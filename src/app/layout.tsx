@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Script from 'next/script';
 import { Playfair_Display, Inter } from 'next/font/google';
 import './globals.css';
 import { I18nProvider } from '@/i18n/I18nProvider';
@@ -104,51 +103,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         {/*
-          Graceful fallback битых <img> (Этап 1 п.11 нативной версии,
-          build/template.html) — inline-скрипт как можно раньше в <head>,
-          т.к. у <img> событие "error" не всплывает (bubbles:false) и
-          ловится только через capture-фазу на document. strategy=
-          "beforeInteractive" — Next.js сам выносит такой скрипт в <head>
-          и выполняет его до гидратации React, до того как успеют
-          отработать все остальные подключаемые скрипты — та же гарантия
-          по времени срабатывания, что была у инлайн-скрипта в
-          build/template.html. Пока в проекте нет ни одной реальной
-          фотографии (весь img/ — заглушки, см. Context.md) — каждый
-          <img> 404-ит и получает вместо браузерной "битой иконки"
-          аккуратную inline-SVG заглушку с классом .img-placeholder
-          (стили уже перенесены в globals.css вместе с остальным CSS).
-          Когда появятся реальные фото — скрипт просто перестанет
-          что-либо делать, убирать его не придётся.
+          Graceful fallback битых <img> — раньше (22.09.2026) был
+          глобальный inline-скрипт здесь (strategy="beforeInteractive"),
+          который слушал 'error' на document в capture-фазе и мутировал
+          DOM напрямую в обход React. 02.10.2026 переписано на обычный
+          React onError + useState на каждом <img> — см.
+          lib/useImageFallback.ts, там подробно объяснена причина: прежний
+          подход гонялся с гидратацией React именно для категории
+          "Напитки" (она активна по умолчанию и видна сразу, поэтому её
+          картинки первыми начинали грузиться/проваливаться — иногда ещё
+          ДО того, как React успевал гидрироваться, и тогда гидратация
+          перезаписывала ручную правку скрипта обратно к битому src).
+          Новый подход на обычных React-хуках такой гонки не допускает в
+          принципе — состояние "битая картинка" живёт внутри самого React,
+          а не мутируется извне.
         */}
-        <Script id="img-fallback" strategy="beforeInteractive">
-          {`(function () {
-            var PLACEHOLDER =
-              'data:image/svg+xml;charset=UTF-8,' +
-              encodeURIComponent(
-                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 75">' +
-                  '<rect width="100" height="75" fill="#3a2a1a"/>' +
-                  '<g fill="none" stroke="#c8964a" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">' +
-                  '<rect x="24" y="19" width="52" height="37" rx="2"/>' +
-                  '<circle cx="37" cy="31" r="5.5"/>' +
-                  '<path d="M24 49 L42 33 L54 45 L64 35 L76 47"/>' +
-                  '</g>' +
-                  '</svg>'
-              );
-
-            document.addEventListener(
-              'error',
-              function (event) {
-                var img = event.target;
-                if (!img || img.tagName !== 'IMG' || img.dataset.fallbackApplied) return;
-                img.dataset.fallbackApplied = 'true';
-                img.src = PLACEHOLDER;
-                img.removeAttribute('srcset');
-                img.classList.add('img-placeholder');
-              },
-              true
-            );
-          })();`}
-        </Script>
         <I18nProvider>
           {/*
             Header/Footer — глобальный каркас, одинаковый на всех
