@@ -5,7 +5,6 @@ import './globals.css';
 import { I18nProvider } from '@/i18n/I18nProvider';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { MapSection } from '@/components/MapSection';
 import { CartModal } from '@/components/CartModal';
 import { CheckoutModal } from '@/components/CheckoutModal';
 import { PrivacyModal } from '@/components/PrivacyModal';
@@ -151,9 +150,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           })();`}
         </Script>
         <I18nProvider>
+          {/*
+            Header/Footer — глобальный каркас, одинаковый на всех
+            страницах, включая not-found.tsx/error.tsx (02.10.2026,
+            оформление 404/500: по решению пользователя эти страницы
+            используют настоящие Header/Footer сайта, а не отдельный
+            минимальный макет). MapSection раньше была здесь же (между
+            {'{children}'} и Footer) и поэтому показывалась на всех
+            страницах без исключения — теперь она переехала в
+            app/page.tsx как часть контента самой главной страницы
+            (после Hero/MenuSection), чтобы НЕ показываться на 404/500.
+          */}
           <Header />
           {children}
-          <MapSection />
           <Footer />
           <CartModal />
           <CheckoutModal />
