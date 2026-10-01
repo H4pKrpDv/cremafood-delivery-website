@@ -39,11 +39,33 @@ export function ItemCard({ itemId }: { itemId: string }) {
 
   // Кнопка "ещё" показывается, только если текст реально обрезан до 2 строк
   // (scrollHeight > clientHeight) — тот же приём, что checkDescOverflow() в
-  // js/menu.js, пересчитывается при ресайзе и после смены языка (длина
-  // перевода отличается).
+  // js/menu.js, пересчитывается при смене языка (длина перевода отличается)
+  // и при любом изменении РЕАЛЬНОГО размера самого элемента описания.
+  //
+  // 02.10.2026: раньше пересчёт запускался только на window 'resize' — этого
+  // достаточно, только если карточка с самого начала видима. Но MenuSection
+  // рендерит ВСЕ категории сразу (скрытые получают класс
+  // .category-group--hidden, см. его комментарий), а не монтирует их по
+  // требованию — значит карточки товаров из категории, которая не активна
+  // при первой загрузке страницы (всё, кроме cafe — см.
+  // DEFAULT_ACTIVE_CATEGORY), монтируются ВНУТРИ display:none-блока.
+  // В этот момент scrollHeight/clientHeight элемента описания равны 0/0 (это
+  // нормальное поведение скрытых через display:none элементов), поэтому
+  // showToggle навсегда "залипал" в false — переключение вкладки лишь меняет
+  // CSS-класс у родителя (сама карточка не перемонтируется), поэтому этот
+  // эффект не перезапускался и реального пересчёта не происходило. Внешний
+  // ресайз окна браузера — единственное, что раньше его триггерило, отсюда
+  // и видимое "исправление" при изменении размера дисплея в dev tools.
+  //
+  // ResizeObserver, подключённый прямо к элементу описания, решает это: он
+  // срабатывает на любое изменение РЕАЛЬНОГО размера бокса — в том числе
+  // переход 0×0 → настоящая высота при снятии display:none с родителя при
+  // переключении вкладки, — а не только на событие window 'resize'.
   useEffect(() => {
+    const el = descRef.current;
+    if (!el) return;
+
     function recheck() {
-      const el = descRef.current;
       if (!el) return;
       if (expanded) {
         setShowToggle(true);
@@ -51,17 +73,20 @@ export function ItemCard({ itemId }: { itemId: string }) {
       }
       setShowToggle(el.scrollHeight - el.clientHeight > 1);
     }
+
     recheck();
-    let resizeTimer: number | null = null;
-    function onResize() {
-      if (resizeTimer) window.clearTimeout(resizeTimer);
-      resizeTimer = window.setTimeout(recheck, 200);
+
+    if (typeof ResizeObserver === 'undefined') {
+      // Очень старые браузеры без ResizeObserver — не наш основной случай
+      // (на момент написания поддержка повсеместная), но на всякий случай
+      // не остаёмся совсем без пересчёта: откатываемся на window 'resize'.
+      window.addEventListener('resize', recheck);
+      return () => window.removeEventListener('resize', recheck);
     }
-    window.addEventListener('resize', onResize);
-    return () => {
-      window.removeEventListener('resize', onResize);
-      if (resizeTimer) window.clearTimeout(resizeTimer);
-    };
+
+    const observer = new ResizeObserver(() => recheck());
+    observer.observe(el);
+    return () => observer.disconnect();
   }, [expanded, lang, desc]);
 
   if (!base) return null;
