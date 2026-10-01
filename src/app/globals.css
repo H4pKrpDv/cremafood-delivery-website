@@ -85,6 +85,36 @@
         scroll-behavior: smooth;
       }
 
+      /* 02.10.2026: основной скроллбар страницы — та же стилизация, что у
+         .cart-list (см. ниже), просто применённая к <html> целиком, а не к
+         одному скроллящемуся блоку внутри попапа корзины: системный белый
+         толстый скроллбар на десктопе так же ломал тёмный дизайн за
+         пределами попапов. На мобильных (iOS/Android) браузеры рисуют свой
+         лёгкий оверлей-скроллбар поверх контента независимо от этих правил
+         — там всё остаётся как было, как и было решено для .cart-list. */
+      html {
+        scrollbar-width: thin; /* Firefox */
+        scrollbar-color: var(--gold-dark) var(--surface-2); /* Firefox: thumb, track */
+      }
+
+      html::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      html::-webkit-scrollbar-track {
+        background: var(--surface-2);
+        border-radius: 999px;
+      }
+
+      html::-webkit-scrollbar-thumb {
+        background: var(--gold-dark);
+        border-radius: 999px;
+      }
+
+      html::-webkit-scrollbar-thumb:hover {
+        background: var(--gold);
+      }
+
       body {
         font-family: var(--font-body);
         background-color: var(--bg);
