@@ -126,7 +126,22 @@ export function CheckoutModal() {
   }
 
   function handlePhoneChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const digits = extractPhoneDigits(e.target.value);
+    const raw = e.target.value;
+    let digits = extractPhoneDigits(raw);
+
+    // Курсор маски всегда в конце строки (см. useEffect ниже), поэтому
+    // Backspace стирает именно последний символ. Если этот символ — не
+    // цифра, а символ самой маски (например закрывающая скобка ")"), то
+    // extractPhoneDigits всё равно вернёт то же количество цифр, что и до
+    // стирания, и formatPhoneDigits тут же нарисует этот символ маски
+    // обратно — пользователь "залипает" и не может продолжить удаление.
+    // Отличаем такой случай (длина строки уменьшилась, а цифр не убавилось)
+    // и в этом случае дополнительно убираем последнюю цифру вручную.
+    const isDeletion = raw.length < form.phone.length;
+    if (isDeletion && digits.length === extractPhoneDigits(form.phone).length) {
+      digits = digits.slice(0, -1);
+    }
+
     updateField('phone', formatPhoneDigits(digits));
     clearFieldError('phone');
   }
