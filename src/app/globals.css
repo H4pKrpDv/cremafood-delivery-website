@@ -1132,6 +1132,66 @@
         color: var(--text-3);
       }
 
+      /* 02.10.2026: textarea "Комментарий к заказу" (components/CheckoutModal.tsx)
+         — без своего <label>, только placeholder/aria-label (см. комментарий в
+         компоненте), поэтому .checkout-field__label тут не используется вообще.
+         Фиксированный размер по требованию: ширина как у остальных полей (100%
+         от .checkout-field), высота — РОВНО в 2 раза больше обычного однострочного
+         .checkout-field__input. У .checkout-field__input нет явного height (он
+         складывается из line-height 0.9rem×1.6 + паддинг 0.7rem×2 + рамка 1px×2
+         ≈ 47-48px при стандартном корневом font-size 16px) — 2x от этого ≈ 96px,
+         отсюда 6rem ниже. resize:none — пользователь не может перетащить за угол
+         и изменить ни ширину, ни высоту, как и просили. */
+      .checkout-field__textarea {
+        display: block;
+        width: 100%;
+        height: 6rem;
+        resize: none;
+        padding: 0.7rem 0.85rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        line-height: 1.5;
+        transition: border-color var(--transition);
+        overflow-y: auto;
+        /* Тот же скроллбар, что у .checkout-modal__scroll/.cart-list/html —
+           тонкий золотой на тёмном треке (Firefox + Chrome/Edge/Safari). На
+           мобильных браузерах, как и везде на сайте, останется их нативный
+           лёгкий оверлей-скроллбар поверх этих правил. */
+        scrollbar-width: thin;
+        scrollbar-color: var(--gold-dark) var(--surface-2);
+      }
+
+      .checkout-field__textarea::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .checkout-field__textarea::-webkit-scrollbar-track {
+        background: var(--surface-2);
+        border-radius: 999px;
+      }
+
+      .checkout-field__textarea::-webkit-scrollbar-thumb {
+        background: var(--gold-dark);
+        border-radius: 999px;
+      }
+
+      .checkout-field__textarea::-webkit-scrollbar-thumb:hover {
+        background: var(--gold);
+      }
+
+      .checkout-field__textarea:focus {
+        outline: none;
+        border-color: var(--gold);
+      }
+
+      .checkout-field__textarea::placeholder {
+        color: var(--text-3);
+      }
+
       /* Правило проекта: провал Zod-валидации → класс .input-error на инпут +
          текст ошибки в <span> под ним, убирается при начале ввода. Тот же
          класс используем и на группах кнопок-переключателей (способ

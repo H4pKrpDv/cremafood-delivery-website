@@ -49,6 +49,7 @@ export interface OrderPayload {
     } | null;
   };
   payment: { method: 'cash' | 'card' };
+  comment: string | null;
   ageConfirmed: boolean;
   items: OrderPayloadItem[];
   amounts: { subtotal: number; deliveryFee: number; total: number };
@@ -107,6 +108,7 @@ export function buildOrderPayload(
           : null
     },
     payment: { method: form.payment as 'cash' | 'card' },
+    comment: form.comment || null,
     ageConfirmed,
     items,
     amounts: {

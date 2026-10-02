@@ -27,7 +27,7 @@ import { useCartStore } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
 import { useCartSummary } from '@/lib/useCartSummary';
 import { extractPhoneDigits, formatPhoneDigits, PHONE_EMPTY_VALUE } from '@/lib/phone';
-import { createOrderFormSchema, type OrderFormInput } from '@/lib/orderSchema';
+import { createOrderFormSchema, ORDER_COMMENT_MAX_LENGTH, type OrderFormInput } from '@/lib/orderSchema';
 import { DELIVERY_FEE } from '@/lib/orderPayload';
 import { trackEvent } from '@/lib/analytics';
 
@@ -35,7 +35,7 @@ function formatMdl(amount: number): string {
   return `${Math.round(amount * 100) / 100} MDL`;
 }
 
-type FieldName = 'name' | 'phone' | 'method' | 'street' | 'building' | 'payment';
+type FieldName = 'name' | 'phone' | 'method' | 'street' | 'building' | 'payment' | 'comment';
 type View = 'form' | 'loading' | 'success' | 'error';
 
 const emptyForm: OrderFormInput = {
@@ -47,7 +47,8 @@ const emptyForm: OrderFormInput = {
   building: '',
   entrance: '',
   floor: '',
-  apartment: ''
+  apartment: '',
+  comment: ''
 };
 
 export function CheckoutModal() {
@@ -415,6 +416,24 @@ export function CheckoutModal() {
                 </div>
                 <span className="checkout-field__error" hidden={!errors.payment}>
                   {errors.payment}
+                </span>
+              </div>
+
+              <div className="checkout-field">
+                <textarea
+                  className={`checkout-field__textarea${errors.comment ? ' input-error' : ''}`}
+                  id="checkoutComment"
+                  placeholder={t('checkout.comment')}
+                  aria-label={t('checkout.comment')}
+                  maxLength={ORDER_COMMENT_MAX_LENGTH}
+                  value={form.comment}
+                  onChange={(e) => {
+                    updateField('comment', e.target.value);
+                    clearFieldError('comment');
+                  }}
+                />
+                <span className="checkout-field__error" hidden={!errors.comment}>
+                  {errors.comment}
                 </span>
               </div>
 

@@ -88,6 +88,10 @@ export function formatOrderMessage(payload: OrderPayload): string {
   }
   lines.push(`💳 ${PAYMENT_LABEL[payload.payment.method] || payload.payment.method}`);
   if (payload.ageConfirmed) lines.push('🔞 18+ подтверждено');
+  if (payload.comment) {
+    lines.push('');
+    lines.push(`💬 ${escapeHtml(payload.comment)}`);
+  }
   lines.push('');
   lines.push('<b>Состав заказа:</b>');
   for (const item of payload.items) {

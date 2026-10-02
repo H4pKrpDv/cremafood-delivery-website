@@ -28,6 +28,13 @@ export const PAYMENT_METHODS = ['cash', 'card'] as const;
 export type FulfillmentMethod = (typeof FULFILLMENT_METHODS)[number];
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 
+// 02.10.2026: необязательный комментарий к заказу (components/CheckoutModal.tsx
+// — textarea фиксированного размера над .checkout-summary). Константа
+// экспортируется, чтобы то же число использовалось и на фронте (атрибут
+// maxLength у textarea — не даёт физически ввести больше символов) и здесь,
+// в Zod-схеме (на случай запроса напрямую к /api/orders в обход формы).
+export const ORDER_COMMENT_MAX_LENGTH = 300;
+
 export interface OrderFormInput {
   name: string;
   phone: string;
@@ -38,6 +45,7 @@ export interface OrderFormInput {
   entrance: string;
   floor: string;
   apartment: string;
+  comment: string;
 }
 
 // Фабрика — та же идея, что buildSchema() в js/checkout.js: сообщения об
@@ -46,6 +54,7 @@ export interface OrderFormInput {
 export function createOrderFormSchema(t: Translator) {
   const requiredMsg = t('checkout.validation.required');
   const phoneMsg = t('checkout.validation.phoneFormat');
+  const commentTooLongMsg = t('checkout.validation.commentTooLong').replace('{max}', String(ORDER_COMMENT_MAX_LENGTH));
 
   return z
     .object({
@@ -57,7 +66,12 @@ export function createOrderFormSchema(t: Translator) {
       building: z.string().trim().optional().default(''),
       entrance: z.string().trim().optional().default(''),
       floor: z.string().trim().optional().default(''),
-      apartment: z.string().trim().optional().default('')
+      apartment: z.string().trim().optional().default(''),
+      // Необязательный комментарий к заказу (см. ORDER_COMMENT_MAX_LENGTH
+      // выше) — на фронте дополнительно подстрахован атрибутом maxLength
+      // на самой textarea (components/CheckoutModal.tsx), это ограничение
+      // здесь — для запросов напрямую к /api/orders в обход формы.
+      comment: z.string().trim().max(ORDER_COMMENT_MAX_LENGTH, commentTooLongMsg).optional().default('')
     })
     .superRefine((data, ctx) => {
       if (data.method === 'delivery') {
@@ -99,7 +113,8 @@ export const orderRequestSchema = z.object({
     building: z.string().optional().default(''),
     entrance: z.string().optional().default(''),
     floor: z.string().optional().default(''),
-    apartment: z.string().optional().default('')
+    apartment: z.string().optional().default(''),
+    comment: z.string().optional().default('')
   }),
   cart: cartPayloadSchema
 });
