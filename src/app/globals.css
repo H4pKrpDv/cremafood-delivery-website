@@ -53,6 +53,23 @@
         --text-3:      #8a6e52;
         --white:       #ffffff;
 
+        /* Текст/иконки НА золотом фоне (счётчик корзины, кнопка .btn--primary,
+           активная вкладка категории, кнопка "В корзину", back-to-top) —
+           раньше эти 6 мест брали color: var(--bg), что работало только
+           случайно (--bg тогда всегда тёмный). В светлой теме --bg становится
+           белым, а эти элементы остаются золотыми — там нужен постоянно
+           тёмный текст независимо от темы, поэтому отдельная переменная, не
+           завязанная на --bg. Одинаковая в обеих темах — не переопределяется
+           в html[data-theme="light"] ниже. */
+        --on-gold: #1c1410;
+
+        /* Полупрозрачная подложка шапки (position: fixed + backdrop-filter:
+           blur) — раньше была зашита как rgba(19, 14, 9, 0.92) прямо в
+           .header, напрямую завязана на --bg, но через rgb-канал, а не
+           var() — такое не подхватывается автоматическим переопределением
+           --bg для светлой темы, поэтому вынесено в свою переменную. */
+        --header-bg-translucent: rgba(19, 14, 9, 0.92);
+
         /* Шрифты грузятся через next/font/google (см. app/layout.tsx) —
            он сам генерирует @font-face с self-hosted файлами и кладёт
            итоговое имя шрифта в CSS-переменные --font-head-google/
@@ -79,6 +96,46 @@
         --header-height: 60px;
 
         --transition: 0.25s ease;
+      }
+
+      /* ─── СВЕТЛАЯ ТЕМА (02.10.2026, см. Context.md) ───────────────────
+         Переключается установкой data-theme="light" на <html> — делает это
+         components/ThemeEffect.tsx на основе store/themeStore.ts. Без
+         атрибута — тёмная тема (значения выше, исходный дизайн сайта не
+         менялся). Переопределяем только сами токены — все ~300 var(--xxx)
+         ниже по файлу подхватывают новые значения автоматически, трогать
+         стили каждого компонента по отдельности не нужно.
+
+         Золотая палитра (--gold/--gold-light/--gold-dark) в тёмной теме
+         местами используется как ЦВЕТ ТЕКСТА на тёмном фоне (hover-ссылки,
+         заголовки, цены — --gold-light одна только встречается так 37 раз).
+         На белом фоне тот же светлый оттенок (#e8b96a) дал бы контраст
+         около 1.6:1 — нечитаемо. Поэтому в светлой теме роли внутри золотой
+         тройки меняются местами ПО СВЕТЛОТЕ, а не по смыслу: --gold-light
+         (самая "акцентная" роль — для hover/текста) здесь становится САМЫМ
+         ТЁМНЫМ из трёх оттенков (контраст ~6.5:1 на белом), --gold-dark
+         (только рамки/скроллбары, не текст — ему это не критично) остаётся
+         близким к исходному и вовсе не переопределён ниже. --on-gold
+         намеренно тоже не переопределяется — он и так одинаковый в обеих
+         темах (см. комментарий у :root). */
+      html[data-theme="light"] {
+        --bg:          #ffffff;
+        --bg-2:        #faf5ec;
+        --bg-3:        #f2e4cc;
+        --surface:     #fdfaf5;
+        --surface-2:   #f3e7d2;
+        --border:      #e3cda0;
+        --gold:        #a06b25;
+        --gold-light:  #7a4f18;
+        --cream:       #1f1509;
+        --cream-2:     #4a3521;
+        --cream-muted: #8a7156;
+        --text:        #2a1d10;
+        --text-2:      #5a4228;
+        --text-3:      #8a7156;
+        --white:       #130e09;
+
+        --header-bg-translucent: rgba(255, 255, 255, 0.86);
       }
 
       html {
@@ -162,7 +219,7 @@
         left: 0;
         right: 0;
         z-index: 100;
-        background: rgba(19, 14, 9, 0.92);
+        background: var(--header-bg-translucent);
         backdrop-filter: blur(12px);
         border-bottom: 1px solid var(--border);
       }
@@ -294,13 +351,41 @@
         padding: 0 4px;
         border-radius: 999px;
         background: var(--gold);
-        color: var(--bg);
+        color: var(--on-gold);
         font-size: 0.65rem;
         font-weight: 700;
         line-height: 1;
         display: flex;
         align-items: center;
         justify-content: center;
+      }
+
+      /* ─── ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ В ШАПКЕ (десктоп; 02.10.2026, см. Context.md) ───
+         Скрыт на мобильном по умолчанию (как .nav) — на мобильном та же
+         функция живёт в .mobile-menu__theme ниже. Появляется вместе с .nav
+         в медиа-запросе от 769px в конце файла. Визуально — тот же стиль
+         icon-button, что и .header__cart. */
+      .theme-toggle--header {
+        display: none;
+        width: 38px;
+        height: 38px;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        color: var(--cream-2);
+        cursor: pointer;
+        transition: color var(--transition);
+        flex-shrink: 0;
+      }
+
+      .theme-toggle--header:hover {
+        color: var(--gold-light);
+      }
+
+      .theme-toggle--header svg {
+        width: 21px;
+        height: 21px;
       }
 
       /* ─── БУРГЕР (мобильное меню; скрыт от 769px — там инлайн-шапка) ─── */
@@ -460,6 +545,40 @@
         padding-top: 0.25rem;
       }
 
+      /* ─── ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ В БУРГЕР-МЕНЮ (мобильный; 02.10.2026) ───
+         Та же строка-ссылка, что .mobile-menu__link (нижняя граница тоже
+         "последняя" — у неё самой по себе нет :last-of-type совпадения с
+         .mobile-menu__link, поэтому граница явно не рисуется отдельно),
+         но с иконкой слева от подписи. Всегда в самом низу — после блока
+         языка, как и просил пользователь. */
+      .mobile-menu__theme {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding-top: 0.6rem;
+        margin-top: 0.1rem;
+        border-top: 1px solid var(--border);
+        background: none;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        color: var(--cream-2);
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: color var(--transition);
+      }
+
+      .mobile-menu__theme:hover {
+        color: var(--gold-light);
+      }
+
+      .mobile-menu__theme svg {
+        width: 19px;
+        height: 19px;
+        flex-shrink: 0;
+      }
+
       /* ─── BUTTON ─── */
       .btn {
         display: inline-block;
@@ -475,7 +594,7 @@
 
       .btn--primary {
         background: var(--gold);
-        color: var(--bg);
+        color: var(--on-gold);
         border: 2px solid var(--gold);
       }
 
@@ -1711,12 +1830,12 @@
 
       .category-tab--active {
         background: var(--gold);
-        color: var(--bg);
+        color: var(--on-gold);
         border-color: var(--gold);
       }
 
       .category-tab--active:hover {
-        color: var(--bg);
+        color: var(--on-gold);
       }
 
       /* ─── MENU PILLS NAV (пилюли подкатегорий текущего таба; клик — якорь-
@@ -2033,7 +2152,7 @@
         padding: 0.55rem;
         border-radius: var(--radius);
         background: var(--gold);
-        color: var(--bg);
+        color: var(--on-gold);
         border: none;
         font-size: 0.8rem;
         font-weight: 500;
@@ -2456,7 +2575,7 @@
         height: 44px;
         border-radius: 50%;
         background: var(--gold);
-        color: var(--bg);
+        color: var(--on-gold);
         border: none;
         font-size: 1.1rem;
         line-height: 1;
@@ -2535,6 +2654,10 @@
         .nav {
           display: flex;
           gap: 2rem;
+        }
+
+        .theme-toggle--header {
+          display: flex;
         }
 
         .header__actions {

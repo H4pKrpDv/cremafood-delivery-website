@@ -8,7 +8,11 @@
     "phone": "+373 (61) 088-777",
     "deliverySchedule": "График доставки",
     "langLabel": "Язык",
-    "menuToggle": "Открыть меню"
+    "menuToggle": "Открыть меню",
+    "themeToggle": {
+      "toLight": "Переключить на светлую тему",
+      "toDark": "Переключить на тёмную тему"
+    }
   },
   "hero": {
     "eyebrow": "Добро пожаловать в",

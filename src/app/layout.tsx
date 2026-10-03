@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Playfair_Display, Inter } from 'next/font/google';
 import './globals.css';
 import { I18nProvider } from '@/i18n/I18nProvider';
+import { ThemeEffect } from '@/components/ThemeEffect';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { CartModal } from '@/components/CartModal';
@@ -118,6 +119,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           принципе — состояние "битая картинка" живёт внутри самого React,
           а не мутируется извне.
         */}
+        {/*
+          Тема оформления (тёмная/светлая) — проставляет data-theme на
+          <html> после гидратации store/themeStore.ts (02.10.2026, см.
+          components/ThemeEffect.tsx и Context.md). Рендерит null, вынесен
+          за пределы I18nProvider, т.к. от i18n-контекста не зависит.
+        */}
+        <ThemeEffect />
         <I18nProvider>
           {/*
             Header/Footer — глобальный каркас, одинаковый на всех

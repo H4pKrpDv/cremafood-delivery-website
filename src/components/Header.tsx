@@ -16,13 +16,36 @@ import Link from 'next/link';
 import { useI18n } from '@/i18n/I18nProvider';
 import { useCartStore, useCartHydrated } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
+import { useThemeStore } from '@/store/themeStore';
 import type { Lang } from '@/lib/i18nCore';
 
 const LANGS: Lang[] = ['ru', 'ro', 'en'];
 
+// Иконки солнца/полумесяца — тот же визуальный язык, что и у иконки
+// корзины ниже (stroke, currentColor, viewBox 0 24 24), декоративная
+// геометрическая форма без привязки к конкретному набору иконок.
+function SunIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.5" />
+      <path d="M12 2.5v2.5M12 19v2.5M4.5 12H2M22 12h-2.5M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8" />
+    </svg>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M21 12.8A9 9 0 1 1 11.2 3 7.2 7.2 0 0 0 21 12.8z" />
+    </svg>
+  );
+}
+
 export function Header() {
   const { t, lang, setLang } = useI18n();
   const openCart = useUIStore((s) => s.openCart);
+  const theme = useThemeStore((s) => s.theme);
+  const toggleTheme = useThemeStore((s) => s.toggleTheme);
   const hydrated = useCartHydrated();
   const count = useCartStore((s) =>
     Object.values(s.items).reduce((sum, entry) => sum + (typeof entry.qty === 'number' ? entry.qty : 0), 0)
@@ -61,6 +84,7 @@ export function Header() {
   }
 
   const displayedCount = hydrated ? count : 0;
+  const themeToggleLabel = theme === 'dark' ? t('header.themeToggle.toLight') : t('header.themeToggle.toDark');
 
   return (
     <header className="header" id="top">
@@ -108,6 +132,23 @@ export function Header() {
               </ul>
             </div>
           </nav>
+          {/*
+            Переключатель темы (02.10.2026, см. Context.md) — на десктопе
+            слева от иконки корзины, на мобильных скрыт отсюда через CSS
+            (.theme-toggle--header, как и у .nav) и продублирован ниже
+            внутри .mobile-menu. Иконка показывает ЦЕЛЕВУЮ тему (солнце =
+            "сейчас тёмная, нажми — станет светлая", и наоборот) — как и
+            просил пользователь.
+          */}
+          <button
+            type="button"
+            className="theme-toggle theme-toggle--header"
+            aria-label={themeToggleLabel}
+            title={themeToggleLabel}
+            onClick={toggleTheme}
+          >
+            {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+          </button>
           <button
             type="button"
             className="header__cart"
@@ -155,6 +196,19 @@ export function Header() {
             </button>
           ))}
         </div>
+        {/* Переключатель темы на мобильных — в самый низ бургер-меню, под
+            кнопками смены языка, как просил пользователь. */}
+        <button
+          type="button"
+          className="mobile-menu__theme"
+          onClick={() => {
+            toggleTheme();
+            setBurgerOpen(false);
+          }}
+        >
+          {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+          <span>{themeToggleLabel}</span>
+        </button>
       </div>
     </header>
   );
