@@ -3,6 +3,7 @@ import { Playfair_Display, Inter } from 'next/font/google';
 import './globals.css';
 import { I18nProvider } from '@/i18n/I18nProvider';
 import { ThemeEffect } from '@/components/ThemeEffect';
+import { themeInitScript } from '@/lib/themeInitScript';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { CartModal } from '@/components/CartModal';
@@ -92,8 +93,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const jsonLd = buildJsonLd();
 
   return (
-    <html lang="ru" className={`${playfairDisplay.variable} ${inter.variable}`}>
+    // suppressHydrationWarning на <html>: inline-скрипт ниже ставит
+    // data-theme на этот элемент ДО гидратации React — это намеренное
+    // расхождение с серверной разметкой, а не ошибка. Работает только на
+    // один уровень (на сам <html>), на детей не распространяется.
+    <html lang="ru" className={`${playfairDisplay.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
+        {/*
+          Тема оформления (04.10.2026, см. Context.md): синхронный inline-
+          скрипт ДО первой отрисовки ставит data-theme="dark", если
+          пользователь ранее выбрал тёмную тему (светлая — база, ей атрибут
+          не нужен). Без него сохранённая тема применялась бы только после
+          гидратации React — отсюда было мигание при каждой загрузке. См.
+          lib/themeInitScript.ts и store/themeStore.ts.
+        */}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         {/*
           JSON-LD (schema.org Restaurant/CafeOrCoffeeShop + меню) — порт
           buildJsonLd() из build.js, см. lib/seo.ts. Собирается из тех же

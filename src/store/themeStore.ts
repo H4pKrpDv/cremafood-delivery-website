@@ -1,23 +1,28 @@
 /**
  * store/themeStore.ts
  * ------------------------------------------------------------------
- * Zustand-хранилище темы оформления (тёмная/светлая) с persist в
+ * Zustand-хранилище темы оформления (светлая/тёмная) с persist в
  * localStorage — тот же паттерн, что и store/cartStore.ts (skipHydration +
- * ручная гидратация через useThemeHydrated(), см. подробный комментарий
- * там же про useCartHydrated(): SSR не имеет доступа ни к localStorage,
- * ни к системным настройкам пользователя, поэтому первый серверный рендер
- * всегда "тёмная тема" (значение по умолчанию ниже совпадает с базовыми
- * стилями :root в globals.css без модификатора [data-theme="light"]) —
- * реальная тема применяется сразу после монтирования на клиенте, см.
- * components/ThemeEffect.tsx.
+ * ручная гидратация через useThemeHydrated()).
  *
- * Если в localStorage ещё нет сохранённого значения (первый визит на
- * сайт) — при гидратации один раз берём системную/браузерную настройку
- * через matchMedia('(prefers-color-scheme: light)') и сразу сохраняем её
- * как пользовательский выбор (тот же эффект, что и у ручного переключения
- * тумблером). Дальше она живёт как обычный выбор пользователя и не
- * синхронизируется с ОС повторно — "дефолтная тема" означает стартовое
- * значение при первом визите, а не постоянное отслеживание системной темы.
+ * ТЕМА ПО УМОЛЧАНИЮ — СВЕТЛАЯ (04.10.2026; раньше при первом визите
+ * бралась системная тема устройства через matchMedia). Пока пользователь
+ * сам не нажал переключатель, в localStorage ничего не пишется и сайт
+ * светлый; после первого нажатия в 'crema_theme' лежит выбор пользователя
+ * ({"state":{"theme":"dark"},"version":0}) и применяется при каждом
+ * следующем заходе.
+ *
+ * ПОЧЕМУ БЫЛО МИГАНИЕ. Серверный HTML и первый клиентский рендер не знают,
+ * что лежит в localStorage (SSR его не видит), поэтому раньше всегда
+ * рисовалась тёмная тема, а настоящая применялась только в useEffect после
+ * гидратации стора — то есть через 100–200 мс после первой отрисовки
+ * (видно на видеозаписи пользователя). Одной сменой дефолта это не
+ * лечится (мигали бы уже те, кто выбрал тёмную). Настоящее решение —
+ * выставить data-theme на <html> СИНХРОННЫМ inline-скриптом в <head>
+ * (app/layout.tsx, themeInitScript из lib/themeInitScript.ts) ДО первой
+ * отрисовки, читая тот же ключ localStorage напрямую. Стор и
+ * components/ThemeEffect.tsx после гидратации лишь подхватывают уже
+ * применённое значение и синхронизируют последующие переключения.
  * ------------------------------------------------------------------
  */
 
@@ -26,8 +31,9 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { useEffect, useState } from 'react';
+import { THEME_STORAGE_KEY } from '@/lib/themeInitScript';
 
-export type Theme = 'dark' | 'light';
+export type Theme = 'light' | 'dark';
 
 interface ThemeStoreState {
   theme: Theme;
@@ -35,59 +41,41 @@ interface ThemeStoreState {
   toggleTheme: () => void;
 }
 
-const STORAGE_KEY = 'crema_theme';
-
 export const useThemeStore = create<ThemeStoreState>()(
   persist(
     (set, get) => ({
-      theme: 'dark',
+      theme: 'light',
       setTheme: (theme) => set({ theme }),
-      toggleTheme: () => set({ theme: get().theme === 'dark' ? 'light' : 'dark' })
+      toggleTheme: () => set({ theme: get().theme === 'light' ? 'dark' : 'light' })
     }),
     {
-      name: STORAGE_KEY,
+      name: THEME_STORAGE_KEY,
       storage: createJSONStorage(() => localStorage),
       skipHydration: true
     }
   )
 );
 
-// Хук гидратации — тот же приём, что useCartHydrated() (store/cartStore.ts).
-// Дополнительно (в отличие от корзины): если ДО гидратации в сторе не было
-// реального сохранённого значения (первый визит), подставляем системную
-// тему пользователя вместо дефолтного 'dark'.
+// Хук гидратации — тот же приём, что useCartHydrated() (store/cartStore.ts):
+// обращение к persist вынесено внутрь useEffect (на сервере/при prerender
+// API persist может отсутствовать).
 export function useThemeHydrated(): boolean {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     const persistApi = useThemeStore.persist;
     if (!persistApi) {
-      // Защитный фолбэк на случай отсутствия API persist в рантайме —
-      // не блокируем интерфейс в состоянии "не гидратировано" навсегда.
+      // Защитный фолбэк — не блокируем интерфейс в "не гидратировано" навсегда.
       setHydrated(true);
       return;
-    }
-
-    function applySystemDefaultIfFirstVisit() {
-      let hasStoredValue = false;
-      try {
-        hasStoredValue = window.localStorage.getItem(STORAGE_KEY) !== null;
-      } catch {
-        /* localStorage недоступен (приватный режим и т.п.) — считаем это первым визитом */
-      }
-      if (!hasStoredValue && typeof window.matchMedia === 'function') {
-        const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-        useThemeStore.getState().setTheme(prefersLight ? 'light' : 'dark');
-      }
-      setHydrated(true);
     }
 
     if (persistApi.hasHydrated()) {
-      applySystemDefaultIfFirstVisit();
+      setHydrated(true);
       return;
     }
 
-    const unsubscribe = persistApi.onFinishHydration(applySystemDefaultIfFirstVisit);
+    const unsubscribe = persistApi.onFinishHydration(() => setHydrated(true));
     persistApi.rehydrate();
     return unsubscribe;
   }, []);

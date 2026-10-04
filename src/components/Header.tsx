@@ -24,20 +24,25 @@ const LANGS: Lang[] = ['ru', 'ro', 'en'];
 // Иконки солнца/полумесяца — тот же визуальный язык, что и у иконки
 // корзины ниже (stroke, currentColor, viewBox 0 24 24), декоративная
 // геометрическая форма без привязки к конкретному набору иконок.
-function SunIcon() {
+//
+// ThemeIcon рендерит ОБЕ иконки сразу, а какая видна — решает CSS по
+// data-theme на <html> (.theme-icon--sun/.theme-icon--moon в globals.css).
+// Нельзя выбирать иконку в React по значению стора: до гидратации оно всегда
+// дефолтное, и у пользователей с сохранённой тёмной темой иконка на
+// мгновение была бы "не той" (то же мигание, что и с самой темой — см.
+// store/themeStore.ts). Светлая тема → полумесяц ("перейти на тёмную"),
+// тёмная → солнце ("перейти на светлую").
+function ThemeIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="4.5" />
-      <path d="M12 2.5v2.5M12 19v2.5M4.5 12H2M22 12h-2.5M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8" />
-    </svg>
-  );
-}
-
-function MoonIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M21 12.8A9 9 0 1 1 11.2 3 7.2 7.2 0 0 0 21 12.8z" />
-    </svg>
+    <>
+      <svg className="theme-icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="4.5" />
+        <path d="M12 2.5v2.5M12 19v2.5M4.5 12H2M22 12h-2.5M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8" />
+      </svg>
+      <svg className="theme-icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M21 12.8A9 9 0 1 1 11.2 3 7.2 7.2 0 0 0 21 12.8z" />
+      </svg>
+    </>
   );
 }
 
@@ -147,7 +152,7 @@ export function Header() {
             title={themeToggleLabel}
             onClick={toggleTheme}
           >
-            {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+            <ThemeIcon />
           </button>
           <button
             type="button"
@@ -206,7 +211,7 @@ export function Header() {
             setBurgerOpen(false);
           }}
         >
-          {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+          <ThemeIcon />
           <span>{themeToggleLabel}</span>
         </button>
       </div>

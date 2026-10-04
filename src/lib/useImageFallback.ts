@@ -69,40 +69,25 @@
 'use client';
 
 import { useState } from 'react';
-import { useThemeStore } from '@/store/themeStore';
 
-// Та же декоративная SVG-иконка "фото", что была у старого inline-скрипта
-// (просто золотой контур + фон) — менять форму не было причины, только
-// способ применения. Цвета теперь две версии (тёмная/светлая), т.к. это
-// data: URI — отдельный "документ", без доступа к CSS-переменным/
-// currentColor страницы, поэтому под каждую тему нужен свой готовый SVG
-// с зашитыми цветами (02.10.2026, добавление светлой темы — см. Context.md).
-// Реальных фото пока почти ни у одной позиции меню нет (см. комментарий
-// ниже про hasImage), так что эта заглушка — то, что увидит пользователь
-// почти везде, отсюда и решение сделать её темозависимой, а не оставить
-// одной на обе темы.
-function buildPlaceholderSrc(bgFill: string, strokeColor: string): string {
-  return (
-    'data:image/svg+xml;charset=UTF-8,' +
-    encodeURIComponent(
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 75">' +
-        `<rect width="100" height="75" fill="${bgFill}"/>` +
-        `<g fill="none" stroke="${strokeColor}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">` +
-        '<rect x="24" y="19" width="52" height="37" rx="2"/>' +
-        '<circle cx="37" cy="31" r="5.5"/>' +
-        '<path d="M24 49 L42 33 L54 45 L64 35 L76 47"/>' +
-        '</g>' +
-        '</svg>'
-    )
-  );
-}
-
-// Тёмная тема — исходные цвета (var(--surface-2)/var(--gold) на момент
-// написания). Светлая тема — var(--surface-2)/var(--gold) светлой темы
-// (globals.css, html[data-theme="light"]) — цвета продублированы вручную,
-// т.к. var() здесь, как сказано выше, недоступен.
-const IMAGE_PLACEHOLDER_SRC_DARK = buildPlaceholderSrc('#3a2a1a', '#c8964a');
-const IMAGE_PLACEHOLDER_SRC_LIGHT = buildPlaceholderSrc('#f3e7d2', '#a06b25');
+// Заглушка отсутствующего фото. САМА иконка "фото" (золотой контур на
+// фоне --surface-2) рисуется теперь CSS-ом — классом .img-placeholder через
+// переменную --placeholder-icon (globals.css, своё значение для каждой
+// темы), а <img src> всегда получает ОДИН И ТОТ ЖЕ прозрачный SVG
+// (пропорции 4:3 — те же, что были у прежней иконки, чтобы intrinsic-размер
+// у <img> не менялся).
+//
+// Почему не data:-SVG с зашитыми цветами, выбираемый по теме в JS (так было
+// 02–04.10.2026): значение темы в сторе до гидратации всегда дефолтное, и
+// у пользователей с сохранённой тёмной темой заглушки на мгновение были бы
+// светлыми — то же мигание, что и с самой темой (см. store/themeStore.ts).
+// Через CSS заглушка меняется вместе с data-theme на <html> и вообще не
+// зависит от JS/гидратации. Реальных фото пока почти ни у одной позиции
+// меню нет (см. комментарий ниже про hasImage), так что заглушка — то, что
+// видно почти везде, и мигать она не должна.
+export const IMAGE_PLACEHOLDER_SRC =
+  'data:image/svg+xml;charset=UTF-8,' +
+  encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 3"/>');
 
 // Общий на весь модуль (а значит — на все инстансы хука на странице) набор
 // путей, про которые мы уже точно знаем, что реальная загрузка провалилась
@@ -126,15 +111,8 @@ export interface ImageFallback {
 // это и устраняет сам источник бага (залповые ~80 обречённых запросов).
 export function useImageFallback(realSrc: string, hasImage: boolean): ImageFallback {
   const [broken, setBroken] = useState(() => !hasImage || knownBrokenSrcs.has(realSrc));
-  // На сервере (и до гидратации темы на клиенте) store/themeStore.ts всегда
-  // отдаёт 'dark' — см. его комментарий. Та же тёмная заглушка окажется и
-  // в первом клиентском рендере (нет hydration mismatch), а сразу после
-  // гидратации темы компонент перерисуется с нужной версией, если реальная
-  // тема — светлая.
-  const theme = useThemeStore((s) => s.theme);
-  const placeholderSrc = theme === 'light' ? IMAGE_PLACEHOLDER_SRC_LIGHT : IMAGE_PLACEHOLDER_SRC_DARK;
   return {
-    src: broken ? placeholderSrc : realSrc,
+    src: broken ? IMAGE_PLACEHOLDER_SRC : realSrc,
     imgClassName: broken ? 'img-placeholder' : '',
     onError: () => {
       knownBrokenSrcs.add(realSrc);
