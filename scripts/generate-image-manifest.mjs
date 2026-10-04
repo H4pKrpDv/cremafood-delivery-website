@@ -51,6 +51,13 @@ const publicDir = path.join(projectRoot, 'public');
 // middleware.ts (теперь он не нужен — см. комментарий выше).
 const WATCHED_DIRS = ['img/items', 'img/categories'];
 
+// Учитываем только настоящие картинки. В этих же папках лежат README.md с
+// памяткой по фото (04.10.2026) — без фильтра он попал бы в манифест как
+// "реальное фото" (на работу сайта это не влияло бы — ни у одной позиции
+// нет такого пути, — но манифест должен быть честным), так же как и
+// случайные служебные файлы вроде Thumbs.db/.DS_Store.
+const IMAGE_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif', '.gif', '.svg']);
+
 function listFilesRecursive(absDir, relPrefix, out) {
   let entries;
   try {
@@ -65,7 +72,7 @@ function listFilesRecursive(absDir, relPrefix, out) {
     const relPath = relPrefix ? `${relPrefix}/${entry.name}` : entry.name;
     if (entry.isDirectory()) {
       listFilesRecursive(absPath, relPath, out);
-    } else if (entry.isFile()) {
+    } else if (entry.isFile() && IMAGE_EXTENSIONS.has(path.extname(entry.name).toLowerCase())) {
       out.push(relPath);
     }
   }
