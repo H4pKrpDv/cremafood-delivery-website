@@ -38,28 +38,26 @@ function LoyaltyCard() {
 function FullMenuCard({ sub, categoryId }: { sub: MenuSubcategory; categoryId: string }) {
   const { t } = useI18n();
   if (!isFullMenuSubcategory(sub)) return null;
-  const text = t('subcategories.full-menu.text');
-  const linkText = t('subcategories.full-menu.linkText');
-  const parts = text.split('«здесь»');
+  // 04.10.2026: вместо QR-плейсхолдера и ссылки «здесь» внутри текста —
+  // обычный текст + action-кнопка (.btn--primary), открывающая PDF полного
+  // меню в НОВОЙ вкладке (target="_blank"): PDF открывается во встроенном
+  // просмотрщике браузера, и в той же вкладке посетитель потерял бы место
+  // на странице меню (на мобильных просмотрщик часто без кнопки "назад").
+  // rel="noopener noreferrer" — стандартная защита для target="_blank".
+  // Адрес PDF — pdfUrl из menu.json (сейчас "/full-menu.pdf" → файл
+  // public/full-menu.pdf).
   return (
     <div className="category category--full-menu" id={`full-menu-card-${categoryId}`}>
       <div className="full-menu-card">
-        <div className="full-menu-card__qr-placeholder" aria-hidden="true">
-          QR
-        </div>
-        <p>
-          {parts.length === 2 ? (
-            <>
-              {parts[0]}«
-              <a href={sub.pdfUrl} target="_blank" rel="noopener noreferrer">
-                {linkText}
-              </a>
-              »{parts[1]}
-            </>
-          ) : (
-            text
-          )}
-        </p>
+        <p>{t('subcategories.full-menu.text')}</p>
+        <a
+          className="btn btn--primary full-menu-card__btn"
+          href={sub.pdfUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {t('subcategories.full-menu.buttonText')}
+        </a>
       </div>
     </div>
   );

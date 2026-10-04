@@ -2287,28 +2287,17 @@
         line-height: 1.6;
       }
 
-      .full-menu-card p a {
-        color: var(--gold-light);
-        text-decoration: underline;
-        text-underline-offset: 2px;
-      }
-
-      .full-menu-card p a:hover {
-        color: var(--gold);
-      }
-
-      .full-menu-card__qr-placeholder {
-        width: 96px;
-        height: 96px;
-        margin: 0 auto 1rem;
-        background: var(--surface);
-        border: 1px dashed var(--border);
-        border-radius: var(--radius);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.75rem;
-        color: var(--text-3);
+      /* Кнопка "Ознакомиться с полным меню" (04.10.2026, вместо QR) — это
+         <a class="btn btn--primary">: .btn задаёт inline-block, поэтому
+         центрируется text-align плашки; text-decoration убирает подчёркивание
+         у ссылки, margin-top отделяет от текста. На узких экранах текст
+         кнопки может переноситься на 2 строки — line-height/max-width это
+         учитывают. */
+      .full-menu-card__btn {
+        margin-top: 1.25rem;
+        max-width: 100%;
+        line-height: 1.35;
+        text-decoration: none;
       }
 
       /* ─── FOOTER ─── */

@@ -111,8 +111,8 @@
     },
     "full-menu": {
       "title": "Полное меню",
-      "text": "На сайте представлены лишь те напитки/блюда, которые можно заказать. Если хотите ознакомиться с полным меню, нажмите «здесь» или отсканируйте QR-код на экране.",
-      "linkText": "здесь"
+      "text": "Comanda online este disponibilă pentru o listă limitată de produse. Lista completă a preparatelor și băuturilor noastre este disponibilă în meniul principal al restaurantului.",
+      "buttonText": "Vezi meniul complet"
     },
     "matcha": {
       "title": "Matcha",

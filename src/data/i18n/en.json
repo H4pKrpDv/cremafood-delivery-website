@@ -111,8 +111,8 @@
     },
     "full-menu": {
       "title": "Полное меню",
-      "text": "На сайте представлены лишь те напитки/блюда, которые можно заказать. Если хотите ознакомиться с полным меню, нажмите «здесь» или отсканируйте QR-код на экране.",
-      "linkText": "здесь"
+      "text": "Online ordering is available for a limited selection of items. The full list of our dishes and drinks is available in the restaurant's main menu.",
+      "buttonText": "View the full menu"
     },
     "matcha": {
       "title": "Matcha",
