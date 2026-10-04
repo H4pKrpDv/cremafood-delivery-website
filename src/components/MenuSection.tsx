@@ -16,10 +16,15 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useLayoutEffect } from 'react';
 import { useI18n } from '@/i18n/I18nProvider';
 import { menuData, DEFAULT_ACTIVE_CATEGORY, publicImagePath, hasRealImage } from '@/lib/data';
 import { useImageFallback } from '@/lib/useImageFallback';
+import {
+  MENU_CATEGORY_PRELOAD_STYLE_ID,
+  readSavedMenuCategory,
+  saveMenuCategory
+} from '@/lib/menuCategoryPersist';
 import { isFullMenuSubcategory, isSubRenderable, type MenuSubcategory } from '@/types/menu';
 import { ItemCard } from './ItemCard';
 
@@ -118,6 +123,25 @@ export function MenuSection() {
   const [activeCategory, setActiveCategory] = useState<string>(DEFAULT_ACTIVE_CATEGORY);
   const [currentPillAnchor, setCurrentPillAnchor] = useState<string | null>(null);
 
+  // 04.10.2026: восстановление выбранной категории после перезагрузки (см.
+  // lib/menuCategoryPersist.ts). Начальное состояние обязано совпадать с
+  // серверным HTML (дефолтная категория), иначе будет ошибка гидратации, —
+  // поэтому сохранённое значение читаем уже в эффекте. useLayoutEffect (а не
+  // useEffect): обновление состояния из него применяется ДО отрисовки
+  // кадра, так что мигания нет. Заодно убираем <style>, который inline-скрипт
+  // из <head> добавил для самого первого кадра — дальше нужную категорию
+  // рисуют обычные классы.
+  useLayoutEffect(() => {
+    const saved = readSavedMenuCategory(menuData.categories.map((category) => category.id));
+    if (saved) setActiveCategory(saved);
+    document.getElementById(MENU_CATEGORY_PRELOAD_STYLE_ID)?.remove();
+  }, []);
+
+  function selectCategory(categoryId: string) {
+    setActiveCategory(categoryId);
+    saveMenuCategory(categoryId);
+  }
+
   return (
     <section className="menu" id="menu">
       <div className="container">
@@ -134,8 +158,9 @@ export function MenuSection() {
               type="button"
               className={`category-tab${category.id === activeCategory ? ' category-tab--active' : ''}`}
               role="tab"
+              data-category={category.id}
               aria-selected={category.id === activeCategory}
-              onClick={() => setActiveCategory(category.id)}
+              onClick={() => selectCategory(category.id)}
             >
               {t(`categories.${category.id}`)}
             </button>
@@ -153,6 +178,7 @@ export function MenuSection() {
                 <a
                   key={`${category.id}-${anchor}`}
                   href={`#${anchor}`}
+                  data-category={category.id}
                   className={`pill${isFullMenu ? ' pill--accent' : ''}${hiddenForTab ? ' pill--hidden' : ''}${
                     currentPillAnchor === anchor ? ' pill--current' : ''
                   }`}

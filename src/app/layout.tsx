@@ -4,6 +4,8 @@ import './globals.css';
 import { I18nProvider } from '@/i18n/I18nProvider';
 import { ThemeEffect } from '@/components/ThemeEffect';
 import { themeInitScript } from '@/lib/themeInitScript';
+import { menuData, DEFAULT_ACTIVE_CATEGORY } from '@/lib/data';
+import { buildMenuCategoryInitScript } from '@/lib/menuCategoryPersist';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { CartModal } from '@/components/CartModal';
@@ -66,6 +68,15 @@ const inter = Inter({
 // и убран, чтобы не плодить дублирующиеся/конфликтующие теги.
 const seo = buildMetaTagValues();
 
+// Скрипт «запомнить выбранную категорию меню после перезагрузки» (см.
+// lib/menuCategoryPersist.ts) — список id категорий и дефолтная берутся из
+// menu.json/lib/data.ts на этапе сборки, поэтому при добавлении категории
+// ничего вручную обновлять не нужно.
+const menuCategoryInitScript = buildMenuCategoryInitScript(
+  menuData.categories.map((category) => category.id),
+  DEFAULT_ACTIVE_CATEGORY
+);
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: seo.title,
@@ -108,6 +119,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           lib/themeInitScript.ts и store/themeStore.ts.
         */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        {/*
+          Выбранная категория меню (04.10.2026): если после перезагрузки в
+          sessionStorage лежит не дефолтная категория, скрипт ДО первой
+          отрисовки подставляет нужную (inline <style>), чтобы не было
+          мигания «Напитки → нужная категория» и браузер точно вернул
+          прокрутку. Убирает этот <style> MenuSection после гидратации. См.
+          lib/menuCategoryPersist.ts.
+        */}
+        <script dangerouslySetInnerHTML={{ __html: menuCategoryInitScript }} />
         {/*
           JSON-LD (schema.org Restaurant/CafeOrCoffeeShop + меню) — порт
           buildJsonLd() из build.js, см. lib/seo.ts. Собирается из тех же
