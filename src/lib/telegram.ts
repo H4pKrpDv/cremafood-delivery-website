@@ -67,12 +67,18 @@ const PAYMENT_LABEL: Record<string, string> = { cash: 'Наличкой', card: 
 // Собирает читаемое сообщение для Telegram из уже посчитанного на сервере
 // order payload (lib/orderPayload.ts) — цены/состав корзины пересчитаны
 // сервером через lib/cartSummary.ts, а не взяты "на слово" у клиента.
-export function formatOrderMessage(payload: OrderPayload): string {
+//
+// siteLang — язык сайта у клиента (ru/ro/en). Сообщение всегда на русском
+// (его читает персонал), но если клиент заказывал на /ro или /en — в
+// сообщение добавляется строка «🌐 Язык сайта», чтобы персонал знал, на
+// каком языке с ним лучше общаться.
+export function formatOrderMessage(payload: OrderPayload, siteLang: string = 'ru'): string {
   const lines: string[] = [];
   lines.push(`<b>Новый заказ ${escapeHtml(payload.orderNumber)}</b>`);
   lines.push('');
   lines.push(`👤 ${escapeHtml(payload.contact.name)}`);
   lines.push(`📞 ${escapeHtml(payload.contact.phone)}`);
+  if (siteLang !== 'ru') lines.push(`🌐 Язык сайта: ${escapeHtml(siteLang.toUpperCase())}`);
   lines.push('');
   lines.push(`🚚 ${METHOD_LABEL[payload.fulfillment.method] || payload.fulfillment.method}`);
   if (payload.fulfillment.address) {

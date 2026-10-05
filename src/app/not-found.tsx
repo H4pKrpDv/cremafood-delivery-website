@@ -1,59 +1,55 @@
 /**
- * app/not-found.tsx — кастомная 404-страница (02.10.2026, UX-правки пока
- * нет контента от заказчика, Этап 1 из двух: сначала 404, отдельным
- * раундом — error.tsx/global-error.tsx под 500).
+ * app/not-found.tsx — корневая «страховка» 404 (05.10.2026).
  *
- * Next.js file-convention: этот компонент автоматически рендерится для
- * любого несуществующего маршрута, но остаётся ВНУТРИ app/layout.tsx —
- * то есть Header/Footer вокруг него те же, что и на главной (решение
- * пользователя: не делать отдельный минимальный макет без шапки/подвала).
- * Единственное, чего здесь намеренно нет — <MapSection>: она 02.10.2026
- * переехала из layout.tsx в app/page.tsx именно для того, чтобы НЕ
- * показываться на этой странице (раньше карта рендерилась на всех
- * маршрутах без исключения, что и имел в виду пользователь, говоря
- * "сейчас на 404 показывается тот же хедер/футер и секция с картой").
- *
- * 'use client' обязателен — тексты идут через useI18n() (i18n на сайте
- * полностью клиентский, язык хранится в состоянии браузера, см.
- * i18n/I18nProvider.tsx), поэтому экспортировать metadata из этого же
- * файла нельзя (ограничение Next.js для клиентских компонентов) —
- * страница использует заголовок/метатеги корневого layout.tsx как есть.
+ * Полноценная 404 с шапкой, футером и переводами — app/[lang]/not-found.tsx
+ * (в неё попадают все несуществующие адреса через app/[lang]/[...rest]).
+ * Сюда доходит только то, что не смогла обработать локализованная ветка
+ * (практически — недопустимое значение [lang]). Корневой layout
+ * (app/layout.tsx) «сквозной» и <html> не рендерит, поэтому эта страница
+ * сама содержит <html>/<body> — минимальная, без зависимостей от
+ * контекста языка (тот же подход, что и у app/global-error.tsx).
  */
 
-'use client';
-
-import Link from 'next/link';
-
-import { useI18n } from '@/i18n/I18nProvider';
-
-export default function NotFound() {
-  const { t } = useI18n();
-
+export default function RootNotFound() {
   return (
-    <section className="error-page error-page--404">
-      <div className="error-page__inner">
-        <div className="error-page__art" aria-hidden="true">
-          {/* Чашка кофе с паром — тот же line-art стиль, что и иконки
-              соцсетей в футере (stroke=currentColor, без заливки). */}
-          <svg viewBox="0 0 140 140" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M70 2C66 10,74 16,70 24C66 32,74 38,70 46" />
-            <path d="M46 4C42 12,50 18,46 26C42 34,50 40,46 48" />
-            <path d="M94 4C90 12,98 18,94 26C90 34,98 40,94 48" />
-            <ellipse cx="70" cy="60" rx="32" ry="6" />
-            <path d="M38 60L102 60L94 108Q92 118 82 118L58 118Q48 118 46 108Z" />
-            <path d="M100 72Q118 72 118 86Q118 100 100 100" />
-            <ellipse cx="70" cy="124" rx="48" ry="7" />
-          </svg>
-        </div>
-        <div className="error-page__content">
-          <p className="error-page__code">404</p>
-          <h1 className="error-page__title">{t('notFound.title')}</h1>
-          <p className="error-page__text">{t('notFound.text')}</p>
-          <Link href="/#menu" className="btn btn--primary">
-            {t('notFound.cta')}
-          </Link>
-        </div>
-      </div>
-    </section>
+    <html lang="ru">
+      <head>
+        <title>Crema Food — страница не найдена</title>
+        <meta name="robots" content="noindex" />
+      </head>
+      <body style={{ margin: 0, background: '#130e09', color: '#f0dfc8', fontFamily: 'Georgia, serif' }}>
+        <section
+          style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '2rem 1.25rem',
+            textAlign: 'center'
+          }}
+        >
+          <div style={{ maxWidth: 420 }}>
+            <p style={{ fontSize: '4rem', margin: 0, color: '#c8964a' }}>404</p>
+            <h1 style={{ fontSize: '1.5rem', margin: '0.5rem 0 1rem' }}>Страница не найдена</h1>
+            {/* Обычный <a>, а не next/link: на странице нет ни контекста
+                приложения, ни стилей сайта, а переход на главную должен
+                работать всегда. */}
+            <a
+              href="/"
+              style={{
+                display: 'inline-block',
+                padding: '0.75rem 1.75rem',
+                borderRadius: 8,
+                background: '#c8964a',
+                color: '#1c1410',
+                textDecoration: 'none'
+              }}
+            >
+              На главную
+            </a>
+          </div>
+        </section>
+      </body>
+    </html>
   );
 }

@@ -10,17 +10,19 @@
  * buildMetaTagValues() отсюда) + JSON-LD <script> в теле layout.tsx
  * (buildJsonLd() отсюда, сериализуется через JSON.stringify в компоненте).
  *
- * ВАЖНО (то же ограничение, что и в нативной версии, задокументировано
- * там же в Context.md): сайт одностраничный, язык переключается на
- * клиенте без отдельных URL на язык (см. i18n/I18nProvider.tsx) — поэтому
- * <title>/description/canonical/JSON-LD "запекаются" один раз на русском
- * (DEFAULT_LANG) и не меняются при переключении языка в браузере. Это
- * осознанная граница возможностей клиентского i18n, не баг.
+ * 05.10.2026: у каждого языка теперь СВОЙ адрес (/, /ro, /en — см.
+ * lib/i18nConfig.ts и proxy.ts), поэтому <title>/description/canonical/
+ * hreflang/og:locale/JSON-LD собираются отдельно для каждого языка на
+ * сервере (app/[lang]/layout.tsx вызывает buildMetaTagValues(lang) и
+ * buildJsonLd(lang)). Прежнее ограничение «всё запекается один раз на
+ * русском» снято. Пока ro/en не переведены, их страницы закрыты от
+ * индексации — см. INDEXABLE_LANGS в lib/i18nConfig.ts.
  * ------------------------------------------------------------------
  */
 
 import { menuData } from '@/lib/data';
-import { I18N_DATA, resolveKey, DEFAULT_LANG } from '@/lib/i18nCore';
+import { I18N_DATA, resolveKey, DEFAULT_LANG, type Lang } from '@/lib/i18nCore';
+import { INDEXABLE_LANGS, HREFLANG, localizedPath, isIndexableLang } from '@/lib/i18nConfig';
 import { isFullMenuSubcategory, type MenuSubcategoryItems } from '@/types/menu';
 
 export const SITE_URL = 'https://cremafood.md';
@@ -45,9 +47,32 @@ export const BUSINESS = {
   openingHours: { opens: '07:00', closes: '22:00' }
 } as const;
 
-function t(key: string, fallback = ''): string {
-  return resolveKey(I18N_DATA[DEFAULT_LANG], key) ?? fallback;
+// Перевод ключа на нужный язык с фолбэком на язык по умолчанию (как t() в
+// I18nProvider), затем на fallback.
+function translate(lang: Lang, key: string, fallback = ''): string {
+  return resolveKey(I18N_DATA[lang], key) ?? resolveKey(I18N_DATA[DEFAULT_LANG], key) ?? fallback;
 }
+
+/** Абсолютный URL страницы нужного языка: https://cremafood.md/ , https://cremafood.md/ro */
+export function absoluteUrl(lang: Lang, path: string = '/'): string {
+  const localized = localizedPath(lang, path);
+  return localized === '/' ? `${SITE_URL}/` : `${SITE_URL}${localized}`;
+}
+
+/**
+ * hreflang-альтернативы для <link rel="alternate">/sitemap: только языки из
+ * INDEXABLE_LANGS (не ссылаемся на noindex-страницы) + x-default на язык по
+ * умолчанию. Если индексируется один язык — hreflang не нужен (undefined).
+ */
+export function buildHreflangAlternates(): Record<string, string> | undefined {
+  if (INDEXABLE_LANGS.length < 2) return undefined;
+  const languages: Record<string, string> = {};
+  for (const lang of INDEXABLE_LANGS) languages[HREFLANG[lang]] = absoluteUrl(lang);
+  languages['x-default'] = absoluteUrl(DEFAULT_LANG);
+  return languages;
+}
+
+export { isIndexableLang };
 
 export interface SeoMetaValues {
   title: string;
@@ -56,11 +81,13 @@ export interface SeoMetaValues {
   ogImagePath: string;
 }
 
-export function buildMetaTagValues(): SeoMetaValues {
+export function buildMetaTagValues(lang: Lang = DEFAULT_LANG): SeoMetaValues {
   return {
-    title: t('meta.title'),
-    description: t('meta.description'),
-    canonicalUrl: '/',
+    title: translate(lang, 'meta.title'),
+    description: translate(lang, 'meta.description'),
+    // Canonical каждой языковой версии — она сама ('/', '/ro', '/en'),
+    // резолвится в абсолютный URL через metadataBase.
+    canonicalUrl: localizedPath(lang),
     // Относительный путь — Next.js резолвит его в абсолютный через
     // metadataBase (см. app/layout.tsx), как и было в build.js (там
     // абсолютный URL собирался вручную через SITE_URL).
@@ -69,7 +96,9 @@ export function buildMetaTagValues(): SeoMetaValues {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function buildJsonLd(): Record<string, any> {
+export function buildJsonLd(lang: Lang = DEFAULT_LANG): Record<string, any> {
+  const t = (key: string, fallback = ''): string => translate(lang, key, fallback);
+
   const menuSections = menuData.categories
     .map((category) => {
       const subSections = (category.subcategories || [])
@@ -117,7 +146,8 @@ export function buildJsonLd(): Record<string, any> {
     '@context': 'https://schema.org',
     '@type': ['Restaurant', 'CafeOrCoffeeShop'],
     name: BUSINESS.name,
-    url: `${SITE_URL}/`,
+    url: absoluteUrl(lang),
+    inLanguage: HREFLANG[lang],
     image: `${SITE_URL}/img/og_default.png`,
     telephone: BUSINESS.telephone,
     email: BUSINESS.email,

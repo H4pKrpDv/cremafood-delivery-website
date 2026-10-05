@@ -15,16 +15,17 @@ import Link from 'next/link';
 import { useI18n } from '@/i18n/I18nProvider';
 import { useUIStore } from '@/store/uiStore';
 import { SocialLinks } from '@/components/SocialLinks';
+import { localizedPath } from '@/lib/i18nConfig';
 
 export function Footer() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const openPrivacy = useUIStore((s) => s.openPrivacy);
 
   return (
     <footer className="footer" id="footer">
       <div className="footer__inner">
         <div className="footer__brand">
-          <Link href="/" className="logo logo--footer">
+          <Link href={localizedPath(lang)} className="logo logo--footer">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img className="logo__mark" src="/img/logo.png" alt="" aria-hidden="true" width={34} height={34} />
             <span className="logo__text">Crema Food</span>

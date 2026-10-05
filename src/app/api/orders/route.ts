@@ -52,8 +52,15 @@ export async function POST(request: Request) {
     );
   }
 
+  // Язык сайта у клиента (ru/ro/en — по адресу /, /ro, /en). Используется
+  // ТОЛЬКО для сообщений об ошибках валидации, которые возвращаются клиенту.
   const lang = isLang(structural.data.lang) ? structural.data.lang : DEFAULT_LANG;
   const t = createTranslator(lang);
+  // 05.10.2026 (решение пользователя): заказ в Telegram ВСЕГДА на русском,
+  // независимо от языка сайта у клиента — его читает персонал заведения.
+  // Поэтому названия позиций в составе заказа подставляются русским
+  // переводчиком, а язык клиента уходит в сообщение отдельной строкой.
+  const tRu = createTranslator(DEFAULT_LANG);
 
   // ---- Шаг 2: локализованная валидация формы (та же схема, что на фронте) ----
   const formSchema = createOrderFormSchema(t);
@@ -73,7 +80,7 @@ export async function POST(request: Request) {
     items: structural.data.cart.items,
     ageConfirmed: structural.data.cart.ageConfirmed
   };
-  const summary = computeSummary(cart, t, nowMinutes);
+  const summary = computeSummary(cart, tRu, nowMinutes);
 
   // ---- Шаг 4: тот же гейт, что и на фронте (checkHoursGate/summary.canCheckout) ----
   if (!summary.canCheckout) {
@@ -88,7 +95,7 @@ export async function POST(request: Request) {
 
   // ---- Шаг 5: сборка payload + отправка в Telegram ----
   const payload = buildOrderPayload(formResult.data, summary, cart.ageConfirmed);
-  const message = formatOrderMessage(payload);
+  const message = formatOrderMessage(payload, lang);
   const telegramResult = await sendTelegramMessage(message);
 
   if (!telegramResult.ok) {

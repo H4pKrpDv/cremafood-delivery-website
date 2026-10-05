@@ -512,7 +512,11 @@
         display: none;
       }
 
+      /* 05.10.2026: пункты языка — ссылки <a> (/, /ro, /en), а не кнопки;
+         display/text-decoration сбрасывают дефолты ссылки, чтобы выглядели как
+         прежние кнопки. */
       .lang-option {
+        display: inline-block;
         background: none;
         border: none;
         color: var(--text-2);
@@ -521,6 +525,7 @@
         padding: 0.35rem 0.5rem;
         border-radius: var(--radius);
         text-align: left;
+        text-decoration: none;
         cursor: pointer;
         transition: all var(--transition);
       }

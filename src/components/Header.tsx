@@ -6,20 +6,26 @@
  * версия слушала клики по document с делегированием, здесь то же
  * поведение через обычные React-обработчики + один useEffect на
  * "клик вне списка языка" (аналог initLangDropdown()).
+ *
+ * 05.10.2026: переключатель языка — теперь ссылки на локализованные адреса
+ * (/, /ro, /en — lib/i18nConfig.ts), а не кнопки, меняющие состояние. Это
+ * настоящие <a href hrefLang>: работают без JS, их видят поисковики, и
+ * "открыть в новой вкладке" ведёт на нужный язык. Переход — полная
+ * загрузка страницы (разные корневые layout'ы), поэтому позицию прокрутки
+ * запоминаем перед переходом (LangScrollRestore вернёт её на новой странице).
  * ------------------------------------------------------------------
  */
 
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react';
 import Link from 'next/link';
 import { useI18n } from '@/i18n/I18nProvider';
 import { useCartStore, useCartHydrated } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
 import { useThemeStore } from '@/store/themeStore';
-import type { Lang } from '@/lib/i18nCore';
-
-const LANGS: Lang[] = ['ru', 'ro', 'en'];
+import { LANGS, HREFLANG, localizedPath } from '@/lib/i18nConfig';
+import { rememberScrollForLangSwitch } from '@/components/LangScrollRestore';
 
 // Иконки солнца/полумесяца — тот же визуальный язык, что и у иконки
 // корзины ниже (stroke, currentColor, viewBox 0 24 24), декоративная
@@ -47,7 +53,7 @@ function ThemeIcon() {
 }
 
 export function Header() {
-  const { t, lang, setLang } = useI18n();
+  const { t, lang } = useI18n();
   const openCart = useUIStore((s) => s.openCart);
   const theme = useThemeStore((s) => s.theme);
   const toggleTheme = useThemeStore((s) => s.toggleTheme);
@@ -82,8 +88,15 @@ export function Header() {
     };
   }, [langListOpen]);
 
-  function selectLang(next: Lang) {
-    setLang(next);
+  // Клик по ссылке языка: на текущий язык — просто закрываем список (перехода
+  // не нужно), на другой — запоминаем прокрутку и даём браузеру перейти по
+  // href (preventDefault НЕ вызываем — это обычная навигация по ссылке).
+  function handleLangClick(event: ReactMouseEvent<HTMLAnchorElement>, next: (typeof LANGS)[number]) {
+    if (next === lang) {
+      event.preventDefault();
+    } else {
+      rememberScrollForLangSwitch();
+    }
     setLangListOpen(false);
     setBurgerOpen(false);
   }
@@ -94,7 +107,7 @@ export function Header() {
   return (
     <header className="header" id="top">
       <div className="header__inner">
-        <Link href="/" className="logo">
+        <Link href={localizedPath(lang)} className="logo">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className="logo__mark" src="/img/logo.png" alt="" aria-hidden="true" width={34} height={34} />
           <span className="logo__text">Crema Food</span>
@@ -123,15 +136,17 @@ export function Header() {
               <ul className="lang-switcher__list" role="listbox" hidden={!langListOpen}>
                 {LANGS.map((code) => (
                   <li role="presentation" key={code}>
-                    <button
-                      type="button"
+                    <a
+                      href={localizedPath(code)}
+                      hrefLang={HREFLANG[code]}
+                      lang={HREFLANG[code]}
                       className={`lang-option${code === lang ? ' lang-option--active' : ''}`}
                       role="option"
                       aria-selected={code === lang}
-                      onClick={() => selectLang(code)}
+                      onClick={(event) => handleLangClick(event, code)}
                     >
                       {code.toUpperCase()}
-                    </button>
+                    </a>
                   </li>
                 ))}
               </ul>
@@ -191,14 +206,17 @@ export function Header() {
         </a>
         <div className="mobile-menu__lang" role="group" aria-label={t('header.langLabel')}>
           {LANGS.map((code) => (
-            <button
+            <a
               key={code}
-              type="button"
+              href={localizedPath(code)}
+              hrefLang={HREFLANG[code]}
+              lang={HREFLANG[code]}
               className={`pill lang-option${code === lang ? ' pill--accent lang-option--active' : ''}`}
-              onClick={() => selectLang(code)}
+              aria-current={code === lang ? 'true' : undefined}
+              onClick={(event) => handleLangClick(event, code)}
             >
               {code.toUpperCase()}
-            </button>
+            </a>
           ))}
         </div>
       </div>

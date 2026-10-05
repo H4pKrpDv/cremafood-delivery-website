@@ -15,16 +15,16 @@ import ru from '@/data/i18n/ru.json';
 import ro from '@/data/i18n/ro.json';
 import en from '@/data/i18n/en.json';
 
-export type Lang = 'ru' | 'ro' | 'en';
-export const DEFAULT_LANG: Lang = 'ru';
-export const LANGS: Lang[] = ['ru', 'ro', 'en'];
+// 05.10.2026: список языков, дефолтный язык и isLang() вынесены в
+// lib/i18nConfig.ts (его импортирует и proxy.ts, которому нельзя тянуть
+// за собой словари) — здесь они реэкспортируются, чтобы существующие
+// импорты '@/lib/i18nCore' продолжали работать без правок.
+import { DEFAULT_LANG, type Lang } from './i18nConfig';
+export { DEFAULT_LANG, LANGS, isLang } from './i18nConfig';
+export type { Lang } from './i18nConfig';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const I18N_DATA: Record<Lang, any> = { ru, ro, en };
-
-export function isLang(value: unknown): value is Lang {
-  return typeof value === 'string' && (LANGS as string[]).includes(value);
-}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function resolveKey(langData: any, key: string): string | undefined {

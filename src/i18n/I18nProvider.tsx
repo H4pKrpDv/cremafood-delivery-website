@@ -1,73 +1,61 @@
 /**
  * i18n/I18nProvider.tsx
  * ------------------------------------------------------------------
- * Порт js/i18n.js (нативная версия) на React-контекст — по выбору
- * пользователя (см. переписку): один URL, переключение языка на клиенте,
- * БЕЗ next-intl и без локализованных путей /ru /ro /en. Язык хранится в
- * localStorage под тем же ключом "crema_lang", что и в нативной версии.
+ * Порт js/i18n.js (нативная версия) на React-контекст, без next-intl.
  *
- * В отличие от нативной версии (which walked the DOM for [data-i18n-key]
- * on every language switch), здесь компоненты сами вызывают t('key') —
- * React перерисовывает то, что реально подписано на контекст, без
- * ручного обхода DOM.
+ * 05.10.2026 — ПЕРЕРАБОТАН под локализованные пути (/, /ro, /en — см.
+ * lib/i18nConfig.ts и proxy.ts). Раньше сайт был на одном URL, язык жил в
+ * состоянии браузера (localStorage "crema_lang") и переключался на
+ * клиенте — поисковики видели только русскую версию. Теперь ЯЗЫК — это
+ * часть адреса: его определяет сегмент [lang] (app/[lang]/layout.tsx) и
+ * передаёт сюда пропсом, поэтому сервер сразу отдаёт HTML на нужном языке
+ * (title, description, hreflang, JSON-LD, <html lang> — всё на сервере),
+ * а не подменяет текст после загрузки скриптов.
+ *
+ * Что убрано: состояние языка, setLang(), чтение/запись localStorage,
+ * ручная смена document.title и атрибута lang у <html> — всё это теперь
+ * делает сервер через metadata и <html lang={lang}>. Переключение языка в
+ * шапке — обычные ссылки на /, /ro, /en (components/Header.tsx).
+ *
+ * Компоненты по-прежнему вызывают t('key') — резолвер тот же
+ * (lib/i18nCore.ts), с тем же фолбэком на русский для отсутствующих ключей.
  * ------------------------------------------------------------------
  */
 
 'use client';
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { DEFAULT_LANG, I18N_DATA, isLang, resolveKey, type Lang } from '@/lib/i18nCore';
+import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'react';
+import { DEFAULT_LANG, I18N_DATA, resolveKey, type Lang } from '@/lib/i18nCore';
 
-const STORAGE_KEY = 'crema_lang';
+// Ключ localStorage из прежней клиентской схемы (до 05.10.2026) — язык
+// теперь определяется адресом, старое значение никем не читается, поэтому
+// просто убираем его у тех, у кого оно осталось.
+const LEGACY_STORAGE_KEY = 'crema_lang';
 
 interface I18nContextValue {
   lang: Lang;
-  setLang: (lang: Lang) => void;
   t: (key: string) => string;
 }
 
 const I18nContext = createContext<I18nContextValue | null>(null);
 
-export function I18nProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>(DEFAULT_LANG);
-
-  // Восстановление выбранного языка из localStorage — только на клиенте,
-  // после монтирования (на сервере/первом рендере всегда DEFAULT_LANG, как
-  // и в нативной версии до применения applyLanguage()).
+export function I18nProvider({ lang, children }: { lang: Lang; children: ReactNode }) {
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (isLang(stored)) setLangState(stored);
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
     } catch {
       /* localStorage недоступен (приватный режим и т.п.) — не критично */
     }
   }, []);
 
-  useEffect(() => {
-    document.documentElement.setAttribute('lang', lang);
-    const title = resolveKey(I18N_DATA[lang], 'meta.title') ?? resolveKey(I18N_DATA[DEFAULT_LANG], 'meta.title');
-    if (title) document.title = title;
-  }, [lang]);
-
-  const setLang = useCallback((next: Lang) => {
-    setLangState(next);
-    try {
-      localStorage.setItem(STORAGE_KEY, next);
-    } catch {
-      /* не критично — просто не сохраняем выбор между визитами */
-    }
-  }, []);
-
-  const t = useCallback(
-    (key: string): string => {
+  const value = useMemo<I18nContextValue>(() => {
+    const t = (key: string): string => {
       const text = resolveKey(I18N_DATA[lang], key);
       if (text !== undefined) return text;
       return resolveKey(I18N_DATA[DEFAULT_LANG], key) ?? '';
-    },
-    [lang]
-  );
-
-  const value = useMemo<I18nContextValue>(() => ({ lang, setLang, t }), [lang, setLang, t]);
+    };
+    return { lang, t };
+  }, [lang]);
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }
