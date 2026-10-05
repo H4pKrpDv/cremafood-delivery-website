@@ -1859,6 +1859,11 @@
         border: 1px solid var(--border);
         transition: all var(--transition);
         letter-spacing: 0.02em;
+        /* Пилюли — <button> (05.10.2026, переключение подкатегорий): сбрасываем
+           браузерные шрифт/курсор кнопки, чтобы выглядели как раньше. */
+        font-family: var(--font-body);
+        line-height: 1.4;
+        cursor: pointer;
       }
 
       .pill:hover {
@@ -1877,9 +1882,16 @@
         background: rgba(200, 150, 74, 0.25);
       }
 
-      .pill--current {
+      /* Выбранная подкатегория (05.10.2026) — как активный таб категории:
+         заливка золотом + цвет текста на золоте. Повторяем :hover, потому
+         что .pill:hover / .pill--accent:hover специфичнее одиночного класса. */
+      .pill--current,
+      .pill--current:hover,
+      .pill--accent.pill--current,
+      .pill--accent.pill--current:hover {
+        background: var(--gold);
+        color: var(--on-gold);
         border-color: var(--gold);
-        color: var(--gold-light);
       }
 
       .pill--hidden {
@@ -1925,6 +1937,12 @@
       .category {
         margin-bottom: 3.5rem;
         scroll-margin-top: 76px;
+      }
+
+      /* Невыбранные подкатегории (05.10.2026) — на экране только одна, как у
+         категорий (.category-group--hidden). */
+      .category--hidden {
+        display: none;
       }
 
       /* Тот же якорь, что и .category выше (переход по ссылке "график

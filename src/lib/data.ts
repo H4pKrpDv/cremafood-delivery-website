@@ -18,6 +18,7 @@
 
 import menuJson from '@/data/menu.json';
 import imageManifest from '@/data/imageManifest.json';
+import { isSubRenderable, subcategoryAnchor } from '@/types/menu';
 import type { MenuData, MenuItem, DepartmentValue } from '@/types/menu';
 
 export const menuData = menuJson as unknown as MenuData;
@@ -98,6 +99,22 @@ export const itemMetaIndex: Record<string, ItemMetaBase> = buildItemMetaIndex();
 export const modifierGroups = menuData.modifierGroups ?? {};
 
 export const DEFAULT_ACTIVE_CATEGORY = 'cafe';
+
+// 05.10.2026. «Скелет» меню для переключения подкатегорий: для каждой
+// категории — список якорей её ОТРИСОВЫВАЕМЫХ подкатегорий в порядке
+// меню (см. subcategoryAnchor/isSubRenderable в types/menu.ts). Первая
+// подкатегория категории — выбранная по умолчанию. Тот же список уходит в
+// inline-скрипт в <head> (lib/menuCategoryPersist.ts), поэтому живёт здесь,
+// а не внутри компонента.
+export interface MenuStructureCategory {
+  id: string;
+  subs: string[];
+}
+
+export const menuStructure: MenuStructureCategory[] = menuData.categories.map((category) => ({
+  id: category.id,
+  subs: category.subcategories.filter(isSubRenderable).map((sub) => subcategoryAnchor(category.id, sub))
+}));
 
 // data/menu.json хранит пути к изображениям без ведущего слэша ("img/items/…"),
 // т.к. в нативной версии это были относительные пути от index.html в корне

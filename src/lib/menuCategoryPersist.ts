@@ -1,53 +1,94 @@
 /**
  * lib/menuCategoryPersist.ts
  * ------------------------------------------------------------------
- * 04.10.2026. Запоминание выбранной категории меню (Спец.предложения /
- * Напитки / Кухня) на время жизни вкладки браузера — чтобы после
- * перезагрузки страницы (F5) посетитель оставался в той же категории, а не
- * возвращался на дефолтную («Напитки», см. DEFAULT_ACTIVE_CATEGORY в
- * lib/data.ts) и не искал заново своё место в меню.
+ * 04.10.2026 (категории) + 05.10.2026 (подкатегории). Запоминание
+ * выбранной категории меню (Спец.предложения / Напитки / Кухня) И
+ * выбранной подкатегории в каждой категории на время жизни вкладки
+ * браузера — чтобы после перезагрузки страницы (F5) посетитель оставался на
+ * том же месте меню, а не возвращался на дефолтное («Напитки», первая
+ * подкатегория) и не искал заново своё место.
  *
  * Хранилище — sessionStorage (решение пользователя): переживает
  * перезагрузку, но не новый заход (новая вкладка/другой день) — там сайт
- * как и раньше открывается на «Напитках», как для нового гостя.
+ * как и раньше открывается на «Напитках», как для нового гостя. Два ключа:
+ *  - crema_menu_category       — id выбранной категории (строка);
+ *  - crema_menu_subcategories  — JSON-объект { id категории: якорь
+ *    подкатегории }. Выбор подкатегории помнится ОТДЕЛЬНО для каждой
+ *    категории: переключились на «Кухню» → «Десерты», вернулись в «Напитки»
+ *    и обратно — снова «Десерты».
  *
  * ПОЧЕМУ ЗДЕСЬ ЕСТЬ INLINE-СКРИПТ, а не просто чтение в useEffect. Сервер
- * (SSR) про sessionStorage ничего не знает и всегда отдаёт в HTML дефолтную
- * категорию. Если читать сохранённое только после гидратации React, то:
+ * (SSR) про sessionStorage ничего не знает и всегда отдаёт в HTML дефолтный
+ * выбор. Если читать сохранённое только после гидратации React, то:
  *   1) на время между первой отрисовкой и гидратацией видны «Напитки»
  *      (мигание);
  *   2) главное — браузер восстанавливает позицию прокрутки при перезагрузке
- *      ПО ВЫСОТЕ страницы на момент загрузки. С высотой дефолтной категории
- *      он «промахивается» мимо места, где пользователь был в другой,
- *      гораздо более длинной/короткой категории.
+ *      ПО ВЫСОТЕ страницы на момент загрузки. С высотой дефолтного выбора
+ *      он «промахивается» мимо места, где пользователь был.
  * Поэтому (тот же приём, что и для темы — lib/themeInitScript.ts) маленький
- * синхронный скрипт в <head> ДО первой отрисовки, если в sessionStorage
- * лежит не дефолтная категория, добавляет <style id="..."> с правилами,
- * которые показывают нужную категорию вместо дефолтной (группа, пилюли
- * подкатегорий, подсветка активного таба). Страница с самого первого кадра
- * имеет высоту нужной категории — и прокрутка восстанавливается точно.
- * Когда React гидратируется, MenuSection в useLayoutEffect (до отрисовки)
- * выставляет activeCategory из sessionStorage и убирает этот <style> —
- * дальше всё рисуют обычные классы, как и раньше.
+ * синхронный скрипт в <head> ДО первой отрисовки, если сохранённый выбор
+ * отличается от дефолтного, добавляет <style id="..."> с правилами, которые
+ * показывают нужную категорию/подкатегорию (блок, кнопки подкатегорий,
+ * подсветка активных кнопок). Страница с самого первого кадра имеет высоту
+ * нужного выбора — и прокрутка восстанавливается точно. Когда React
+ * гидратируется, MenuSection в useLayoutEffect (до отрисовки) выставляет
+ * состояние из sessionStorage и убирает этот <style> — дальше всё рисуют
+ * обычные классы.
  * ------------------------------------------------------------------
  */
 
 export const MENU_CATEGORY_STORAGE_KEY = 'crema_menu_category';
+export const MENU_SUBCATEGORIES_STORAGE_KEY = 'crema_menu_subcategories';
 export const MENU_CATEGORY_PRELOAD_STYLE_ID = 'menu-category-preload';
 
-/**
- * Читает сохранённую категорию из sessionStorage. Возвращает её, только
- * если она есть в списке актуальных id меню (защита от устаревшего или
- * подменённого значения), иначе null. Любая ошибка доступа к хранилищу
- * (приватный режим, заблокированные данные сайта) — тоже null.
- */
-export function readSavedMenuCategory(validIds: readonly string[]): string | null {
+/** «Скелет» меню: категория -> якоря её подкатегорий (см. lib/data.ts). */
+export interface MenuStructureLike {
+  id: string;
+  subs: readonly string[];
+}
+
+export interface SavedMenuSelection {
+  /** Сохранённая категория или null (нет значения/значение устарело). */
+  category: string | null;
+  /** Сохранённые подкатегории по категориям — только валидные пары. */
+  subs: Record<string, string>;
+}
+
+function readSubsMap(): Record<string, unknown> {
   try {
-    const saved = window.sessionStorage.getItem(MENU_CATEGORY_STORAGE_KEY);
-    return saved && validIds.includes(saved) ? saved : null;
+    const raw = window.sessionStorage.getItem(MENU_SUBCATEGORIES_STORAGE_KEY);
+    const parsed: unknown = raw ? JSON.parse(raw) : null;
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+      ? (parsed as Record<string, unknown>)
+      : {};
   } catch {
-    return null;
+    return {};
   }
+}
+
+/**
+ * Читает сохранённый выбор из sessionStorage. Возвращает только значения,
+ * которые есть в актуальном меню (защита от устаревшего или подменённого
+ * значения): категория — из списка категорий, подкатегория — из списка
+ * подкатегорий именно ЭТОЙ категории. Любая ошибка доступа к хранилищу
+ * (приватный режим, заблокированные данные сайта) — «ничего не сохранено».
+ */
+export function readSavedMenuSelection(structure: readonly MenuStructureLike[]): SavedMenuSelection {
+  const result: SavedMenuSelection = { category: null, subs: {} };
+  try {
+    const savedCategory = window.sessionStorage.getItem(MENU_CATEGORY_STORAGE_KEY);
+    if (savedCategory && structure.some((category) => category.id === savedCategory)) {
+      result.category = savedCategory;
+    }
+  } catch {
+    // Хранилище недоступно — см. комментарий выше.
+  }
+  const map = readSubsMap();
+  for (const category of structure) {
+    const sub = map[category.id];
+    if (typeof sub === 'string' && category.subs.includes(sub)) result.subs[category.id] = sub;
+  }
+  return result;
 }
 
 export function saveMenuCategory(categoryId: string): void {
@@ -59,27 +100,48 @@ export function saveMenuCategory(categoryId: string): void {
   }
 }
 
+export function saveMenuSubcategory(categoryId: string, subAnchor: string): void {
+  try {
+    const map = readSubsMap();
+    map[categoryId] = subAnchor;
+    window.sessionStorage.setItem(MENU_SUBCATEGORIES_STORAGE_KEY, JSON.stringify(map));
+  } catch {
+    // см. saveMenuCategory
+  }
+}
+
 /**
- * Текст inline-скрипта для <head> (см. комментарий выше). validIds и
- * defaultId вшиваются в код как JSON — id берутся из menu.json на сервере,
- * а значение из sessionStorage сверяется с этим списком и дополнительно с
- * шаблоном [a-z0-9-]+, поэтому в CSS попадает только заведомо безопасная
- * строка. Код — намеренно ES5 и без зависимостей: выполняется до любого
- * бандла.
+ * Текст inline-скрипта для <head> (см. комментарий выше). structure и
+ * defaultId вшиваются в код как JSON — берутся из menu.json на сервере, а
+ * значения из sessionStorage сверяются с этим списком и дополнительно с
+ * шаблоном [A-Za-z0-9_-]+, поэтому в CSS попадает только заведомо
+ * безопасная строка. Код — намеренно ES5 и без зависимостей: выполняется
+ * до любого бандла.
  *
- * Правила, которые добавляет скрипт (X — сохранённая категория):
- *  - все .category-group, кроме #cat-X, скрыты; #cat-X показана;
- *  - пилюли подкатегорий: показаны только с data-category="X";
- *  - таб с data-category="X" выглядит активным, прежний активный (дефолтный)
- *    — неактивным (значения повторяют .category-tab / .category-tab--active
- *    из globals.css). !important нужен, чтобы перебить классы
- *    .category-group--hidden / .pill--hidden / .category-tab--active,
- *    которые сервер расставил под дефолтную категорию.
+ * Логика: выбранная категория C = сохранённая (если валидна) или дефолтная;
+ * подкатегория S = сохранённая для C (если валидна) или первая из C. Если
+ * C — не дефолтная категория ИЛИ S — не первая подкатегория C, то серверный
+ * HTML (рассчитанный на дефолт) не совпадает с нужным выбором, и скрипт
+ * добавляет правила (!important нужен, чтобы перебить классы
+ * .category-group--hidden / .pill--hidden / .category--hidden /
+ * .category-tab--active / .pill--current, расставленные сервером):
+ *  - если C не дефолтная: все .category-group, кроме #cat-C, скрыты, #cat-C
+ *    показана; показаны только кнопки подкатегорий с data-category="C";
+ *    таб C выглядит активным, прежний активный — неактивным (значения
+ *    повторяют .category-tab / .category-tab--active из globals.css);
+ *  - внутри #cat-C показан только блок с data-subcategory="S"; кнопка S
+ *    выглядит активной, прежняя активная (первая) — неактивной (значения
+ *    повторяют .pill / .pill--current).
  */
-export function buildMenuCategoryInitScript(validIds: readonly string[], defaultId: string): string {
-  return `(function(){try{var ids=${JSON.stringify(validIds)};var d=${JSON.stringify(defaultId)};var id=sessionStorage.getItem(${JSON.stringify(
+export function buildMenuCategoryInitScript(
+  structure: readonly MenuStructureLike[],
+  defaultId: string
+): string {
+  return `(function(){try{var st=${JSON.stringify(structure)};var d=${JSON.stringify(defaultId)};var ok=/^[A-Za-z0-9_-]+$/;var cat=sessionStorage.getItem(${JSON.stringify(
     MENU_CATEGORY_STORAGE_KEY
-  )});if(!id||id===d||ids.indexOf(id)===-1||!/^[a-z0-9-]+$/.test(id))return;var q='[data-category="'+id+'"]';var css='.category-group:not(#cat-'+id+'){display:none!important}#cat-'+id+'{display:block!important}.pill:not('+q+'){display:none!important}.pill'+q+'{display:block!important}.category-tab--active:not('+q+'){background:none!important;color:var(--text-2)!important;border-color:var(--border)!important}.category-tab'+q+'{background:var(--gold)!important;color:var(--on-gold)!important;border-color:var(--gold)!important}';var s=document.createElement('style');s.id=${JSON.stringify(
+  )});var map={};try{map=JSON.parse(sessionStorage.getItem(${JSON.stringify(
+    MENU_SUBCATEGORIES_STORAGE_KEY
+  )})||'{}')||{};}catch(e){}var c=null,i;for(i=0;i<st.length;i++){if(st[i].id===cat){c=st[i];}}if(!c){for(i=0;i<st.length;i++){if(st[i].id===d){c=st[i];}}}if(!c||!c.subs.length)return;var s=map[c.id];if(typeof s!=='string'||c.subs.indexOf(s)===-1){s=c.subs[0];}var catChanged=c.id!==d;var subChanged=s!==c.subs[0];if(!catChanged&&!subChanged)return;if(!ok.test(c.id)||!ok.test(s))return;var qc='[data-category="'+c.id+'"]';var qs='[data-subcategory="'+s+'"]';var css='';if(catChanged){css+='.category-group:not(#cat-'+c.id+'){display:none!important}#cat-'+c.id+'{display:block!important}.pill:not('+qc+'){display:none!important}.pill'+qc+'{display:block!important}.category-tab--active:not('+qc+'){background:none!important;color:var(--text-2)!important;border-color:var(--border)!important}.category-tab'+qc+'{background:var(--gold)!important;color:var(--on-gold)!important;border-color:var(--gold)!important}';}css+='#cat-'+c.id+' .category:not('+qs+'){display:none!important}#cat-'+c.id+' .category'+qs+'{display:block!important}.pill--current'+qc+':not('+qs+'){background:var(--surface)!important;color:var(--text-2)!important;border-color:var(--border)!important}.pill'+qc+qs+'{background:var(--gold)!important;color:var(--on-gold)!important;border-color:var(--gold)!important}';var el=document.createElement('style');el.id=${JSON.stringify(
     MENU_CATEGORY_PRELOAD_STYLE_ID
-  )};s.textContent=css;document.head.appendChild(s);}catch(e){}})();`;
+  )};el.textContent=css;document.head.appendChild(el);}catch(e){}})();`;
 }

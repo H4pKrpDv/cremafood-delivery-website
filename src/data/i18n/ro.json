@@ -47,6 +47,7 @@
     "title": "Всё, что вы любите",
     "desc": "Каждый напиток приготовлен с заботой из лучших ингредиентов",
     "categoryTabsLabel": "Категории меню",
+    "subcategoryTabsLabel": "Subcategoriile meniului",
     "availableFrom": "Будет доступно с {time}"
   },
   "categories": {

@@ -11,6 +11,12 @@
  * рендером — так весь текст остаётся в статической разметке страницы
  * (важно было для SEO/шеринга у нативной версии; в Next.js это SSR в любом
  * случае, но поведение сознательно сохранено один в один).
+ *
+ * 05.10.2026: подкатегории переключаются так же, как категории — видна
+ * ТОЛЬКО выбранная подкатегория активной категории (по умолчанию первая),
+ * остальные скрыты классом .category--hidden (в DOM остаются — см. выше про
+ * SEO). Кнопки подкатегорий — <button>, а не якорные ссылки. Выбор
+ * запоминается в sessionStorage по категориям (lib/menuCategoryPersist.ts).
  * ------------------------------------------------------------------
  */
 
@@ -18,14 +24,26 @@
 
 import { useState, useLayoutEffect } from 'react';
 import { useI18n } from '@/i18n/I18nProvider';
-import { menuData, DEFAULT_ACTIVE_CATEGORY, publicImagePath, hasRealImage } from '@/lib/data';
+import {
+  menuData,
+  menuStructure,
+  DEFAULT_ACTIVE_CATEGORY,
+  publicImagePath,
+  hasRealImage
+} from '@/lib/data';
 import { useImageFallback } from '@/lib/useImageFallback';
 import {
   MENU_CATEGORY_PRELOAD_STYLE_ID,
-  readSavedMenuCategory,
-  saveMenuCategory
+  readSavedMenuSelection,
+  saveMenuCategory,
+  saveMenuSubcategory
 } from '@/lib/menuCategoryPersist';
-import { isFullMenuSubcategory, isSubRenderable, type MenuSubcategory } from '@/types/menu';
+import {
+  isFullMenuSubcategory,
+  isSubRenderable,
+  subcategoryAnchor,
+  type MenuSubcategory
+} from '@/types/menu';
 import { ItemCard } from './ItemCard';
 
 function LoyaltyCard() {
@@ -40,7 +58,15 @@ function LoyaltyCard() {
   );
 }
 
-function FullMenuCard({ sub, categoryId }: { sub: MenuSubcategory; categoryId: string }) {
+function FullMenuCard({
+  sub,
+  categoryId,
+  active
+}: {
+  sub: MenuSubcategory;
+  categoryId: string;
+  active: boolean;
+}) {
   const { t } = useI18n();
   if (!isFullMenuSubcategory(sub)) return null;
   // 04.10.2026: вместо QR-плейсхолдера и ссылки «здесь» внутри текста —
@@ -52,7 +78,11 @@ function FullMenuCard({ sub, categoryId }: { sub: MenuSubcategory; categoryId: s
   // Адрес PDF — pdfUrl из menu.json (сейчас "/full-menu.pdf" → файл
   // public/full-menu.pdf).
   return (
-    <div className="category category--full-menu" id={`full-menu-card-${categoryId}`}>
+    <div
+      className={`category category--full-menu${active ? '' : ' category--hidden'}`}
+      id={`full-menu-card-${categoryId}`}
+      data-subcategory={`full-menu-card-${categoryId}`}
+    >
       <div className="full-menu-card">
         <p>{t('subcategories.full-menu.text')}</p>
         <a
@@ -70,12 +100,12 @@ function FullMenuCard({ sub, categoryId }: { sub: MenuSubcategory; categoryId: s
 
 function Subcategory({
   sub,
-  index,
-  categoryId
+  categoryId,
+  active
 }: {
   sub: MenuSubcategory;
-  index: number;
   categoryId: string;
+  active: boolean;
 }) {
   const { t } = useI18n();
   // Хуки обязаны вызываться безусловно и в одном и том же порядке на каждый
@@ -86,15 +116,23 @@ function Subcategory({
     isFullMenuSubcategory(sub) ? '' : publicImagePath(sub.image),
     isFullMenuSubcategory(sub) ? false : hasRealImage(sub.image)
   );
-  if (isFullMenuSubcategory(sub)) return <FullMenuCard sub={sub} categoryId={categoryId} />;
+  if (isFullMenuSubcategory(sub)) return <FullMenuCard sub={sub} categoryId={categoryId} active={active} />;
 
   const titleKey = `subcategories.${sub.id}.title`;
   const descKey = `subcategories.${sub.id}.desc`;
-  const reversed = index % 2 === 1;
 
+  // Раньше баннеры чередовались (картинка то слева, то справа — по номеру
+  // подкатегории в списке). Теперь на экране всегда ОДНА подкатегория, и
+  // «чётность» зависела бы от того, какую кнопку нажали, — поэтому раскладка
+  // везде одинаковая (модификатор .category__header--rev в CSS остался,
+  // но больше не используется).
   return (
-    <div className="category" id={sub.id}>
-      <div className={`category__header${reversed ? ' category__header--rev' : ''}`}>
+    <div
+      className={`category${active ? '' : ' category--hidden'}`}
+      id={sub.id}
+      data-subcategory={sub.id}
+    >
+      <div className="category__header">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={img.src}
@@ -121,7 +159,12 @@ function Subcategory({
 export function MenuSection() {
   const { t } = useI18n();
   const [activeCategory, setActiveCategory] = useState<string>(DEFAULT_ACTIVE_CATEGORY);
-  const [currentPillAnchor, setCurrentPillAnchor] = useState<string | null>(null);
+  // Выбранная подкатегория по категориям: { id категории: якорь подкатегории }.
+  // Начальное значение — первая отрисовываемая подкатегория каждой категории
+  // (то же, что рендерит сервер; восстановление из sessionStorage — ниже).
+  const [activeSubs, setActiveSubs] = useState<Record<string, string>>(() =>
+    Object.fromEntries(menuStructure.map((category) => [category.id, category.subs[0] ?? '']))
+  );
 
   // 04.10.2026: восстановление выбранной категории после перезагрузки (см.
   // lib/menuCategoryPersist.ts). Начальное состояние обязано совпадать с
@@ -132,14 +175,20 @@ export function MenuSection() {
   // из <head> добавил для самого первого кадра — дальше нужную категорию
   // рисуют обычные классы.
   useLayoutEffect(() => {
-    const saved = readSavedMenuCategory(menuData.categories.map((category) => category.id));
-    if (saved) setActiveCategory(saved);
+    const saved = readSavedMenuSelection(menuStructure);
+    if (saved.category) setActiveCategory(saved.category);
+    if (Object.keys(saved.subs).length > 0) setActiveSubs((prev) => ({ ...prev, ...saved.subs }));
     document.getElementById(MENU_CATEGORY_PRELOAD_STYLE_ID)?.remove();
   }, []);
 
   function selectCategory(categoryId: string) {
     setActiveCategory(categoryId);
     saveMenuCategory(categoryId);
+  }
+
+  function selectSubcategory(categoryId: string, anchor: string) {
+    setActiveSubs((prev) => ({ ...prev, [categoryId]: anchor }));
+    saveMenuSubcategory(categoryId, anchor);
   }
 
   return (
@@ -167,29 +216,33 @@ export function MenuSection() {
           ))}
         </div>
 
-        <nav className="menu-pills">
+        <div className="menu-pills" role="tablist" aria-label={t('menu.subcategoryTabsLabel')}>
           {menuData.categories.flatMap((category) =>
             category.subcategories.filter(isSubRenderable).map((sub) => {
               const isFullMenu = isFullMenuSubcategory(sub);
-              const anchor = isFullMenu ? `full-menu-card-${category.id}` : sub.id;
+              const anchor = subcategoryAnchor(category.id, sub);
               const key = isFullMenu ? 'subcategories.full-menu.title' : `subcategories.${sub.id}.title`;
               const hiddenForTab = category.id !== activeCategory;
+              const isCurrent = activeSubs[category.id] === anchor;
               return (
-                <a
+                <button
                   key={`${category.id}-${anchor}`}
-                  href={`#${anchor}`}
+                  type="button"
+                  role="tab"
                   data-category={category.id}
+                  data-subcategory={anchor}
+                  aria-selected={isCurrent}
                   className={`pill${isFullMenu ? ' pill--accent' : ''}${hiddenForTab ? ' pill--hidden' : ''}${
-                    currentPillAnchor === anchor ? ' pill--current' : ''
+                    isCurrent ? ' pill--current' : ''
                   }`}
-                  onClick={() => setCurrentPillAnchor(anchor)}
+                  onClick={() => selectSubcategory(category.id, anchor)}
                 >
                   {t(key)}
-                </a>
+                </button>
               );
             })
           )}
-        </nav>
+        </div>
 
         {menuData.categories.map((category) => (
           <section
@@ -198,8 +251,13 @@ export function MenuSection() {
             id={`cat-${category.id}`}
           >
             <h3 className="category-group__title">{t(`categories.${category.id}`)}</h3>
-            {category.subcategories.filter(isSubRenderable).map((sub, index) => (
-              <Subcategory key={sub.id} sub={sub} index={index} categoryId={category.id} />
+            {category.subcategories.filter(isSubRenderable).map((sub) => (
+              <Subcategory
+                key={sub.id}
+                sub={sub}
+                categoryId={category.id}
+                active={activeSubs[category.id] === subcategoryAnchor(category.id, sub)}
+              />
             ))}
           </section>
         ))}
