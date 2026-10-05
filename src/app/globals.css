@@ -1575,9 +1575,14 @@
          потоке (не на весь vh, как и требовалось), а текстовый блок идёт
          под ней на обычном тёмном фоне сайта, поэтому старые .hero__overlay
          и background-image на .hero больше не нужны — убраны. */
+      /* 05.10.2026: убран min-height: 100vh. Раньше hero растягивался на весь
+         экран, и на высоких мониторах свободное место (экран минус карусель
+         и текст) оставалось пустотой под подсказкой «Листайте вниз» —
+         получалась «пропасть» до секции меню (~100–220px в зависимости от
+         высоты окна, плюс padding секции меню). Теперь высота hero = карусель
+         + текст, высоты карусели и так подобраны по vh под первый экран. */
       .hero {
         position: relative;
-        min-height: 100vh;
         display: flex;
         flex-direction: column;
         background: var(--bg);
@@ -1794,7 +1799,7 @@
 
       /* ─── MENU SECTION ─── */
       .menu {
-        padding: 5rem 0 3rem;
+        padding: 3rem 0 3rem;
         background: var(--bg);
       }
 
@@ -1901,8 +1906,14 @@
       /* ─── CATEGORY GROUP (верхнеуровневая категория: Спец.предложения /
              Кафе / Кухня — один видимый таб за раз, остальные скрыты
              классом .category-group--hidden, см. js/menu.js) ─── */
+      /* margin-bottom у .category-group/.category — 0 (05.10.2026): раньше
+         они разделяли друг от друга ПОДРЯД стоящие подкатегории/категории, а
+         теперь на экране всегда одна видимая подкатегория одной категории, и
+         эти отступы просто складывались с padding секции меню в большую
+         пустоту перед картой (~176px на десктопе). Нижний отступ перед
+         следующей секцией задаёт только padding .menu. */
       .category-group {
-        margin-bottom: 3rem;
+        margin-bottom: 0;
       }
 
       .category-group--hidden {
@@ -1935,7 +1946,7 @@
 
       /* ─── CATEGORY (подкатегория: баннер-фото + описание) ─── */
       .category {
-        margin-bottom: 3.5rem;
+        margin-bottom: 0;
         scroll-margin-top: 76px;
       }
 
@@ -2705,7 +2716,7 @@
         }
 
         .menu {
-          padding: 7rem 0 5rem;
+          padding: 4rem 0 4rem;
         }
 
         .menu-pills {
@@ -2713,7 +2724,7 @@
         }
 
         .category-group {
-          margin-bottom: 5rem;
+          margin-bottom: 0;
         }
 
         .category-group__title {
@@ -2721,7 +2732,7 @@
         }
 
         .category {
-          margin-bottom: 6rem;
+          margin-bottom: 0;
           scroll-margin-top: 90px;
         }
 
