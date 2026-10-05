@@ -5,7 +5,7 @@ import { Playfair_Display, Inter } from 'next/font/google';
 import '../globals.css';
 import { I18nProvider } from '@/i18n/I18nProvider';
 import { ThemeEffect } from '@/components/ThemeEffect';
-import { themeInitScript } from '@/lib/themeInitScript';
+import { themeInitScript, buildHtmlBootScript } from '@/lib/themeInitScript';
 import { menuStructure, DEFAULT_ACTIVE_CATEGORY } from '@/lib/data';
 import { LANGS, HREFLANG, OG_LOCALE, isLang, isIndexableLang, type Lang } from '@/lib/i18nConfig';
 import { buildMenuCategoryInitScript } from '@/lib/menuCategoryPersist';
@@ -133,13 +133,15 @@ export default async function LangLayout({ children, params }: { children: React
   if (!isLang(langParam)) notFound();
   const lang: Lang = langParam;
   const jsonLd = buildJsonLd(lang);
+  const htmlClassName = `${playfairDisplay.variable} ${inter.variable}`;
+  const htmlBootScript = buildHtmlBootScript(HREFLANG[lang], htmlClassName);
 
   return (
     // suppressHydrationWarning на <html>: inline-скрипт ниже ставит
     // data-theme на этот элемент ДО гидратации React — это намеренное
     // расхождение с серверной разметкой, а не ошибка. Работает только на
     // один уровень (на сам <html>), на детей не распространяется.
-    <html lang={HREFLANG[lang]} className={`${playfairDisplay.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang={HREFLANG[lang]} className={htmlClassName} suppressHydrationWarning>
       <head>
         {/*
           Тема оформления (04.10.2026, см. Context.md): синхронный inline-
@@ -168,6 +170,14 @@ export default async function LangLayout({ children, params }: { children: React
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
       <body>
+        {/*
+          Страховка для 404/ошибок (05.10.2026): на этих страницах Next
+          отдаёт аварийную оболочку <html id="__next_error__"> без нашего
+          <head> и без атрибутов <html>, из-за чего страница мигала светлой
+          темой. Скрипт — первым в <body> — ставит lang, классы шрифтов и
+          data-theme до отрисовки содержимого. Подробно: lib/themeInitScript.ts.
+        */}
+        <script dangerouslySetInnerHTML={{ __html: htmlBootScript }} />
         {/*
           Graceful fallback битых <img> — раньше (22.09.2026) был
           глобальный inline-скрипт здесь (strategy="beforeInteractive"),
