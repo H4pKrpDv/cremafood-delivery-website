@@ -144,6 +144,22 @@ export default async function LangLayout({ children, params }: { children: React
     <html lang={HREFLANG[lang]} className={htmlClassName} suppressHydrationWarning>
       <head>
         {/*
+          Скачок страницы вверх при перезагрузке (05.10.2026). Браузер
+          восстанавливает прокрутку только когда документ уже достаточно
+          высокий. HTML приходит кусками, и если первая отрисовка успевает
+          случиться по первому куску — кадр рисуется на scrollY=0 (видна
+          шапка/hero), а когда подъезжает остальное, страница прыгает на
+          сохранённое место. Зависит от скорости сети и от глубины
+          прокрутки — отсюда «не каждый раз и не на всех позициях».
+          <link rel="expect" blocking="render"> запрещает первую отрисовку,
+          пока не разобран элемент #page-end (последний в <body>): браузер
+          восстанавливает прокрутку ДО первого кадра. Chrome/Edge/Opera
+          (124+) поддерживают, остальные браузеры тег игнорируют (поведение
+          как раньше). Атрибут blocking передан через spread — в типах
+          React он может отсутствовать.
+        */}
+        <link rel="expect" href="#page-end" {...{ blocking: 'render' }} />
+        {/*
           Тема оформления (04.10.2026, см. Context.md): синхронный inline-
           скрипт ДО первой отрисовки ставит data-theme="dark", если
           пользователь ранее выбрал тёмную тему (светлая — база, ей атрибут
@@ -224,6 +240,10 @@ export default async function LangLayout({ children, params }: { children: React
           <LangScrollRestore />
         </I18nProvider>
         <Analytics />
+        {/* Метка конца документа для <link rel="expect"> в <head> — должна
+            оставаться ПОСЛЕДНИМ элементом <body>, иначе страница будет ждать
+            не весь контент. */}
+        <div id="page-end" hidden />
       </body>
     </html>
   );
