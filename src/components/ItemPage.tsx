@@ -29,6 +29,7 @@ import { useImageFallback } from '@/lib/useImageFallback';
 import { hasRealImage, itemMetaIndex, modifierGroups, publicImagePath } from '@/lib/data';
 import { localizedPath } from '@/lib/i18nConfig';
 import { getItemStatus } from '@/lib/itemRoutes';
+import { getSubcategoryInternalPath } from '@/lib/subcategoryRoutes';
 import type { ModifierOption } from '@/types/menu';
 
 const CUTLERY_EXTRA_PRICE = 2; // MDL за каждый набор сверх числа порций (то же правило, что lib/cartSummary.ts)
@@ -124,6 +125,9 @@ export function ItemPage({ itemId }: { itemId: string }) {
   const weight = t(`items.${itemId}.weight`);
   const imageAlt = t(`items.${itemId}.imageAlt`) || name;
 
+  // 08.10.2026: подкатегория в крошках — ссылка на её страницу (если страница есть).
+  const subcategoryPath = getSubcategoryInternalPath(lang, base.subcategoryId);
+
   const { status } = getItemStatus(itemId);
   const unavailable = status === 'unavailable' || base.available === false;
   const closedNow = !unavailable && !meta.departmentOpen;
@@ -149,7 +153,13 @@ export function ItemPage({ itemId }: { itemId: string }) {
               <span>{t(`categories.${base.categoryId}`)}</span>
             </li>
             <li>
-              <span>{t(`subcategories.${base.subcategoryId}.title`)}</span>
+              {subcategoryPath ? (
+                <Link href={localizedPath(lang, subcategoryPath)} className="breadcrumbs__link">
+                  {t(`subcategories.${base.subcategoryId}.title`)}
+                </Link>
+              ) : (
+                <span>{t(`subcategories.${base.subcategoryId}.title`)}</span>
+              )}
             </li>
             <li>
               <span className="breadcrumbs__current" aria-current="page">

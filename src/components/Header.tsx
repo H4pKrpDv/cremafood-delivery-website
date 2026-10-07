@@ -27,6 +27,7 @@ import { useUIStore } from '@/store/uiStore';
 import { useThemeStore } from '@/store/themeStore';
 import { LANGS, HREFLANG, localizedPath } from '@/lib/i18nConfig';
 import { findItemIdByPathname, getItemPathname } from '@/lib/itemRoutes';
+import { findSubcategoryIdByPathname, getSubcategoryPathname } from '@/lib/subcategoryRoutes';
 import { rememberScrollForLangSwitch } from '@/components/LangScrollRestore';
 
 // Иконки солнца/полумесяца — тот же визуальный язык, что и у иконки
@@ -61,8 +62,12 @@ export function Header() {
   // /ro/drinks/cafea/latte), а не на главную. Где позиции нет — как раньше.
   const pathname = usePathname();
   const currentItemId = pathname ? findItemIdByPathname(pathname, lang) : null;
+  // 08.10.2026: то же для страницы подкатегории (/drinks/kofe → /ro/drinks/cafea).
+  const currentSubId = pathname && !currentItemId ? findSubcategoryIdByPathname(pathname, lang) : null;
   const langHref = (code: (typeof LANGS)[number]): string =>
-    (currentItemId ? getItemPathname(code, currentItemId) : null) ?? localizedPath(code);
+    (currentItemId ? getItemPathname(code, currentItemId) : null) ??
+    (currentSubId ? getSubcategoryPathname(code, currentSubId) : null) ??
+    localizedPath(code);
   const openCart = useUIStore((s) => s.openCart);
   const theme = useThemeStore((s) => s.theme);
   const toggleTheme = useThemeStore((s) => s.toggleTheme);

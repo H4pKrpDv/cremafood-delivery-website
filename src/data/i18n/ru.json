@@ -558,6 +558,10 @@
     "metaTitle": "{name} — доставка в Бэлць | Crema Food",
     "metaDescription": "{name} — {desc} Цена: {price} MDL. Закажите с доставкой по Бэлць в Crema Food."
   },
+  "subcategoryPage": {
+    "metaTitle": "{title} — доставка в Бэлць | Crema Food",
+    "metaDescription": "{title} — {desc} Закажите с доставкой по Бэлць в Crema Food."
+  },
   "cart": {
     "title": "Корзина",
     "subtitle": "Всё, что вы заказываете",

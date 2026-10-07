@@ -7,6 +7,8 @@
  * язык ровно один URL — тот же changefreq/priority, что и раньше.
  * lastModified пересчитывается сам на каждый билд/запрос.
  *
+ * 08.10.2026: добавлены страницы подкатегорий.
+ *
  * 05.10.2026: страницы по языкам (/, /ro, /en). В карту попадают ТОЛЬКО
  * языки из INDEXABLE_LANGS (lib/i18nConfig.ts) — сейчас это один русский
  * (ro/en ещё не переведены и закрыты noindex). Когда их добавят в
@@ -19,6 +21,7 @@ import type { MetadataRoute } from 'next';
 import { absoluteUrl, buildHreflangAlternates } from '@/lib/seo';
 import { INDEXABLE_LANGS, HREFLANG, DEFAULT_LANG } from '@/lib/i18nConfig';
 import { getItemInternalPath, listSitemapItemIds } from '@/lib/itemRoutes';
+import { getSubcategoryInternalPath, listSitemapSubcategoryIds } from '@/lib/subcategoryRoutes';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const languages = buildHreflangAlternates();
@@ -57,5 +60,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })
   );
 
-  return [...home, ...items];
+  // 08.10.2026: страницы подкатегорий (у каждой — свой слаг на каждом языке,
+  // hreflang собирается так же, как у позиций).
+  const subUrl = (lang: (typeof INDEXABLE_LANGS)[number], subId: string) =>
+    absoluteUrl(lang, getSubcategoryInternalPath(lang, subId) ?? '/');
+  const subcategories: MetadataRoute.Sitemap = listSitemapSubcategoryIds().flatMap((subId) =>
+    INDEXABLE_LANGS.map((lang) => {
+      let subLanguages: Record<string, string> | undefined;
+      if (INDEXABLE_LANGS.length > 1) {
+        subLanguages = {};
+        for (const code of INDEXABLE_LANGS) subLanguages[HREFLANG[code]] = subUrl(code, subId);
+        subLanguages['x-default'] = subUrl(DEFAULT_LANG, subId);
+      }
+      return {
+        url: subUrl(lang, subId),
+        lastModified,
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
+        ...(subLanguages ? { alternates: { languages: subLanguages } } : {})
+      };
+    })
+  );
+
+  return [...home, ...subcategories, ...items];
 }

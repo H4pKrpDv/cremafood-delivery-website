@@ -9,9 +9,10 @@
  *  - hreflang и индексация — по INDEXABLE_LANGS (lib/i18nConfig.ts): пока
  *    ro/en не переведены, их страницы позиций — noindex, follow и без
  *    hreflang (тот же механизм, что у главной).
- *  - BreadcrumbList в JSON-LD пока содержит только «Главная → Позиция»:
- *    страниц категорий и подкатегорий ещё нет, а ссылаться на несуществующие
- *    адреса нельзя. Когда они появятся — добавить промежуточные уровни.
+ *  - BreadcrumbList в JSON-LD: «Главная → Подкатегория → Позиция» (с
+ *    08.10.2026, когда появились страницы подкатегорий). Уровня раздела
+ *    (Напитки/Блюда) нет: страниц разделов пока нет, а ссылаться на
+ *    несуществующие адреса нельзя. Когда появятся — вставить между ними.
  *  - Статус позиции влияет на Offer.availability (unavailable → OutOfStock).
  * ------------------------------------------------------------------
  */
@@ -22,6 +23,8 @@ import { createTranslator } from '@/lib/i18nCore';
 import { HREFLANG, INDEXABLE_LANGS, LANGS, OG_LOCALE, DEFAULT_LANG, isIndexableLang, type Lang } from '@/lib/i18nConfig';
 import { BUSINESS, SITE_URL, absoluteUrl } from '@/lib/seo';
 import { getItemInternalPath, getItemPathname, getItemStatus } from '@/lib/itemRoutes';
+import { hasSubcategoryPage } from '@/lib/subcategoryRoutes';
+import { subcategoryUrl } from '@/lib/subcategorySeo';
 
 const DESCRIPTION_SNIPPET_MAX = 90;
 
@@ -132,7 +135,11 @@ export function buildItemJsonLd(lang: Lang, itemId: string): Record<string, any>
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: t('itemPage.home'), item: absoluteUrl(lang) },
-      { '@type': 'ListItem', position: 2, name, item: url }
+      // 08.10.2026: у подкатегории появилась своя страница — уровень «Подкатегория».
+      ...(hasSubcategoryPage(base.subcategoryId)
+        ? [{ '@type': 'ListItem', position: 2, name: t(`subcategories.${base.subcategoryId}.title`), item: subcategoryUrl(lang, base.subcategoryId) }]
+        : []),
+      { '@type': 'ListItem', position: hasSubcategoryPage(base.subcategoryId) ? 3 : 2, name, item: url }
     ]
   };
 
