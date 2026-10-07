@@ -68,9 +68,10 @@ export function isSubRenderable(sub: MenuSubcategory): boolean {
 }
 
 // Уникальный на всё меню идентификатор («якорь») подкатегории: id самой
-// подкатегории, а для карточки «Полное меню» — id с префиксом категории,
-// т.к. такая карточка есть в каждой категории и её id ("full-menu")
-// повторяется. Используется как значение data-subcategory у кнопки и блока
+// подкатегории, а для карточки «Полное меню» — id с префиксом категории
+// (id у карточки всегда один и тот же — "full-menu"; с 07.10.2026 она
+// лежит в отдельной категории «Полное меню», но схема на случай других
+// карточек такого типа осталась прежней). Используется как значение data-subcategory у кнопки и блока
 // подкатегории и как значение, которое запоминается в sessionStorage.
 export function subcategoryAnchor(categoryId: string, sub: MenuSubcategory): string {
   return isFullMenuSubcategory(sub) ? `full-menu-card-${categoryId}` : sub.id;

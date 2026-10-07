@@ -17,6 +17,13 @@
  * остальные скрыты классом .category--hidden (в DOM остаются — см. выше про
  * SEO). Кнопки подкатегорий — <button>, а не якорные ссылки. Выбор
  * запоминается в sessionStorage по категориям (lib/menuCategoryPersist.ts).
+ *
+ * 07.10.2026: «Полное меню» — отдельная 4-я категория (вкладка) с единственной
+ * плашкой-ссылкой на общий PDF (раньше плашка была подкатегорией в каждой из
+ * трёх категорий). Подкатегория в категории одна, поэтому ряд пилюль для неё
+ * не показывается: единственная пилюля только дублировала бы вкладку.
+ * Правило общее: пилюли есть только у категорий минимум с двумя
+ * отрисовываемыми подкатегориями (см. MIN_SUBS_FOR_PILLS).
  * ------------------------------------------------------------------
  */
 
@@ -46,6 +53,11 @@ import {
 } from '@/types/menu';
 import { ItemCard } from './ItemCard';
 
+// Категория показывает ряд пилюль подкатегорий, только если в ней не меньше
+// стольких отрисовываемых подкатегорий (одна пилюль не нужна). Тот же порог
+// зашит в inline-скрипт из lib/menuCategoryPersist.ts (первый кадр).
+const MIN_SUBS_FOR_PILLS = 2;
+
 function LoyaltyCard() {
   const { t } = useI18n();
   return (
@@ -69,6 +81,8 @@ function FullMenuCard({
 }) {
   const { t } = useI18n();
   if (!isFullMenuSubcategory(sub)) return null;
+  // 07.10.2026: плашка живёт в отдельной категории «Полное меню» (одна на
+  // весь сайт, один общий PDF), а не в каждой из трёх категорий.
   // 04.10.2026: вместо QR-плейсхолдера и ссылки «здесь» внутри текста —
   // обычный текст + action-кнопка (.btn--primary), открывающая PDF полного
   // меню в НОВОЙ вкладке (target="_blank"): PDF открывается во встроенном
@@ -181,6 +195,11 @@ export function MenuSection() {
     document.getElementById(MENU_CATEGORY_PRELOAD_STYLE_ID)?.remove();
   }, []);
 
+  // Ряд пилюль виден, только если у активной категории достаточно подкатегорий.
+  const activeCategoryData = menuData.categories.find((category) => category.id === activeCategory);
+  const pillsVisible =
+    (activeCategoryData?.subcategories.filter(isSubRenderable).length ?? 0) >= MIN_SUBS_FOR_PILLS;
+
   function selectCategory(categoryId: string) {
     setActiveCategory(categoryId);
     saveMenuCategory(categoryId);
@@ -216,12 +235,17 @@ export function MenuSection() {
           ))}
         </div>
 
-        <div className="menu-pills" role="tablist" aria-label={t('menu.subcategoryTabsLabel')}>
-          {menuData.categories.flatMap((category) =>
-            category.subcategories.filter(isSubRenderable).map((sub) => {
-              const isFullMenu = isFullMenuSubcategory(sub);
+        <div
+          className={`menu-pills${pillsVisible ? '' : ' menu-pills--hidden'}`}
+          role="tablist"
+          aria-label={t('menu.subcategoryTabsLabel')}
+        >
+          {menuData.categories.flatMap((category) => {
+            const renderableSubs = category.subcategories.filter(isSubRenderable);
+            if (renderableSubs.length < MIN_SUBS_FOR_PILLS) return [];
+            return renderableSubs.map((sub) => {
               const anchor = subcategoryAnchor(category.id, sub);
-              const key = isFullMenu ? 'subcategories.full-menu.title' : `subcategories.${sub.id}.title`;
+              const key = `subcategories.${sub.id}.title`;
               const hiddenForTab = category.id !== activeCategory;
               const isCurrent = activeSubs[category.id] === anchor;
               return (
@@ -232,16 +256,14 @@ export function MenuSection() {
                   data-category={category.id}
                   data-subcategory={anchor}
                   aria-selected={isCurrent}
-                  className={`pill${isFullMenu ? ' pill--accent' : ''}${hiddenForTab ? ' pill--hidden' : ''}${
-                    isCurrent ? ' pill--current' : ''
-                  }`}
+                  className={`pill${hiddenForTab ? ' pill--hidden' : ''}${isCurrent ? ' pill--current' : ''}`}
                   onClick={() => selectSubcategory(category.id, anchor)}
                 >
                   {t(key)}
                 </button>
               );
-            })
-          )}
+            });
+          })}
         </div>
 
         {menuData.categories.map((category) => (

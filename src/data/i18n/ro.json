@@ -53,7 +53,8 @@
   "categories": {
     "special-offers": "Спец. предложения",
     "cafe": "Напитки",
-    "kitchen": "Блюда"
+    "kitchen": "Блюда",
+    "full-menu": "Meniul complet"
   },
   "specialOffers": {
     "loyaltyBadge": "-20%",

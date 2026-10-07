@@ -110,11 +110,6 @@
           "id": "promo-new",
           "image": "img/categories/promo-new.jpg",
           "items": []
-        },
-        {
-          "id": "full-menu",
-          "type": "full-menu-card",
-          "pdfUrl": "/full-menu.pdf"
         }
       ]
     },
@@ -489,11 +484,6 @@
               "ageRestricted": true
             }
           ]
-        },
-        {
-          "id": "full-menu",
-          "type": "full-menu-card",
-          "pdfUrl": "/full-menu.pdf"
         }
       ]
     },
@@ -625,7 +615,12 @@
             }
           ],
           "cutleryEligible": true
-        },
+        }
+      ]
+    },
+    {
+      "id": "full-menu",
+      "subcategories": [
         {
           "id": "full-menu",
           "type": "full-menu-card",

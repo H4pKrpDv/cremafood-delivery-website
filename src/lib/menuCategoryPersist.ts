@@ -51,6 +51,11 @@ export const MENU_CATEGORY_STORAGE_KEY = 'crema_menu_category';
 export const MENU_SUBCATEGORIES_STORAGE_KEY = 'crema_menu_subcategories';
 export const MENU_CATEGORY_PRELOAD_STYLE_ID = 'menu-category-preload';
 
+// Минимум подкатегорий, при котором у категории показывается ряд пилюль
+// (то же значение — MIN_SUBS_FOR_PILLS в components/MenuSection.tsx; у
+// категории «Полное меню» подкатегория одна, ряда пилюль нет).
+const MIN_SUBS_FOR_PILLS = 2;
+
 // 07.10.2026. Скрипт должен работать ТОЛЬКО на главной (/, /ro, /en): меню
 // есть только там, и только MenuSection снимает добавленный <style> после
 // гидратации. На остальных страницах (страницы позиций и т.д.) <style>
@@ -158,7 +163,7 @@ export function buildMenuCategoryInitScript(
     MENU_CATEGORY_STORAGE_KEY
   )});var map={};try{map=JSON.parse(sessionStorage.getItem(${JSON.stringify(
     MENU_SUBCATEGORIES_STORAGE_KEY
-  )})||'{}')||{};}catch(e){}var c=null,i;for(i=0;i<st.length;i++){if(st[i].id===cat){c=st[i];}}if(!c){for(i=0;i<st.length;i++){if(st[i].id===d){c=st[i];}}}if(!c||!c.subs.length)return;var s=map[c.id];if(typeof s!=='string'||c.subs.indexOf(s)===-1){s=c.subs[0];}var catChanged=c.id!==d;var subChanged=s!==c.subs[0];if(!catChanged&&!subChanged)return;if(!ok.test(c.id)||!ok.test(s))return;var qc='[data-category="'+c.id+'"]';var qs='[data-subcategory="'+s+'"]';var css='';if(catChanged){css+='.category-group:not(#cat-'+c.id+'){display:none!important}#cat-'+c.id+'{display:block!important}.menu-pills .pill:not('+qc+'){display:none!important}.menu-pills .pill'+qc+'{display:block!important}.category-tab--active:not('+qc+'){background:none!important;color:var(--text-2)!important;border-color:var(--border)!important}.category-tab'+qc+'{background:var(--gold)!important;color:var(--on-gold)!important;border-color:var(--gold)!important}';}css+='#cat-'+c.id+' .category:not('+qs+'){display:none!important}#cat-'+c.id+' .category'+qs+'{display:block!important}.menu-pills .pill--current'+qc+':not('+qs+'){background:var(--surface)!important;color:var(--text-2)!important;border-color:var(--border)!important}.menu-pills .pill'+qc+qs+'{background:var(--gold)!important;color:var(--on-gold)!important;border-color:var(--gold)!important}';var el=document.createElement('style');el.id=${JSON.stringify(
+  )})||'{}')||{};}catch(e){}var c=null,i;for(i=0;i<st.length;i++){if(st[i].id===cat){c=st[i];}}if(!c){for(i=0;i<st.length;i++){if(st[i].id===d){c=st[i];}}}if(!c||!c.subs.length)return;var s=map[c.id];if(typeof s!=='string'||c.subs.indexOf(s)===-1){s=c.subs[0];}var catChanged=c.id!==d;var subChanged=s!==c.subs[0];var noPills=c.subs.length<${MIN_SUBS_FOR_PILLS};if(!catChanged&&!subChanged&&!noPills)return;if(!ok.test(c.id)||!ok.test(s))return;var qc='[data-category="'+c.id+'"]';var qs='[data-subcategory="'+s+'"]';var css='';if(catChanged){css+='.category-group:not(#cat-'+c.id+'){display:none!important}#cat-'+c.id+'{display:block!important}.menu-pills .pill:not('+qc+'){display:none!important}.menu-pills .pill'+qc+'{display:block!important}.category-tab--active:not('+qc+'){background:none!important;color:var(--text-2)!important;border-color:var(--border)!important}.category-tab'+qc+'{background:var(--gold)!important;color:var(--on-gold)!important;border-color:var(--gold)!important}';}if(noPills){css+='.menu-pills{display:none!important}';}css+='#cat-'+c.id+' .category:not('+qs+'){display:none!important}#cat-'+c.id+' .category'+qs+'{display:block!important}.menu-pills .pill--current'+qc+':not('+qs+'){background:var(--surface)!important;color:var(--text-2)!important;border-color:var(--border)!important}.menu-pills .pill'+qc+qs+'{background:var(--gold)!important;color:var(--on-gold)!important;border-color:var(--gold)!important}';var el=document.createElement('style');el.id=${JSON.stringify(
     MENU_CATEGORY_PRELOAD_STYLE_ID
   )};el.textContent=css;document.head.appendChild(el);}catch(e){}})();`;
 }
