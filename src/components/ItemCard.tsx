@@ -19,7 +19,10 @@ import { useI18n } from '@/i18n/I18nProvider';
 import { useCartStore, useCartHydrated } from '@/store/cartStore';
 import { useItemMeta } from '@/lib/useItemMeta';
 import { useImageFallback } from '@/lib/useImageFallback';
+import Link from 'next/link';
 import { itemMetaIndex, publicImagePath } from '@/lib/data';
+import { localizedPath } from '@/lib/i18nConfig';
+import { getItemInternalPath } from '@/lib/itemRoutes';
 
 export function ItemCard({ itemId }: { itemId: string }) {
   const { t, lang } = useI18n();
@@ -42,6 +45,7 @@ export function ItemCard({ itemId }: { itemId: string }) {
   const desc = t(`items.${itemId}.desc`);
   const name = t(`items.${itemId}.name`) || itemId;
   const weight = t(`items.${itemId}.weight`);
+  const itemInternalPath = getItemInternalPath(lang, itemId);
   const imageAlt = t(`items.${itemId}.imageAlt`) || name;
 
   // Кнопка "ещё" показывается, только если текст реально обрезан до 2 строк
@@ -115,7 +119,18 @@ export function ItemCard({ itemId }: { itemId: string }) {
         onError={img.onError}
       />
       <div className="item-card__body">
-        <h5 className="item-card__name">{name}</h5>
+        {/* 07.10.2026: название — ссылка на страницу позиции (клик именно по
+            названию, решение пользователя). prefetch отключён: на странице
+            ~70 таких ссылок, предзагружать все страницы позиций незачем. */}
+        <h5 className="item-card__name">
+          {itemInternalPath ? (
+            <Link href={localizedPath(lang, itemInternalPath)} className="item-card__name-link" prefetch={false}>
+              {name}
+            </Link>
+          ) : (
+            name
+          )}
+        </h5>
         <p ref={descRef} className={`item-card__desc${expanded ? ' item-card__desc--expanded' : ''}`}>
           {desc}
         </p>

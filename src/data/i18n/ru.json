@@ -548,6 +548,15 @@
       "name": "Кетчуп"
     }
   },
+  "itemPage": {
+    "home": "Главная",
+    "breadcrumbsLabel": "Навигация по сайту",
+    "unavailable": "Временно недоступно",
+    "modifiersHint": "Соусы можно добавить, когда блюдо уже в корзине",
+    "cutleryNote": "Бесплатно — набор на каждую порцию, дополнительный набор +2 MDL",
+    "metaTitle": "{name} — доставка в Бэлць | Crema Food",
+    "metaDescription": "{name} — {desc} Цена: {price} MDL. Закажите с доставкой по Бэлць в Crema Food."
+  },
   "cart": {
     "title": "Корзина",
     "subtitle": "Всё, что вы заказываете",

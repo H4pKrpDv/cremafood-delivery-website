@@ -2935,3 +2935,284 @@
           justify-content: flex-start;
         }
       }
+
+      /* ─── ITEM PAGE (страница позиции меню, 07.10.2026) ───
+         Mobile-first: на телефоне всё в одну колонку в порядке документа —
+         хлебные крошки → фото → название → описание → цена · вес → соусы →
+         приборы → «Добавить» (без «липкой» панели, решение пользователя).
+         С 769px — две колонки: фото слева (ограничено по ширине колонкой и
+         «прилипает» при прокрутке длинной правой колонки), справа вся
+         информация и управление. Цвета только через токены темы. */
+      .item-page {
+        background: var(--bg);
+        padding-top: calc(var(--header-height) + 1rem);
+        padding-bottom: 3.5rem;
+      }
+
+      .breadcrumbs {
+        margin-bottom: 1rem;
+      }
+
+      .breadcrumbs__list {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+        color: var(--text-3);
+      }
+
+      /* Разделитель «·» рисуется CSS-ом перед каждым пунктом, кроме первого,
+         чтобы не засорять разметку (и текст для скринридеров). */
+      .breadcrumbs__list > li + li::before {
+        content: '·';
+        margin-right: 0.5rem;
+        color: var(--text-3);
+      }
+
+      .breadcrumbs__link {
+        color: var(--text-2);
+        text-decoration: none;
+        transition: color var(--transition);
+      }
+
+      .breadcrumbs__link:hover {
+        color: var(--gold);
+      }
+
+      .breadcrumbs__current {
+        color: var(--cream);
+        font-weight: 500;
+      }
+
+      .item-page__layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.25rem;
+      }
+
+      .item-page__media {
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        border: 1px solid var(--border);
+        background: var(--bg-2);
+      }
+
+      /* height:auto обязателен — см. комментарий у .item-card__img (атрибуты
+         width/height у <img> иначе перебивают aspect-ratio). */
+      .item-page__img {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+      }
+
+      .item-page__info {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        min-width: 0;
+      }
+
+      .item-page__title {
+        font-family: var(--font-head);
+        font-size: clamp(1.6rem, 5vw, 2.25rem);
+        font-weight: 700;
+        line-height: 1.2;
+        color: var(--cream);
+      }
+
+      .item-page__desc {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: var(--text-2);
+      }
+
+      .item-page__meta {
+        display: flex;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        font-size: 1rem;
+        color: var(--text-2);
+      }
+
+      .item-page__price {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--gold);
+      }
+
+      .item-page__notice {
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius);
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        color: var(--text-2);
+        font-size: 0.9rem;
+      }
+
+      .item-page__section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+
+      .item-page__section-title {
+        font-family: var(--font-head);
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--cream);
+      }
+
+      .item-page__hint {
+        font-size: 0.78rem;
+        line-height: 1.4;
+        color: var(--text-3);
+      }
+
+      /* Карточки соусов — тот же визуальный язык, что .item-card (фон,
+         рамка, радиус, степпер/кнопка «Добавить»), но компактнее. */
+      .item-page__mods {
+        list-style: none;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem;
+      }
+
+      .mod-card {
+        background: var(--bg-2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .mod-card__img {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+      }
+
+      .mod-card__body {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        padding: 0.7rem;
+        flex: 1;
+      }
+
+      .mod-card__name {
+        font-size: 0.88rem;
+        color: var(--cream);
+        line-height: 1.3;
+      }
+
+      .mod-card__price {
+        font-size: 0.78rem;
+        color: var(--gold);
+        font-weight: 600;
+      }
+
+      .mod-card__stepper {
+        margin-top: auto;
+        padding-top: 0.45rem;
+      }
+
+      /* Приборы — как строка в корзине: слева подпись (+доплата), справа
+         степпер; grid с колонкой auto справа — степпер не «плавает», когда
+         появляется «(+N MDL)» (тот же приём, что у .cart-item__cutlery-row). */
+      .item-page__cutlery-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+        color: var(--cream);
+      }
+
+      .item-page__cutlery-left {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.15rem 0.4rem;
+        min-width: 0;
+      }
+
+      .item-page__cutlery-extra {
+        font-size: 0.8rem;
+        color: var(--gold-light);
+        white-space: nowrap;
+      }
+
+      /* Кнопка «Добавить» внизу страницы и её степпер — крупнее, чем в
+         карточках меню; на телефоне во всю ширину, на десктопе ограничена. */
+      .item-page__actions {
+        margin-top: 0.25rem;
+        max-width: 22rem;
+      }
+
+      .item-page__add {
+        padding: 0.9rem;
+        font-size: 1rem;
+      }
+
+      .item-page__stepper .stepper__btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1.25rem;
+      }
+
+      .item-page__stepper .stepper__qty {
+        font-size: 1.1rem;
+      }
+
+      /* Название позиции в карточке меню — ссылка на страницу позиции. По
+         виду остаётся заголовком карточки, подсвечивается при наведении. */
+      .item-card__name-link {
+        color: inherit;
+        text-decoration: none;
+        transition: color var(--transition);
+      }
+
+      .item-card__name-link:hover,
+      .item-card__name-link:focus-visible {
+        color: var(--gold);
+      }
+
+      @media (min-width: 481px) {
+        .item-page__mods {
+          grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+        }
+      }
+
+      @media (min-width: 769px) {
+        .item-page {
+          padding-top: calc(var(--header-height) + 1.5rem);
+          padding-bottom: 5rem;
+        }
+
+        .breadcrumbs {
+          margin-bottom: 1.5rem;
+        }
+
+        .item-page__layout {
+          grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+          gap: 2.5rem;
+          align-items: start;
+        }
+
+        .item-page__media {
+          position: sticky;
+          top: calc(var(--header-height) + 1.5rem);
+        }
+
+        .item-page__info {
+          gap: 1.25rem;
+        }
+      }

@@ -17,7 +17,7 @@ import { PrivacyModal } from '@/components/PrivacyModal';
 import { ModalManager } from '@/components/ModalManager';
 import { BackToTop } from '@/components/BackToTop';
 import { LangScrollRestore } from '@/components/LangScrollRestore';
-import { SITE_URL, buildMetaTagValues, buildJsonLd, buildHreflangAlternates } from '@/lib/seo';
+import { SITE_URL, buildMetaTagValues, buildHreflangAlternates } from '@/lib/seo';
 import { Analytics } from "@vercel/analytics/next"
 
 // Шрифты — раньше подключались обычным <link> на fonts.googleapis.com
@@ -132,7 +132,6 @@ export default async function LangLayout({ children, params }: { children: React
   // случай прямого обращения с неизвестным сегментом — обычный 404.
   if (!isLang(langParam)) notFound();
   const lang: Lang = langParam;
-  const jsonLd = buildJsonLd(lang);
   const htmlClassName = `${playfairDisplay.variable} ${inter.variable}`;
   const htmlBootScript = buildHtmlBootScript(HREFLANG[lang], htmlClassName);
 
@@ -178,12 +177,12 @@ export default async function LangLayout({ children, params }: { children: React
         */}
         <script dangerouslySetInnerHTML={{ __html: menuCategoryInitScript }} />
         {/*
-          JSON-LD (schema.org Restaurant/CafeOrCoffeeShop + меню) — порт
-          buildJsonLd() из build.js, см. lib/seo.ts. Собирается из тех же
-          данных, что и видимая разметка меню, поэтому не может разойтись
-          с тем, что реально показано на странице.
+          07.10.2026: JSON-LD ресторана с полным меню (buildJsonLd, lib/seo.ts)
+          отсюда убран и выводится только на главной (app/[lang]/page.tsx):
+          иначе тяжёлый блок с ~70 позициями повторялся бы в <head> каждой
+          из ~210 страниц позиций. У страниц позиций свой JSON-LD (Product +
+          BreadcrumbList, lib/itemSeo.ts).
         */}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
       <body>
         {/*

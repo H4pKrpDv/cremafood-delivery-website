@@ -548,6 +548,15 @@
       "name": "Кетчуп"
     }
   },
+  "itemPage": {
+    "home": "Home",
+    "breadcrumbsLabel": "Breadcrumb",
+    "unavailable": "Temporarily unavailable",
+    "modifiersHint": "Sauces can be added once the dish is in your cart",
+    "cutleryNote": "Free — one set per portion, each extra set +2 MDL",
+    "metaTitle": "{name} — delivery in Bălți | Crema Food",
+    "metaDescription": "{name} — {desc} Price: {price} MDL. Order with delivery in Bălți from Crema Food."
+  },
   "cart": {
     "title": "Корзина",
     "subtitle": "Всё, что вы заказываете",

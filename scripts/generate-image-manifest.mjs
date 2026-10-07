@@ -47,9 +47,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..');
 const publicDir = path.join(projectRoot, 'public');
 
-// Те же два подкаталога, которые раньше были в зоне действия
-// middleware.ts (теперь он не нужен — см. комментарий выше).
-const WATCHED_DIRS = ['img/items', 'img/categories'];
+// Те же подкаталоги, которые раньше были в зоне действия middleware.ts
+// (теперь он не нужен — см. комментарий выше). 07.10.2026 добавлен
+// img/modifiers — фото соусов/добавок на страницах позиций.
+const WATCHED_DIRS = ['img/items', 'img/categories', 'img/modifiers'];
 
 // Учитываем только настоящие картинки. В этих же папках лежат README.md с
 // памяткой по фото (04.10.2026) — без фильтра он попал бы в манифест как
@@ -89,5 +90,5 @@ fs.mkdirSync(path.dirname(outPath), { recursive: true });
 fs.writeFileSync(outPath, JSON.stringify(existingPaths, null, 2) + '\n', 'utf8');
 
 console.log(
-  `[generate-image-manifest] ${existingPaths.length} real image file(s) found under public/img/{items,categories} -> src/data/imageManifest.json`
+  `[generate-image-manifest] ${existingPaths.length} real image file(s) found under public/img/{items,categories,modifiers} -> src/data/imageManifest.json`
 );

@@ -26,10 +26,27 @@
 
 import { NextResponse, type NextRequest } from 'next/server';
 import { DEFAULT_LANG, LANGS } from '@/lib/i18nConfig';
+import { REDIRECTS, GONE } from '@/data/redirects';
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const firstSegment = pathname.split('/')[1];
+
+  // 07.10.2026: постоянные редиректы (301) и «удалено навсегда» (410) для
+  // страниц позиций — единый список в data/redirects.ts. Проверяется ПЕРВЫМ,
+  // по адресу ровно как в браузере (русский без префикса, ro/en с префиксом).
+  const normalized = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+  if (Object.prototype.hasOwnProperty.call(REDIRECTS, normalized)) {
+    const url = request.nextUrl.clone();
+    url.pathname = REDIRECTS[normalized];
+    return NextResponse.redirect(url, 301);
+  }
+  if (GONE.includes(normalized)) {
+    return new NextResponse(
+      '<!doctype html><meta charset="utf-8"><meta name="robots" content="noindex"><title>410</title><p>Страница удалена · Pagina a fost ștearsă · This page has been removed.</p>',
+      { status: 410, headers: { 'content-type': 'text/html; charset=utf-8', 'x-robots-tag': 'noindex' } }
+    );
+  }
 
   // /ru и /ru/... — явный префикс языка по умолчанию: редирект на адрес без него.
   if (firstSegment === DEFAULT_LANG) {

@@ -20,11 +20,13 @@
 
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useI18n } from '@/i18n/I18nProvider';
 import { useCartStore, useCartHydrated } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
 import { useThemeStore } from '@/store/themeStore';
 import { LANGS, HREFLANG, localizedPath } from '@/lib/i18nConfig';
+import { findItemIdByPathname, getItemPathname } from '@/lib/itemRoutes';
 import { rememberScrollForLangSwitch } from '@/components/LangScrollRestore';
 
 // Иконки солнца/полумесяца — тот же визуальный язык, что и у иконки
@@ -54,6 +56,13 @@ function ThemeIcon() {
 
 export function Header() {
   const { t, lang } = useI18n();
+  // 07.10.2026: на странице позиции переключатель языка ведёт на ТУ ЖЕ
+  // позицию на другом языке (у неё свой слаг: /drinks/kofe/latte →
+  // /ro/drinks/cafea/latte), а не на главную. Где позиции нет — как раньше.
+  const pathname = usePathname();
+  const currentItemId = pathname ? findItemIdByPathname(pathname, lang) : null;
+  const langHref = (code: (typeof LANGS)[number]): string =>
+    (currentItemId ? getItemPathname(code, currentItemId) : null) ?? localizedPath(code);
   const openCart = useUIStore((s) => s.openCart);
   const theme = useThemeStore((s) => s.theme);
   const toggleTheme = useThemeStore((s) => s.toggleTheme);
@@ -137,7 +146,7 @@ export function Header() {
                 {LANGS.map((code) => (
                   <li role="presentation" key={code}>
                     <a
-                      href={localizedPath(code)}
+                      href={langHref(code)}
                       hrefLang={HREFLANG[code]}
                       lang={HREFLANG[code]}
                       className={`lang-option${code === lang ? ' lang-option--active' : ''}`}
@@ -208,7 +217,7 @@ export function Header() {
           {LANGS.map((code) => (
             <a
               key={code}
-              href={localizedPath(code)}
+              href={langHref(code)}
               hrefLang={HREFLANG[code]}
               lang={HREFLANG[code]}
               className={`pill lang-option${code === lang ? ' pill--accent lang-option--active' : ''}`}

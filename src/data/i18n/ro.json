@@ -548,6 +548,15 @@
       "name": "Кетчуп"
     }
   },
+  "itemPage": {
+    "home": "Acasă",
+    "breadcrumbsLabel": "Navigare pe site",
+    "unavailable": "Temporar indisponibil",
+    "modifiersHint": "Sosurile pot fi adăugate după ce preparatul este în coș",
+    "cutleryNote": "Gratuit — un set pentru fiecare porție, setul suplimentar +2 MDL",
+    "metaTitle": "{name} — livrare în Bălți | Crema Food",
+    "metaDescription": "{name} — {desc} Preț: {price} MDL. Comandați cu livrare în Bălți la Crema Food."
+  },
   "cart": {
     "title": "Корзина",
     "subtitle": "Всё, что вы заказываете",

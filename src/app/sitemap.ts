@@ -17,17 +17,45 @@
 
 import type { MetadataRoute } from 'next';
 import { absoluteUrl, buildHreflangAlternates } from '@/lib/seo';
-import { INDEXABLE_LANGS } from '@/lib/i18nConfig';
+import { INDEXABLE_LANGS, HREFLANG, DEFAULT_LANG } from '@/lib/i18nConfig';
+import { getItemInternalPath, listSitemapItemIds } from '@/lib/itemRoutes';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const languages = buildHreflangAlternates();
   const lastModified = new Date();
 
-  return INDEXABLE_LANGS.map((lang) => ({
+  const home: MetadataRoute.Sitemap = INDEXABLE_LANGS.map((lang) => ({
     url: absoluteUrl(lang),
     lastModified,
     changeFrequency: 'weekly' as const,
     priority: 1,
     ...(languages ? { alternates: { languages } } : {})
   }));
+
+  // 07.10.2026: страницы позиций меню. В карту попадают только позиции со
+  // статусом active/unavailable (archived — нет, см. data/routes.ts) и только
+  // индексируемые языки. У позиции свой слаг на каждом языке, поэтому
+  // hreflang-альтернативы (когда индексируется больше одного языка)
+  // собираются отдельно для каждой позиции.
+  const itemUrl = (lang: (typeof INDEXABLE_LANGS)[number], itemId: string) =>
+    absoluteUrl(lang, getItemInternalPath(lang, itemId) ?? '/');
+  const items: MetadataRoute.Sitemap = listSitemapItemIds().flatMap((itemId) =>
+    INDEXABLE_LANGS.map((lang) => {
+      let itemLanguages: Record<string, string> | undefined;
+      if (INDEXABLE_LANGS.length > 1) {
+        itemLanguages = {};
+        for (const code of INDEXABLE_LANGS) itemLanguages[HREFLANG[code]] = itemUrl(code, itemId);
+        itemLanguages['x-default'] = itemUrl(DEFAULT_LANG, itemId);
+      }
+      return {
+        url: itemUrl(lang, itemId),
+        lastModified,
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+        ...(itemLanguages ? { alternates: { languages: itemLanguages } } : {})
+      };
+    })
+  );
+
+  return [...home, ...items];
 }
