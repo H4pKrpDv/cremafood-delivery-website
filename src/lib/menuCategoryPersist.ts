@@ -34,12 +34,29 @@
  * гидратируется, MenuSection в useLayoutEffect (до отрисовки) выставляет
  * состояние из sessionStorage и убирает этот <style> — дальше всё рисуют
  * обычные классы.
+ *
+ * 07.10.2026 — ДВА ИСПРАВЛЕНИЯ (баг: на страницах позиций пропадали кнопки
+ * RU/RO/EN в мобильном меню, если на главной была выбрана не дефолтная
+ * категория): (1) все правила для пилюль теперь начинаются с
+ * `.menu-pills ` — раньше `.pill:not(...)` задевал любой элемент с классом
+ * `.pill`, в том числе переключатель языка в шапке; (2) скрипт выходит, если
+ * страница — не главная (см. HOME_PATH_PATTERN): <style> снимает только
+ * MenuSection, а её нет на остальных страницах.
  * ------------------------------------------------------------------
  */
+
+import { LANGS } from './i18nConfig';
 
 export const MENU_CATEGORY_STORAGE_KEY = 'crema_menu_category';
 export const MENU_SUBCATEGORIES_STORAGE_KEY = 'crema_menu_subcategories';
 export const MENU_CATEGORY_PRELOAD_STYLE_ID = 'menu-category-preload';
+
+// 07.10.2026. Скрипт должен работать ТОЛЬКО на главной (/, /ro, /en): меню
+// есть только там, и только MenuSection снимает добавленный <style> после
+// гидратации. На остальных страницах (страницы позиций и т.д.) <style>
+// оставался бы навсегда, а его правила скрывали лишнее. Список главных
+// строится из LANGS, поэтому новый язык подхватывается сам.
+const HOME_PATH_PATTERN = `^/(${LANGS.join('|')})?/?$`;
 
 /** «Скелет» меню: категория -> якоря её подкатегорий (см. lib/data.ts). */
 export interface MenuStructureLike {
@@ -137,11 +154,11 @@ export function buildMenuCategoryInitScript(
   structure: readonly MenuStructureLike[],
   defaultId: string
 ): string {
-  return `(function(){try{var st=${JSON.stringify(structure)};var d=${JSON.stringify(defaultId)};var ok=/^[A-Za-z0-9_-]+$/;var cat=sessionStorage.getItem(${JSON.stringify(
+  return `(function(){try{if(!new RegExp(${JSON.stringify(HOME_PATH_PATTERN)}).test(location.pathname))return;var st=${JSON.stringify(structure)};var d=${JSON.stringify(defaultId)};var ok=/^[A-Za-z0-9_-]+$/;var cat=sessionStorage.getItem(${JSON.stringify(
     MENU_CATEGORY_STORAGE_KEY
   )});var map={};try{map=JSON.parse(sessionStorage.getItem(${JSON.stringify(
     MENU_SUBCATEGORIES_STORAGE_KEY
-  )})||'{}')||{};}catch(e){}var c=null,i;for(i=0;i<st.length;i++){if(st[i].id===cat){c=st[i];}}if(!c){for(i=0;i<st.length;i++){if(st[i].id===d){c=st[i];}}}if(!c||!c.subs.length)return;var s=map[c.id];if(typeof s!=='string'||c.subs.indexOf(s)===-1){s=c.subs[0];}var catChanged=c.id!==d;var subChanged=s!==c.subs[0];if(!catChanged&&!subChanged)return;if(!ok.test(c.id)||!ok.test(s))return;var qc='[data-category="'+c.id+'"]';var qs='[data-subcategory="'+s+'"]';var css='';if(catChanged){css+='.category-group:not(#cat-'+c.id+'){display:none!important}#cat-'+c.id+'{display:block!important}.pill:not('+qc+'){display:none!important}.pill'+qc+'{display:block!important}.category-tab--active:not('+qc+'){background:none!important;color:var(--text-2)!important;border-color:var(--border)!important}.category-tab'+qc+'{background:var(--gold)!important;color:var(--on-gold)!important;border-color:var(--gold)!important}';}css+='#cat-'+c.id+' .category:not('+qs+'){display:none!important}#cat-'+c.id+' .category'+qs+'{display:block!important}.pill--current'+qc+':not('+qs+'){background:var(--surface)!important;color:var(--text-2)!important;border-color:var(--border)!important}.pill'+qc+qs+'{background:var(--gold)!important;color:var(--on-gold)!important;border-color:var(--gold)!important}';var el=document.createElement('style');el.id=${JSON.stringify(
+  )})||'{}')||{};}catch(e){}var c=null,i;for(i=0;i<st.length;i++){if(st[i].id===cat){c=st[i];}}if(!c){for(i=0;i<st.length;i++){if(st[i].id===d){c=st[i];}}}if(!c||!c.subs.length)return;var s=map[c.id];if(typeof s!=='string'||c.subs.indexOf(s)===-1){s=c.subs[0];}var catChanged=c.id!==d;var subChanged=s!==c.subs[0];if(!catChanged&&!subChanged)return;if(!ok.test(c.id)||!ok.test(s))return;var qc='[data-category="'+c.id+'"]';var qs='[data-subcategory="'+s+'"]';var css='';if(catChanged){css+='.category-group:not(#cat-'+c.id+'){display:none!important}#cat-'+c.id+'{display:block!important}.menu-pills .pill:not('+qc+'){display:none!important}.menu-pills .pill'+qc+'{display:block!important}.category-tab--active:not('+qc+'){background:none!important;color:var(--text-2)!important;border-color:var(--border)!important}.category-tab'+qc+'{background:var(--gold)!important;color:var(--on-gold)!important;border-color:var(--gold)!important}';}css+='#cat-'+c.id+' .category:not('+qs+'){display:none!important}#cat-'+c.id+' .category'+qs+'{display:block!important}.menu-pills .pill--current'+qc+':not('+qs+'){background:var(--surface)!important;color:var(--text-2)!important;border-color:var(--border)!important}.menu-pills .pill'+qc+qs+'{background:var(--gold)!important;color:var(--on-gold)!important;border-color:var(--gold)!important}';var el=document.createElement('style');el.id=${JSON.stringify(
     MENU_CATEGORY_PRELOAD_STYLE_ID
   )};el.textContent=css;document.head.appendChild(el);}catch(e){}})();`;
 }
