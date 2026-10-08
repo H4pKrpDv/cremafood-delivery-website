@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "Crema Food — кофейня в Бэлць",
-    "description": "Авторский кофе, десерты и кухня с доставкой по Бэлць. Смотрите меню и заказывайте онлайн."
+    "title": "Доставка еды и напитков в Бельцах — Crema Food",
+    "description": "Доставка еды и напитков в Бельцах из Crema Food: кофе, завтраки, мексиканская кухня, десерты. Онлайн-заказ, доставка 60 MDL, бесплатно от 399 MDL."
   },
   "header": {
     "logoAlt": "Логотип Crema Food",
@@ -17,7 +17,7 @@
   "hero": {
     "eyebrow": "Добро пожаловать в",
     "title": "Crema Food",
-    "tagline": "Где каждый глоток — это маленькое удовольствие. Авторский кофе, уют и атмосфера, созданная для вас.",
+    "tagline": "Доставка еды и напитков в Бельцах: авторский кофе, завтраки, мексиканская кухня и десерты из кафе-ресторана Crema Food.",
     "cta": "Смотреть меню",
     "scrollHint": "Листайте вниз"
   },
@@ -45,7 +45,7 @@
   "menu": {
     "eyebrow": "Наше меню",
     "title": "Всё, что вы любите",
-    "desc": "Каждый напиток приготовлен с заботой из лучших ингредиентов",
+    "desc": "Кофе и напитки, завтраки, мексиканская кухня и десерты — выбирайте любимое и заказывайте с доставкой по Бельцам",
     "categoryTabsLabel": "Категории меню",
     "subcategoryTabsLabel": "Подкатегории меню",
     "availableFrom": "Будет доступно с {time}"
@@ -555,16 +555,21 @@
     "unavailable": "Временно недоступно",
     "modifiersHint": "Соусы можно добавить, когда блюдо уже в корзине",
     "cutleryNote": "Бесплатно — набор на каждую порцию, дополнительный набор +2 MDL",
-    "metaTitle": "{name} — доставка в Бэлць | Crema Food",
-    "metaDescription": "{name} — {desc} Цена: {price} MDL. Закажите с доставкой по Бэлць в Crema Food."
+    "metaTitle": "{name} — доставка в Бельцах | Crema Food",
+    "metaDescription": "{name} — {desc} Цена: {price} MDL. Закажите с доставкой по Бельцам в Crema Food."
   },
   "subcategoryPage": {
-    "metaTitle": "{title} — доставка в Бэлць | Crema Food",
-    "metaDescription": "{title} — {desc} Закажите с доставкой по Бэлць в Crema Food."
+    "metaTitle": "{title} — доставка в Бельцах | Crema Food",
+    "metaDescription": "{title} — {desc} Закажите с доставкой по Бельцам в Crema Food."
   },
   "categoryPage": {
-    "metaTitle": "{title} — доставка в Бэлць | Crema Food",
-    "metaDescription": "{title}: {list}. Закажите с доставкой по Бэлць в Crema Food."
+    "metaTitle": "{title} — доставка в Бельцах | Crema Food",
+    "metaDescription": "{title}: {list}. Закажите с доставкой по Бельцам в Crema Food."
+  },
+  "seoText": {
+    "label": "Подробнее о доставке Crema Food",
+    "readMore": "Читать далее",
+    "hide": "Скрыть"
   },
   "cart": {
     "title": "Корзина",
@@ -617,7 +622,7 @@
     }
   },
   "footer": {
-    "tagline": "Место, где каждый день начинается с идеальной чашки кофе",
+    "tagline": "Кафе-ресторан в Бельцах: кофе, завтраки и мексиканская кухня с доставкой",
     "locationTitle": "Местоположение",
     "hoursTitle": "График работы",
     "hoursCafe": "Кафе/бар 7–22, кухня 9–22",

@@ -27,6 +27,10 @@ import { isFullMenuSubcategory, type MenuSubcategoryItems } from '@/types/menu';
 
 export const SITE_URL = 'https://cremafood.md';
 
+// Постоянный идентификатор заведения в JSON-LD: на него ссылаются страницы
+// позиций (Offer.seller), чтобы поисковик связывал их с одним объектом.
+export const RESTAURANT_ID = `${SITE_URL}/#restaurant`;
+
 // Реквизиты заведения — та же константа BUSINESS, что была в build.js.
 // ВАЖНО: эти факты также "запечены" в разметке футера (Footer.tsx) —
 // при смене адреса/телефона/соцсетей нужно обновить оба места (то же
@@ -144,7 +148,13 @@ export function buildJsonLd(lang: Lang = DEFAULT_LANG): Record<string, any> {
 
   return {
     '@context': 'https://schema.org',
-    '@type': ['Restaurant', 'CafeOrCoffeeShop'],
+    // 08.10.2026: оставлен ОДИН тип — Restaurant (подтип FoodEstablishment).
+    // Раньше было ['Restaurant', 'CafeOrCoffeeShop']: заведение — кафе-ресторан
+    // с доставкой еды, Restaurant покрывает и кухню, и бар/кофе, а Google
+    // для локального бизнеса работает с одним понятным типом (CafeOrCoffeeShop
+    // не даёт ничего сверх, кроме неопределённости).
+    '@type': 'Restaurant',
+    '@id': RESTAURANT_ID,
     name: BUSINESS.name,
     url: absoluteUrl(lang),
     inLanguage: HREFLANG[lang],
@@ -152,12 +162,27 @@ export function buildJsonLd(lang: Lang = DEFAULT_LANG): Record<string, any> {
     telephone: BUSINESS.telephone,
     email: BUSINESS.email,
     servesCuisine: ['Coffee', 'Mexican', 'Breakfast', 'Desserts'],
+    description: translate(lang, 'meta.description'),
     priceRange,
     address: {
       '@type': 'PostalAddress',
       streetAddress: BUSINESS.streetAddress,
       addressLocality: BUSINESS.addressLocality,
       addressCountry: BUSINESS.addressCountry
+    },
+    areaServed: { '@type': 'City', name: BUSINESS.addressLocality },
+    // Заказ доставки/самовывоза на сайте: действие «заказать еду».
+    potentialAction: {
+      '@type': 'OrderAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: absoluteUrl(lang),
+        actionPlatform: [
+          'http://schema.org/DesktopWebPlatform',
+          'http://schema.org/MobileWebPlatform'
+        ]
+      },
+      deliveryMethod: ['http://purl.org/goodrelations/v1#DeliveryModeOwnFleet', 'http://purl.org/goodrelations/v1#DeliveryModePickUp']
     },
     hasMap: BUSINESS.hasMap,
     sameAs: BUSINESS.sameAs,

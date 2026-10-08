@@ -21,7 +21,7 @@ import type { Metadata } from 'next';
 import { itemMetaIndex, publicImagePath } from '@/lib/data';
 import { createTranslator } from '@/lib/i18nCore';
 import { HREFLANG, INDEXABLE_LANGS, LANGS, OG_LOCALE, DEFAULT_LANG, isIndexableLang, type Lang } from '@/lib/i18nConfig';
-import { BUSINESS, SITE_URL, absoluteUrl } from '@/lib/seo';
+import { BUSINESS, RESTAURANT_ID, SITE_URL, absoluteUrl } from '@/lib/seo';
 import { getItemInternalPath, getItemPathname, getItemStatus } from '@/lib/itemRoutes';
 import { hasSubcategoryPage } from '@/lib/subcategoryRoutes';
 import { hasCategoryPage } from '@/lib/categoryRoutes';
@@ -128,7 +128,7 @@ export function buildItemJsonLd(lang: Lang, itemId: string): Record<string, any>
       price: String(base.price),
       priceCurrency: 'MDL',
       availability: status === 'unavailable' ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
-      seller: { '@type': 'Restaurant', name: BUSINESS.name, url: absoluteUrl(lang) }
+      seller: { '@type': 'Restaurant', '@id': RESTAURANT_ID, name: BUSINESS.name, url: absoluteUrl(lang) }
     }
   };
 

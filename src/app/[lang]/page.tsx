@@ -3,6 +3,7 @@ import { MenuSection } from '@/components/MenuSection';
 import { MapSection } from '@/components/MapSection';
 import { isLang, DEFAULT_LANG } from '@/lib/i18nConfig';
 import { buildJsonLd } from '@/lib/seo';
+import { SeoText } from '@/components/SeoText';
 
 // Главная страница (05.10.2026 переехала из app/page.tsx в app/[lang]/ —
 // одна и та же страница на трёх языках: /, /ro, /en; язык берёт из
@@ -13,7 +14,8 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
   // buildJsonLd() из build.js. До 07.10.2026 лежал в <head> общего layout и
   // попадал на каждую страницу; теперь — только на главную (см. комментарий
   // в [lang]/layout.tsx). "<" экранируем, чтобы данные не закрыли <script>.
-  const jsonLd = buildJsonLd(isLang(lang) ? lang : DEFAULT_LANG);
+  const pageLang = isLang(lang) ? lang : DEFAULT_LANG;
+  const jsonLd = buildJsonLd(pageLang);
   return (
     <>
       <script
@@ -27,6 +29,8 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
           каркасу (Header/Footer), поэтому не должна показываться на
           not-found.tsx/error.tsx. */}
       <MapSection />
+      {/* 08.10.2026: SEO-текст «Читать далее» перед футером (серверный компонент). */}
+      <SeoText lang={pageLang} textKey="home" />
     </>
   );
 }

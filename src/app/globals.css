@@ -3364,3 +3364,140 @@
           --sub-gap: 1.5rem;
         }
       }
+
+      /* ─── SEO TEXT (блок «Читать далее» перед футером, 08.10.2026) ───
+         Серверный компонент components/SeoText.tsx: заголовок и первый
+         абзац видны всегда, остальное — под нативным <details>. Текст
+         лежит в HTML целиком (виден роботам), в браузере скрыта только
+         свёрнутая часть. Цвета — токены темы. Mobile-first. */
+      .seo-text {
+        background: var(--bg);
+        padding: 2rem 0 2.5rem;
+      }
+
+      .seo-text__card {
+        background: var(--bg-2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
+        max-width: 56rem;
+        margin: 0 auto;
+      }
+
+      .seo-text__h2 {
+        font-family: var(--font-head);
+        font-size: 1.25rem;
+        line-height: 1.3;
+        font-weight: 700;
+        color: var(--cream);
+        margin: 1.5rem 0 0.75rem;
+      }
+
+      .seo-text__card > .seo-text__h2:first-child {
+        margin-top: 0;
+      }
+
+      .seo-text__h3 {
+        font-family: var(--font-head);
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--cream);
+        margin: 1.25rem 0 0.5rem;
+      }
+
+      .seo-text__p,
+      .seo-text__list {
+        font-size: 0.95rem;
+        line-height: 1.75;
+        color: var(--text-2);
+        margin: 0 0 0.9rem;
+      }
+
+      .seo-text__list {
+        padding-left: 1.25rem;
+        list-style: disc;
+      }
+
+      .seo-text__list li {
+        margin-bottom: 0.35rem;
+      }
+
+      .seo-text__link {
+        color: var(--gold-light);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        text-decoration-color: color-mix(in srgb, var(--gold) 50%, transparent);
+        transition: color var(--transition);
+      }
+
+      .seo-text__link:hover {
+        color: var(--gold);
+      }
+
+      .seo-text__toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin: 0.25rem 0 0.75rem;
+        color: var(--gold-light);
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        list-style: none;
+        user-select: none;
+      }
+
+      .seo-text__toggle::-webkit-details-marker {
+        display: none;
+      }
+
+      .seo-text__toggle::after {
+        content: '';
+        width: 0.5rem;
+        height: 0.5rem;
+        border-right: 2px solid currentColor;
+        border-bottom: 2px solid currentColor;
+        transform: translateY(-2px) rotate(45deg);
+        transition: transform var(--transition);
+      }
+
+      .seo-text__more[open] > .seo-text__toggle::after {
+        transform: translateY(2px) rotate(-135deg);
+      }
+
+      .seo-text__toggle:focus-visible {
+        outline: 2px solid var(--gold);
+        outline-offset: 3px;
+        border-radius: 4px;
+      }
+
+      .seo-text__toggle-close {
+        display: none;
+      }
+
+      .seo-text__more[open] .seo-text__toggle-open {
+        display: none;
+      }
+
+      .seo-text__more[open] .seo-text__toggle-close {
+        display: inline;
+      }
+
+      @media (min-width: 769px) {
+        .seo-text {
+          padding: 3rem 0 4rem;
+        }
+
+        .seo-text__card {
+          padding: 2rem 2.25rem;
+        }
+
+        .seo-text__h2 {
+          font-size: 1.5rem;
+        }
+
+        .seo-text__p,
+        .seo-text__list {
+          font-size: 1rem;
+        }
+      }
