@@ -562,6 +562,48 @@
     "metaTitle": "{title} — delivery in Bălți | Crema Food",
     "metaDescription": "{title} — {desc} Order with delivery in Bălți from Crema Food."
   },
+  "subcategorySeo": {
+    "coffee": {
+      "h1": "Coffee delivery in Bălți",
+      "metaTitle": "Coffee delivery in Bălți: latte, cappuccino, espresso | Crema Food",
+      "metaDescription": "Order coffee for delivery in Bălți: espresso, americano, cappuccino, latte, flat white, raf. Delivery 60 MDL, free from 399 MDL."
+    },
+    "ice-coffee": {
+      "h1": "Iced coffee delivery in Bălți",
+      "metaTitle": "Iced coffee delivery in Bălți: iced latte, frappe | Crema Food",
+      "metaDescription": "Order iced coffee in Bălți: iced latte, frappe, espresso tonic, Bumblebee. Delivery 60 MDL, free from 399 MDL."
+    },
+    "milkshakes": {
+      "h1": "Milkshake delivery in Bălți",
+      "metaTitle": "Milkshake delivery in Bălți: Oreo, strawberry, chocolate | Crema Food",
+      "metaDescription": "Order thick milkshakes in Bălți: classic, chocolate, banana, strawberry and Oreo. Delivery 60 MDL, free from 399 MDL."
+    },
+    "lemonades": {
+      "h1": "Lemonade delivery in Bălți",
+      "metaTitle": "Lemonade delivery in Bălți: mojito, Blue Lagoon | Crema Food",
+      "metaDescription": "Order signature lemonades in Bălți: mojito, tropical, strawberry, Blue Lagoon, Raspberry Chai Fizz. Delivery 60 MDL, free from 399 MDL."
+    },
+    "matcha": {
+      "h1": "Matcha delivery in Bălți",
+      "metaTitle": "Matcha delivery in Bălți: matcha latte, Matcha Tonic | Crema Food",
+      "metaDescription": "Order matcha in Bălți: classic, coconut and mango matcha latte, strawberry matcha, Matcha Tonic. Delivery 60 MDL, free from 399 MDL."
+    },
+    "ube": {
+      "h1": "Ube latte delivery in Bălți",
+      "metaTitle": "Ube latte delivery in Bălți: Ube Cream Latte, smoothie | Crema Food",
+      "metaDescription": "Order drinks made with purple yam Ube in Bălți: Ube Latte, Ube Cream Latte and Ube Smoothie. Delivery 60 MDL, free from 399 MDL."
+    },
+    "bubble-tea": {
+      "h1": "Bubble Tea delivery in Bălți",
+      "metaTitle": "Bubble Tea delivery in Bălți: kiwi, strawberry, peach | Crema Food",
+      "metaDescription": "Order Bubble Tea in Bălți: tea or milk drinks with jelly pearls, 6 flavors. Delivery 60 MDL, free from 399 MDL."
+    },
+    "alcohol": {
+      "h1": "Alcoholic drinks delivery in Bălți",
+      "metaTitle": "Alcoholic drinks delivery in Bălți | Crema Food",
+      "metaDescription": "Cocktails and spirits for delivery in Bălți: Crema Kick The Rules, Jack Daniel's, Johnnie Walker, Jägermeister. Only for ages 18+."
+    }
+  },
   "categoryPage": {
     "metaTitle": "{title} — delivery in Bălți | Crema Food",
     "metaDescription": "{title}: {list}. Order with delivery in Bălți from Crema Food."

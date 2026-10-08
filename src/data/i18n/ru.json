@@ -562,6 +562,48 @@
     "metaTitle": "{title} — доставка в Бельцах | Crema Food",
     "metaDescription": "{title} — {desc} Закажите с доставкой по Бельцам в Crema Food."
   },
+  "subcategorySeo": {
+    "coffee": {
+      "h1": "Доставка кофе в Бельцах",
+      "metaTitle": "Доставка кофе в Бельцах: латте, капучино, эспрессо | Crema Food",
+      "metaDescription": "Закажите кофе с доставкой в Бельцах: эспрессо, американо, капучино, латте, флэт уайт, раф. Доставка 60 MDL, бесплатно от 399 MDL."
+    },
+    "ice-coffee": {
+      "h1": "Холодный кофе с доставкой в Бельцах",
+      "metaTitle": "Холодный кофе с доставкой в Бельцах: айс-латте, фраппе | Crema Food",
+      "metaDescription": "Закажите холодный кофе в Бельцах: айс-латте, фраппе, эспрессо-тоник, Bumblebee. Доставка 60 MDL, бесплатно от 399 MDL."
+    },
+    "milkshakes": {
+      "h1": "Милкшейки с доставкой в Бельцах",
+      "metaTitle": "Милкшейки с доставкой в Бельцах: Oreo, клубника, шоколад | Crema Food",
+      "metaDescription": "Закажите густые милкшейки в Бельцах: классический, шоколадный, банановый, клубничный и с Oreo. Доставка 60 MDL, бесплатно от 399 MDL."
+    },
+    "lemonades": {
+      "h1": "Лимонады с доставкой в Бельцах",
+      "metaTitle": "Лимонады с доставкой в Бельцах: мохито, Blue Lagoon | Crema Food",
+      "metaDescription": "Закажите авторские лимонады в Бельцах: мохито, тропический, клубничный, Blue Lagoon, Raspberry Chai Fizz. Доставка 60 MDL, бесплатно от 399 MDL."
+    },
+    "matcha": {
+      "h1": "Матча с доставкой в Бельцах",
+      "metaTitle": "Матча с доставкой в Бельцах: матча-латте, Matcha Tonic | Crema Food",
+      "metaDescription": "Закажите матчу в Бельцах: классический, кокосовый и манго матча-латте, клубничная матча, Matcha Tonic. Доставка 60 MDL, бесплатно от 399 MDL."
+    },
+    "ube": {
+      "h1": "Ube латте с доставкой в Бельцах",
+      "metaTitle": "Ube латте с доставкой в Бельцах: Ube Cream Latte, смузи | Crema Food",
+      "metaDescription": "Закажите напитки с фиолетовым бататом Ube в Бельцах: Ube Latte, Ube Cream Latte и Ube Smoothie. Доставка 60 MDL, бесплатно от 399 MDL."
+    },
+    "bubble-tea": {
+      "h1": "Bubble Tea с доставкой в Бельцах",
+      "metaTitle": "Bubble Tea с доставкой в Бельцах: киви, клубника, персик | Crema Food",
+      "metaDescription": "Закажите Bubble Tea в Бельцах: чай и молочные напитки с желейными шариками, 6 вкусов. Доставка 60 MDL, бесплатно от 399 MDL."
+    },
+    "alcohol": {
+      "h1": "Алкогольные напитки с доставкой в Бельцах",
+      "metaTitle": "Алкогольные напитки с доставкой в Бельцах | Crema Food",
+      "metaDescription": "Коктейли и крепкие напитки с доставкой в Бельцах: Crema Kick The Rules, Jack Daniel's, Johnnie Walker, Jägermeister. Только для лиц старше 18 лет."
+    }
+  },
   "categoryPage": {
     "metaTitle": "{title} — доставка в Бельцах | Crema Food",
     "metaDescription": "{title}: {list}. Закажите с доставкой по Бельцам в Crema Food."

@@ -4,6 +4,7 @@ import { isLang } from '@/lib/i18nConfig';
 import { listSubcategoryPageParams, resolveSubcategoryRoute } from '@/lib/subcategoryRoutes';
 import { buildSubcategoryJsonLd, buildSubcategoryMetadata } from '@/lib/subcategorySeo';
 import { SubcategoryPage } from '@/components/SubcategoryPage';
+import { SeoText } from '@/components/SeoText';
 
 /**
  * app/[lang]/[section]/[subcategory]/page.tsx — страница подкатегории меню
@@ -53,7 +54,9 @@ export default async function SubcategoryRoutePage({ params }: SubcategoryParams
           dangerouslySetInnerHTML={{ __html: JSON.stringify(block).replace(/</g, '\\u003c') }}
         />
       ))}
-      <SubcategoryPage subId={resolution.subId} />
+      <SubcategoryPage subId={resolution.subId}>
+        <SeoText lang={lang} textKey={`sub:${resolution.subId}`} />
+      </SubcategoryPage>
     </>
   );
 }

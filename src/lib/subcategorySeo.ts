@@ -47,12 +47,24 @@ function buildSubcategoryAlternates(subId: string): Record<string, string> | und
   return languages;
 }
 
+/**
+ * Ключевой H1 страницы подкатегории («Доставка кофе в Бельцах») — i18n-блок
+ * subcategorySeo (09.10.2026, SEO этап 3). Нет блока — короткое название.
+ */
+export function subcategoryH1(lang: Lang, subId: string): string {
+  const t = createTranslator(lang);
+  return t(`subcategorySeo.${subId}.h1`) || t(`subcategories.${subId}.title`) || subId;
+}
+
 export function buildSubcategoryMetadata(lang: Lang, subId: string): Metadata {
   const t = createTranslator(lang);
   const title = t(`subcategories.${subId}.title`) || subId;
   const desc = t(`subcategories.${subId}.desc`);
-  const metaTitle = fill(t('subcategoryPage.metaTitle'), { title });
-  const metaDescription = fill(t('subcategoryPage.metaDescription'), { title, desc });
+  // Уникальные title/description (subcategorySeo.<id>.*); общий шаблон
+  // subcategoryPage.* — запасной вариант для подкатегорий без своих строк.
+  const metaTitle = t(`subcategorySeo.${subId}.metaTitle`) || fill(t('subcategoryPage.metaTitle'), { title });
+  const metaDescription =
+    t(`subcategorySeo.${subId}.metaDescription`) || fill(t('subcategoryPage.metaDescription'), { title, desc });
   const indexable = isIndexableLang(lang);
   const languages = indexable ? buildSubcategoryAlternates(subId) : undefined;
   const canonicalPath = getSubcategoryPathname(lang, subId) ?? undefined;
@@ -94,8 +106,8 @@ export function buildSubcategoryJsonLd(lang: Lang, subId: string): Record<string
   const collection = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: title,
-    description: t(`subcategories.${subId}.desc`),
+    name: subcategoryH1(lang, subId),
+    description: t(`subcategorySeo.${subId}.metaDescription`) || t(`subcategories.${subId}.desc`),
     url,
     inLanguage: HREFLANG[lang],
     image: subcategoryImageAbsolute(subId),

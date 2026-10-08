@@ -562,6 +562,48 @@
     "metaTitle": "{title} — livrare în Bălți | Crema Food",
     "metaDescription": "{title} — {desc} Comandați cu livrare în Bălți la Crema Food."
   },
+  "subcategorySeo": {
+    "coffee": {
+      "h1": "Livrare de cafea în Bălți",
+      "metaTitle": "Livrare de cafea în Bălți: latte, cappuccino, espresso | Crema Food",
+      "metaDescription": "Comandați cafea cu livrare în Bălți: espresso, americano, cappuccino, latte, flat white, raf. Livrare 60 MDL, gratuită de la 399 MDL."
+    },
+    "ice-coffee": {
+      "h1": "Cafea rece cu livrare în Bălți",
+      "metaTitle": "Cafea rece cu livrare în Bălți: ice latte, frappe | Crema Food",
+      "metaDescription": "Comandați cafea rece în Bălți: ice latte, frappe, espresso tonic, Bumblebee. Livrare 60 MDL, gratuită de la 399 MDL."
+    },
+    "milkshakes": {
+      "h1": "Milkshake-uri cu livrare în Bălți",
+      "metaTitle": "Milkshake-uri cu livrare în Bălți: Oreo, căpșuni, ciocolată | Crema Food",
+      "metaDescription": "Comandați milkshake-uri groase în Bălți: clasic, ciocolată, banane, căpșuni și Oreo. Livrare 60 MDL, gratuită de la 399 MDL."
+    },
+    "lemonades": {
+      "h1": "Limonade cu livrare în Bălți",
+      "metaTitle": "Limonade cu livrare în Bălți: mojito, Blue Lagoon | Crema Food",
+      "metaDescription": "Comandați limonade de autor în Bălți: mojito, tropical, căpșuni, Blue Lagoon, Raspberry Chai Fizz. Livrare 60 MDL, gratuită de la 399 MDL."
+    },
+    "matcha": {
+      "h1": "Matcha cu livrare în Bălți",
+      "metaTitle": "Matcha cu livrare în Bălți: matcha latte, Matcha Tonic | Crema Food",
+      "metaDescription": "Comandați matcha în Bălți: matcha latte clasic, cu cocos și mango, matcha cu căpșuni, Matcha Tonic. Livrare 60 MDL, gratuită de la 399 MDL."
+    },
+    "ube": {
+      "h1": "Ube latte cu livrare în Bălți",
+      "metaTitle": "Ube latte cu livrare în Bălți: Ube Cream Latte, smoothie | Crema Food",
+      "metaDescription": "Comandați băuturi cu cartof dulce violet Ube în Bălți: Ube Latte, Ube Cream Latte și Ube Smoothie. Livrare 60 MDL, gratuită de la 399 MDL."
+    },
+    "bubble-tea": {
+      "h1": "Bubble Tea cu livrare în Bălți",
+      "metaTitle": "Bubble Tea cu livrare în Bălți: kiwi, căpșuni, piersică | Crema Food",
+      "metaDescription": "Comandați Bubble Tea în Bălți: băuturi pe bază de ceai sau lapte cu bile de jeleu, 6 arome. Livrare 60 MDL, gratuită de la 399 MDL."
+    },
+    "alcohol": {
+      "h1": "Băuturi alcoolice cu livrare în Bălți",
+      "metaTitle": "Băuturi alcoolice cu livrare în Bălți | Crema Food",
+      "metaDescription": "Cocktailuri și băuturi tari cu livrare în Bălți: Crema Kick The Rules, Jack Daniel's, Johnnie Walker, Jägermeister. Doar persoanelor peste 18 ani."
+    }
+  },
   "categoryPage": {
     "metaTitle": "{title} — livrare în Bălți | Crema Food",
     "metaDescription": "{title}: {list}. Comandați cu livrare în Bălți la Crema Food."
