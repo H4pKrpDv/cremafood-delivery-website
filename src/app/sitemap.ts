@@ -7,7 +7,7 @@
  * язык ровно один URL — тот же changefreq/priority, что и раньше.
  * lastModified пересчитывается сам на каждый билд/запрос.
  *
- * 08.10.2026: добавлены страницы подкатегорий и категорий.
+ * 08.10.2026: добавлены страницы подкатегорий и категорий; 09.10.2026 — /menu.
  *
  * 05.10.2026: страницы по языкам (/, /ro, /en). В карту попадают ТОЛЬКО
  * языки из INDEXABLE_LANGS (lib/i18nConfig.ts) — сейчас это один русский
@@ -23,6 +23,7 @@ import { INDEXABLE_LANGS, HREFLANG, DEFAULT_LANG } from '@/lib/i18nConfig';
 import { getItemInternalPath, listSitemapItemIds } from '@/lib/itemRoutes';
 import { getSubcategoryInternalPath, listSitemapSubcategoryIds } from '@/lib/subcategoryRoutes';
 import { getCategoryInternalPath, listSitemapCategoryIds } from '@/lib/categoryRoutes';
+import { MENU_PAGE_INTERNAL_PATH } from '@/lib/menuPageRoutes';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const languages = buildHreflangAlternates();
@@ -104,5 +105,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })
   );
 
-  return [...home, ...categories, ...subcategories, ...items];
+  // 09.10.2026: страница «Полное меню» (/menu) — как страницы категорий.
+  const menuUrl = (lang: (typeof INDEXABLE_LANGS)[number]) => absoluteUrl(lang, MENU_PAGE_INTERNAL_PATH);
+  const menuPage: MetadataRoute.Sitemap = INDEXABLE_LANGS.map((lang) => {
+    let menuLanguages: Record<string, string> | undefined;
+    if (INDEXABLE_LANGS.length > 1) {
+      menuLanguages = {};
+      for (const code of INDEXABLE_LANGS) menuLanguages[HREFLANG[code]] = menuUrl(code);
+      menuLanguages['x-default'] = menuUrl(DEFAULT_LANG);
+    }
+    return {
+      url: menuUrl(lang),
+      lastModified,
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
+      ...(menuLanguages ? { alternates: { languages: menuLanguages } } : {})
+    };
+  });
+
+  return [...home, ...menuPage, ...categories, ...subcategories, ...items];
 }

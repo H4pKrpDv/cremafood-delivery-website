@@ -7,7 +7,7 @@
  * только русский: ro/en берут русские тексты (как и остальной контент,
  * эти страницы закрыты noindex до перевода — INDEXABLE_LANGS).
  *
- * Ключи страниц: "home", "cat:<id категории>", "sub:<id подкатегории>".
+ * Ключи страниц: "home", "cat:<id категории>", "sub:<id подкатегории>", "page:menu".
  *
  * Мини-разметка строки:
  *   "## Заголовок"         — H2;   "### Заголовок" — H3;
@@ -16,7 +16,8 @@
  *   всё остальное          — абзац.
  * Внутри текста — ссылки [текст](токен). Токены (внутренняя перелинковка,
  * адрес собирается под язык страницы):
- *   home | menu | hours | cat:<categoryId> | sub:<subId> | item:<itemId>
+ *   home | menu | hours | page:menu | cat:<categoryId> | sub:<subId> | item:<itemId>
+ * (page:menu — страница «Полное меню» /menu, 09.10.2026; menu — якорь меню на главной)
  * Если токен неизвестен или страницы нет, текст выводится без ссылки (а в
  * dev-режиме сборка не падает) — это защита от битых ссылок при смене
  * меню/слагов.
@@ -31,6 +32,7 @@ import { DEFAULT_LANG, localizedPath, type Lang } from '@/lib/i18nConfig';
 import { getCategoryPathname } from '@/lib/categoryRoutes';
 import { getSubcategoryPathname } from '@/lib/subcategoryRoutes';
 import { getItemPathname } from '@/lib/itemRoutes';
+import { getMenuPagePathname } from '@/lib/menuPageRoutes';
 
 const TEXTS: Record<Lang, Record<string, string[]>> = {
   ru: ruTexts as Record<string, string[]>,
@@ -63,6 +65,7 @@ export function resolveSeoHref(lang: Lang, token: string): string | null {
   if (token === 'home') return localizedPath(lang);
   if (token === 'menu') return `${localizedPath(lang)}#menu`;
   if (token === 'hours') return `${localizedPath(lang)}#delivery-hours`;
+  if (token === 'page:menu') return getMenuPagePathname(lang);
   const [kind, id] = token.split(':');
   if (!id) return null;
   if (kind === 'cat') return getCategoryPathname(lang, id);

@@ -50,6 +50,7 @@ import { findItemIdByPathname, getItemPathname } from '@/lib/itemRoutes';
 import { findSubcategoryIdByPathname, getSubcategoryPathname } from '@/lib/subcategoryRoutes';
 import { findCategoryIdByPathname, getCategoryPathname, getCategorySubcategoryIds } from '@/lib/categoryRoutes';
 import { rememberScrollForLangSwitch } from '@/components/LangScrollRestore';
+import { getMenuPagePathname, isMenuPagePathname } from '@/lib/menuPageRoutes';
 
 // Иконки солнца/полумесяца — тот же визуальный язык, что и у иконки
 // корзины ниже (stroke, currentColor, viewBox 0 24 24), декоративная
@@ -113,6 +114,7 @@ export function Header() {
     (currentItemId ? getItemPathname(code, currentItemId) : null) ??
     (currentSubId ? getSubcategoryPathname(code, currentSubId) : null) ??
     (currentCategoryId ? getCategoryPathname(code, currentCategoryId) : null) ??
+    (pathname && isMenuPagePathname(pathname) ? getMenuPagePathname(code) : null) ??
     localizedPath(code);
   const openCart = useUIStore((s) => s.openCart);
   const theme = useThemeStore((s) => s.theme);
@@ -377,6 +379,19 @@ export function Header() {
                   </li>
                 );
               })}
+              {/* 09.10.2026: «Полное меню» — отдельная страница /menu, в бургере
+                  обычная ссылка (без раскрывающегося списка). */}
+              <li className="mobile-menu__cat-item">
+                <Link
+                  href={getMenuPagePathname(lang)}
+                  className="mobile-menu__cat mobile-menu__cat--link"
+                  aria-current={pathname === getMenuPagePathname(lang) ? 'page' : undefined}
+                  prefetch={false}
+                  onClick={closeBurger}
+                >
+                  <span>{t('categories.full-menu')}</span>
+                </Link>
+              </li>
             </ul>
           </nav>
           {/* График доставки сразу в меню (решение пользователя): два отдела с

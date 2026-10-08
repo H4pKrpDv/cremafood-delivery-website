@@ -633,6 +633,11 @@
         transition: color var(--transition);
       }
 
+      /* «Полное меню» в бургере — обычная ссылка с тем же видом, что у заголовков. */
+      .mobile-menu__cat--link {
+        text-decoration: none;
+      }
+
       .mobile-menu__cat:hover,
       .mobile-menu__cat[aria-expanded="true"] {
         color: var(--gold-light);
@@ -2141,7 +2146,11 @@
         margin-bottom: 1.5rem;
       }
 
+      /* 09.10.2026: пилюли — ссылки (<a>/<Link>), поэтому inline-block и без
+         подчёркивания; раньше были <button>. */
       .category-tab {
+        display: inline-block;
+        text-decoration: none;
         padding: 0.55rem 1.25rem;
         border-radius: 999px;
         background: none;
@@ -2168,6 +2177,89 @@
 
       .category-tab--active:hover {
         color: var(--on-gold);
+      }
+
+      .category-tab:focus-visible {
+        outline: 2px solid var(--gold);
+        outline-offset: 2px;
+      }
+
+      /* Страница категории/«Полное меню»: ряд пилюль под крошками. */
+      .category-page .category-tabs {
+        margin-top: 0.25rem;
+      }
+
+      /* ─── СТРАНИЦА «ПОЛНОЕ МЕНЮ» (/menu, 09.10.2026) ─── */
+      .menu-page__intro {
+        max-width: 640px;
+        margin: -0.5rem auto 2rem;
+        text-align: center;
+        color: var(--text-2);
+        font-size: 0.95rem;
+        line-height: 1.7;
+      }
+
+      .menu-page__sections {
+        display: grid;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .menu-page__section {
+        background: var(--bg-2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
+        text-align: center;
+      }
+
+      .menu-page__section-title {
+        font-family: var(--font-head);
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--cream);
+        margin-bottom: 0.9rem;
+        text-align: center;
+      }
+
+      .menu-page__section-link {
+        color: inherit;
+        text-decoration: none;
+        transition: color var(--transition);
+      }
+
+      .menu-page__section-link:hover {
+        color: var(--gold-light);
+      }
+
+      .menu-page__links {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .menu-page__link {
+        display: inline-block;
+        padding: 0.4rem 0.95rem;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        color: var(--text-2);
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: all var(--transition);
+      }
+
+      .menu-page__link:hover {
+        color: var(--gold-light);
+        border-color: var(--gold-dark);
+      }
+
+      .menu-page__pdf {
+        margin-bottom: 2rem;
       }
 
       /* ─── .pill — базовый вид пилюль (с 08.10.2026 используется только
@@ -3045,6 +3137,15 @@
 
         .category-group {
           margin-bottom: 0;
+        }
+
+        .menu-page__sections {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 1.25rem;
+        }
+
+        .menu-page__section {
+          padding: 1.5rem;
         }
 
         .category-group__title {

@@ -16,6 +16,9 @@
  * i18n categorySeo.<id>.h1), в крошках и на вкладках остаётся короткое
  * название. children — SEO-текст «Читать далее» (серверный компонент SeoText,
  * передаётся из серверной страницы), выводится под сеткой, внутри <main>.
+ *
+ * 09.10.2026: под крошками — ряд пилюль разделов (CategoryNav) с подсвеченным
+ * текущим разделом.
  * ------------------------------------------------------------------
  */
 
@@ -25,6 +28,7 @@ import { useI18n } from '@/i18n/I18nProvider';
 import { getCategorySubcategoryIds } from '@/lib/categoryRoutes';
 import type { ReactNode } from 'react';
 import { Breadcrumbs } from './Breadcrumbs';
+import { CategoryNav } from './CategoryNav';
 import { SubcategoryBanner } from './SubcategoryBanner';
 
 export function CategoryPage({ categoryId, children }: { categoryId: string; children?: ReactNode }) {
@@ -36,6 +40,9 @@ export function CategoryPage({ categoryId, children }: { categoryId: string; chi
     <main className="sub-page category-page">
       <div className="container">
         <Breadcrumbs items={[{ label: t(`categories.${categoryId}`) }]} />
+        {/* 09.10.2026: тот же ряд пилюль, что и на главной, — разделы переключаются
+            как вкладки, но у каждого свой адрес. */}
+        <CategoryNav activeId={categoryId} />
         <h1 className="category-group__title">{t(`categorySeo.${categoryId}.h1`) || t(`categories.${categoryId}`)}</h1>
         <div className="sub-grid">
           {subIds.map((subId) => (

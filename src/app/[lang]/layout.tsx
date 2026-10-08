@@ -6,9 +6,7 @@ import '../globals.css';
 import { I18nProvider } from '@/i18n/I18nProvider';
 import { ThemeEffect } from '@/components/ThemeEffect';
 import { themeInitScript, buildHtmlBootScript } from '@/lib/themeInitScript';
-import { menuStructure, DEFAULT_ACTIVE_CATEGORY } from '@/lib/data';
 import { LANGS, HREFLANG, OG_LOCALE, isLang, isIndexableLang, type Lang } from '@/lib/i18nConfig';
-import { buildMenuCategoryInitScript } from '@/lib/menuCategoryPersist';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { CartModal } from '@/components/CartModal';
@@ -67,13 +65,6 @@ const inter = Inter({
 // отдаёт его по адресу /favicon.ico). Оба файла — тот же img/logo.png,
 // просто подготовленный под каждый формат. Ручной `icons` больше не нужен
 // и убран, чтобы не плодить дублирующиеся/конфликтующие теги.
-
-// Скрипт «запомнить выбранную категорию и подкатегорию меню после
-// перезагрузки» (см. lib/menuCategoryPersist.ts) — «скелет» меню (категории
-// и их подкатегории) и дефолтная категория берутся из menu.json/lib/data.ts
-// на этапе сборки, поэтому при добавлении категории/подкатегории ничего
-// вручную обновлять не нужно.
-const menuCategoryInitScript = buildMenuCategoryInitScript(menuStructure, DEFAULT_ACTIVE_CATEGORY);
 
 // 05.10.2026: этот layout — КОРНЕВОЙ (содержит <html>) и лежит в сегменте
 // [lang] (/ , /ro , /en — см. lib/i18nConfig.ts, proxy.ts). Статически
@@ -167,15 +158,6 @@ export default async function LangLayout({ children, params }: { children: React
           lib/themeInitScript.ts и store/themeStore.ts.
         */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-        {/*
-          Выбранная категория и подкатегория меню (04.10/05.10.2026): если
-          после перезагрузки в sessionStorage лежит не дефолтный выбор, скрипт
-          ДО первой отрисовки подставляет нужный (inline <style>), чтобы не
-          было мигания «Напитки → нужная категория» и браузер точно вернул
-          прокрутку. Убирает этот <style> MenuSection после гидратации. См.
-          lib/menuCategoryPersist.ts.
-        */}
-        <script dangerouslySetInnerHTML={{ __html: menuCategoryInitScript }} />
         {/*
           07.10.2026: JSON-LD ресторана с полным меню (buildJsonLd, lib/seo.ts)
           отсюда убран и выводится только на главной (app/[lang]/page.tsx):
