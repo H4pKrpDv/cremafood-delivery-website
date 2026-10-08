@@ -7,7 +7,7 @@
  * язык ровно один URL — тот же changefreq/priority, что и раньше.
  * lastModified пересчитывается сам на каждый билд/запрос.
  *
- * 08.10.2026: добавлены страницы подкатегорий.
+ * 08.10.2026: добавлены страницы подкатегорий и категорий.
  *
  * 05.10.2026: страницы по языкам (/, /ro, /en). В карту попадают ТОЛЬКО
  * языки из INDEXABLE_LANGS (lib/i18nConfig.ts) — сейчас это один русский
@@ -22,6 +22,7 @@ import { absoluteUrl, buildHreflangAlternates } from '@/lib/seo';
 import { INDEXABLE_LANGS, HREFLANG, DEFAULT_LANG } from '@/lib/i18nConfig';
 import { getItemInternalPath, listSitemapItemIds } from '@/lib/itemRoutes';
 import { getSubcategoryInternalPath, listSitemapSubcategoryIds } from '@/lib/subcategoryRoutes';
+import { getCategoryInternalPath, listSitemapCategoryIds } from '@/lib/categoryRoutes';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const languages = buildHreflangAlternates();
@@ -82,5 +83,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })
   );
 
-  return [...home, ...subcategories, ...items];
+  // 08.10.2026: страницы категорий (/drinks, /food, /promo).
+  const catUrl = (lang: (typeof INDEXABLE_LANGS)[number], categoryId: string) =>
+    absoluteUrl(lang, getCategoryInternalPath(categoryId) ?? '/');
+  const categories: MetadataRoute.Sitemap = listSitemapCategoryIds().flatMap((categoryId) =>
+    INDEXABLE_LANGS.map((lang) => {
+      let catLanguages: Record<string, string> | undefined;
+      if (INDEXABLE_LANGS.length > 1) {
+        catLanguages = {};
+        for (const code of INDEXABLE_LANGS) catLanguages[HREFLANG[code]] = catUrl(code, categoryId);
+        catLanguages['x-default'] = catUrl(DEFAULT_LANG, categoryId);
+      }
+      return {
+        url: catUrl(lang, categoryId),
+        lastModified,
+        changeFrequency: 'weekly' as const,
+        priority: 0.9,
+        ...(catLanguages ? { alternates: { languages: catLanguages } } : {})
+      };
+    })
+  );
+
+  return [...home, ...categories, ...subcategories, ...items];
 }

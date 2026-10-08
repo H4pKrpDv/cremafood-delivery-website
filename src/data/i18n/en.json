@@ -562,6 +562,10 @@
     "metaTitle": "{title} — delivery in Bălți | Crema Food",
     "metaDescription": "{title} — {desc} Order with delivery in Bălți from Crema Food."
   },
+  "categoryPage": {
+    "metaTitle": "{title} — delivery in Bălți | Crema Food",
+    "metaDescription": "{title}: {list}. Order with delivery in Bălți from Crema Food."
+  },
   "cart": {
     "title": "Корзина",
     "subtitle": "Всё, что вы заказываете",

@@ -562,6 +562,10 @@
     "metaTitle": "{title} — доставка в Бэлць | Crema Food",
     "metaDescription": "{title} — {desc} Закажите с доставкой по Бэлць в Crema Food."
   },
+  "categoryPage": {
+    "metaTitle": "{title} — доставка в Бэлць | Crema Food",
+    "metaDescription": "{title}: {list}. Закажите с доставкой по Бэлць в Crema Food."
+  },
   "cart": {
     "title": "Корзина",
     "subtitle": "Всё, что вы заказываете",
