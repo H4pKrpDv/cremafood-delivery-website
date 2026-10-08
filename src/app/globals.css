@@ -205,6 +205,15 @@
         overflow: hidden;
       }
 
+      /* 09.10.2026: то же для мобильного бургер-меню — пока оно открыто, страница
+         под ним не прокручивается (скроллится только сама панель). Только
+         < 769px: на десктопе панели нет, блокировка не нужна. */
+      @media (max-width: 768px) {
+        body.menu-open {
+          overflow: hidden;
+        }
+      }
+
       a {
         text-decoration: none;
         color: inherit;
@@ -374,14 +383,14 @@
         justify-content: center;
       }
 
-      /* ─── ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ В ШАПКЕ (02.10.2026; с 04.10.2026 — и на
-             мобильном, не только на десктопе) ───
-         Стоит в .header__actions слева от иконки корзины на всех ширинах
-         (раньше на мобильном был скрыт и дублировался в бургер-меню, см.
-         Context.md). Визуально — тот же стиль icon-button, что и
-         .header__cart. */
+      /* ─── ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ В ШАПКЕ (02.10.2026; 04.10.2026 — и на
+             мобильном; с 09.10.2026 снова ТОЛЬКО на десктопе) ───
+         Стоит в .header__actions слева от иконки корзины. С 09.10.2026 на
+         мобильном (< 769px) скрыт: там язык в шапке, а тема переехала в
+         бургер-меню (.mobile-menu__theme). Визуально — тот же стиль
+         icon-button, что и .header__cart. */
       .theme-toggle--header {
-        display: flex;
+        display: none;
         width: 38px;
         height: 38px;
         align-items: center;
@@ -540,47 +549,273 @@
         background: rgba(200, 150, 74, 0.15);
       }
 
-      /* ─── МОБИЛЬНОЕ МЕНЮ (бургер-панель: телефон → график доставки → язык) ─── */
+      /* ─── МОБИЛЬНОЕ МЕНЮ (бургер-панель) ───
+         09.10.2026, редизайн: раньше — небольшая плашка под шапкой, теперь —
+         панель НА ВЕСЬ ЭКРАН под шапкой (шапка остаётся видимой, z-index 100
+         у .header против 99 здесь), выезжает справа. Панель — соседний с
+         .header элемент (не его потомок): у .header есть backdrop-filter, а он
+         делает шапку containing block'ом для position:fixed потомков, и панель
+         "прилипла" бы к её высоте. Закрытая панель: за экраном + visibility:
+         hidden (+ атрибут inert в разметке) — не фокусируется. Прокрутка
+         страницы под открытой панелью заблокирована (body.menu-open), скроллится
+         только .mobile-menu__scroll; футер с кнопкой звонка закреплён внизу. */
       .mobile-menu {
         position: fixed;
-        top: 60px;
+        top: var(--header-height);
         left: 0;
         right: 0;
+        bottom: 0;
         z-index: 99;
-        background: var(--bg-2);
-        border-bottom: 1px solid var(--border);
-        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
-        padding: 1rem 1.25rem 1.25rem;
         display: flex;
         flex-direction: column;
-        gap: 0.85rem;
+        background: var(--bg-2);
+        transform: translateX(100%);
+        visibility: hidden;
+        transition: transform 0.3s ease, visibility 0s linear 0.3s;
       }
 
-      .mobile-menu[hidden] {
-        display: none;
+      .mobile-menu--open {
+        transform: none;
+        visibility: visible;
+        transition: transform 0.3s ease, visibility 0s;
       }
 
-      .mobile-menu__link {
-        font-size: 0.95rem;
-        font-weight: 500;
-        color: var(--cream-2);
-        padding: 0.4rem 0;
+      .mobile-menu__scroll {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+        padding: 1.25rem 1.25rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        text-align: center;
+      }
+
+      .mobile-menu__nav {
+        width: 100%;
+        max-width: 28rem;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .mobile-menu__cats {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .mobile-menu__cat-item {
         border-bottom: 1px solid var(--border);
+      }
+
+      /* Заголовок категории — кнопка-аккордеон: название по центру, стрелка
+         рядом, при раскрытии разворачивается. */
+      .mobile-menu__cat {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 1rem 0.5rem;
+        background: none;
+        border: none;
+        color: var(--cream);
+        font-family: var(--font-head);
+        font-size: 1.2rem;
+        font-weight: 600;
+        cursor: pointer;
         transition: color var(--transition);
       }
 
-      .mobile-menu__link:last-of-type {
-        border-bottom: none;
+      .mobile-menu__cat:hover,
+      .mobile-menu__cat[aria-expanded="true"] {
+        color: var(--gold-light);
+      }
+
+      .mobile-menu__chevron {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        transition: transform 0.3s ease;
+      }
+
+      .mobile-menu__cat[aria-expanded="true"] .mobile-menu__chevron {
+        transform: rotate(180deg);
+      }
+
+      /* Раскрытие высоты без JS-замеров: grid-template-rows 0fr → 1fr. */
+      .mobile-menu__sub {
+        display: grid;
+        grid-template-rows: 0fr;
+        visibility: hidden;
+        transition: grid-template-rows 0.3s ease, visibility 0s linear 0.3s;
+      }
+
+      .mobile-menu__sub--open {
+        grid-template-rows: 1fr;
+        visibility: visible;
+        transition: grid-template-rows 0.3s ease, visibility 0s;
+      }
+
+      .mobile-menu__sub-inner {
+        min-height: 0;
+        overflow: hidden;
+      }
+
+      /* Подкатегории — просто текст в ряд (с переносом), по центру, без
+         баннеров. */
+      .mobile-menu__sublist {
+        list-style: none;
+        margin: 0;
+        padding: 0.1rem 0 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.2rem 0.3rem;
+      }
+
+      .mobile-menu__sublink {
+        display: inline-block;
+        padding: 0.45rem 0.8rem;
+        border-radius: 999px;
+        font-size: 0.95rem;
+        color: var(--text-2);
+        transition: color var(--transition), background var(--transition);
+      }
+
+      .mobile-menu__sublink:hover,
+      .mobile-menu__sublink:focus-visible {
+        color: var(--gold-light);
+        background: var(--surface-2);
+      }
+
+      .mobile-menu__sublink--all {
+        color: var(--gold);
+      }
+
+      .mobile-menu__sublink--current {
+        color: var(--gold-light);
+        background: rgba(200, 150, 74, 0.15);
+      }
+
+      .mobile-menu__link {
+        display: block;
+        padding: 1rem 0.5rem;
+        font-size: 1.05rem;
+        font-weight: 500;
+        color: var(--cream-2);
+        transition: color var(--transition);
       }
 
       .mobile-menu__link:hover {
         color: var(--gold-light);
       }
 
-      .mobile-menu__lang {
+      /* Переключатель темы в меню (на мобильном он убран из шапки). Подпись —
+         целевая тема, иконка — из ThemeIcon (выбирается CSS по data-theme). */
+      .mobile-menu__theme {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.6rem 1.15rem;
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        color: var(--cream-2);
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: border-color var(--transition), color var(--transition);
+      }
+
+      .mobile-menu__theme:hover {
+        border-color: var(--gold-dark);
+        color: var(--gold-light);
+      }
+
+      .mobile-menu__theme svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      .mobile-menu__footer {
+        flex-shrink: 0;
+        padding: 0.85rem 1.25rem calc(0.85rem + env(safe-area-inset-bottom, 0px));
+        border-top: 1px solid var(--border);
+        background: var(--bg-2);
+      }
+
+      .mobile-menu__cta {
         display: flex;
+        align-items: center;
+        justify-content: center;
         gap: 0.5rem;
-        padding-top: 0.25rem;
+        width: 100%;
+        max-width: 28rem;
+        margin: 0 auto;
+        padding: 0.9rem 1rem;
+        border-radius: var(--radius);
+        background: var(--gold);
+        color: var(--on-gold);
+        font-size: 1rem;
+        font-weight: 600;
+        transition: background var(--transition);
+      }
+
+      .mobile-menu__cta:hover {
+        background: var(--gold-light);
+      }
+
+      .mobile-menu__cta svg {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .mobile-menu,
+        .mobile-menu--open,
+        .mobile-menu__sub,
+        .mobile-menu__sub--open,
+        .mobile-menu__chevron {
+          transition: none;
+        }
+      }
+
+      /* Шапка на мобильном: лого + язык + корзина + бургер должны поместиться
+         в 320px — чуть компактнее отступы, логотип-текст и «таблетка» языка. */
+      @media (max-width: 768px) {
+        .header__inner {
+          padding: 0 1rem;
+        }
+
+        .header__actions {
+          gap: 0.45rem;
+        }
+
+        .logo__text {
+          font-size: 1.4rem;
+        }
+
+        .lang-switcher__toggle {
+          padding: 0.3rem 0.6rem;
+        }
+      }
+
+      @media (max-width: 359px) {
+        .logo__text {
+          font-size: 1.2rem;
+        }
+
+        .logo {
+          gap: 0.35rem;
+        }
       }
 
       /* ─── BUTTON ─── */
@@ -2673,10 +2908,17 @@
         .nav {
           display: flex;
           gap: 2rem;
+          /* язык теперь не внутри .nav, а рядом (см. Header.tsx): добавка
+             к gap .header__actions сохраняет прежние 2rem до списка языка */
+          margin-right: 0.5rem;
         }
 
         .header__actions {
           gap: 1.5rem;
+        }
+
+        .theme-toggle--header {
+          display: flex;
         }
 
         .burger {

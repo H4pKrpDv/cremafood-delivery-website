@@ -12,7 +12,12 @@
     "themeToggle": {
       "toLight": "Переключить на светлую тему",
       "toDark": "Переключить на тёмную тему"
-    }
+    },
+    "menuClose": "Закрыть меню",
+    "menuAll": "Все позиции",
+    "navLabel": "Меню сайта",
+    "themeNameLight": "Светлая тема",
+    "themeNameDark": "Тёмная тема"
   },
   "hero": {
     "eyebrow": "Добро пожаловать в",
