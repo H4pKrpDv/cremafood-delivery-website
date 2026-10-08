@@ -44,6 +44,7 @@ function Block({ block }: { block: SeoBlock }) {
       </p>
     );
   }
+  if (block.type !== 'ul') return null;
   return (
     <ul className="seo-text__list">
       {block.items.map((item, index) => (

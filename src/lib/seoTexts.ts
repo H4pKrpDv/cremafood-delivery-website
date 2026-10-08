@@ -58,7 +58,8 @@ export function resolveSeoHref(lang: Lang, token: string): string | null {
 
 export type SeoInline = { text: string; href?: string };
 export type SeoBlock =
-  | { type: 'h2' | 'h3'; text: string }
+  | { type: 'h2'; text: string }
+  | { type: 'h3'; text: string }
   | { type: 'p'; inline: SeoInline[] }
   | { type: 'ul'; items: SeoInline[][] };
 
