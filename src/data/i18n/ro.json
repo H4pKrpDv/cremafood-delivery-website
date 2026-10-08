@@ -17,7 +17,13 @@
     "menuAll": "Все позиции",
     "navLabel": "Меню сайта",
     "themeNameLight": "Светлая тема",
-    "themeNameDark": "Тёмная тема"
+    "themeNameDark": "Тёмная тема",
+    "deliveryTitle": "График доставки",
+    "deliveryBar": "Напитки",
+    "deliveryKitchen": "Блюда",
+    "deliveryOpen": "Принимаем заказы",
+    "deliveryClosed": "Откроется в {time}",
+    "venueHoursLink": "График работы заведения"
   },
   "hero": {
     "eyebrow": "Добро пожаловать в",

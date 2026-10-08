@@ -704,16 +704,104 @@
         background: rgba(200, 150, 74, 0.15);
       }
 
-      .mobile-menu__link {
-        display: block;
-        padding: 1rem 0.5rem;
-        font-size: 1.05rem;
+      /* График доставки в меню (09.10.2026): два отдела (напитки / блюда) —
+         карточки в ряд по центру: название, часы, живой статус с точкой
+         (зелёная — принимаем заказы, серая — закрыто, откроется в …).
+         Под ними ссылка на блок «График работы» в футере. */
+      .mobile-menu__delivery {
+        width: 100%;
+        max-width: 28rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .mobile-menu__delivery-title {
+        margin: 0;
+        font-size: 0.75rem;
         font-weight: 500;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--gold);
+      }
+
+      .mobile-menu__delivery-grid {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.6rem;
+      }
+
+      .mobile-menu__delivery-card {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.2rem;
+        padding: 0.8rem 0.5rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+      }
+
+      .mobile-menu__delivery-label {
+        font-size: 0.8rem;
+        color: var(--text-3);
+      }
+
+      .mobile-menu__delivery-time {
+        font-family: var(--font-head);
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--cream);
+        white-space: nowrap;
+      }
+
+      /* min-height резервирует строку статуса до гидратации — без прыжка
+         вёрстки, когда статус появляется. */
+      .mobile-menu__delivery-status {
+        min-height: 1.2em;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.75rem;
+        line-height: 1.2;
+        color: var(--text-3);
+      }
+
+      .mobile-menu__delivery-status::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        background: var(--text-3);
+      }
+
+      .mobile-menu__delivery-status:empty::before {
+        display: none;
+      }
+
+      .mobile-menu__delivery-status--open {
         color: var(--cream-2);
+      }
+
+      .mobile-menu__delivery-status--open::before {
+        background: #4caf6e;
+        box-shadow: 0 0 0 3px rgba(76, 175, 110, 0.2);
+      }
+
+      .mobile-menu__venue-link {
+        font-size: 0.9rem;
+        color: var(--gold);
+        text-decoration: underline;
+        text-underline-offset: 3px;
         transition: color var(--transition);
       }
 
-      .mobile-menu__link:hover {
+      .mobile-menu__venue-link:hover,
+      .mobile-menu__venue-link:focus-visible {
         color: var(--gold-light);
       }
 
@@ -2193,7 +2281,8 @@
          заголовок блока при прыжке по якорю. (Политика конфиденциальности
          с 22.09.2026 — попап, не якорный блок, поэтому здесь больше не
          участвует.) */
-      .footer__col-title--delivery {
+      .footer__col-title--delivery,
+      .footer__col-title--venue {
         scroll-margin-top: 76px;
       }
 
@@ -2967,7 +3056,8 @@
           scroll-margin-top: 90px;
         }
 
-        .footer__col-title--delivery {
+        .footer__col-title--delivery,
+        .footer__col-title--venue {
           scroll-margin-top: 90px;
         }
 

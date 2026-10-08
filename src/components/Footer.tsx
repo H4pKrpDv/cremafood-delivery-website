@@ -40,7 +40,12 @@ export function Footer() {
           </address>
         </div>
         <div className="footer__col">
-          <h5 className="footer__col-title">{t('footer.hoursTitle')}</h5>
+          {/* id="venue-hours" — якорь для ссылки «График работы заведения» из
+              мобильного бургер-меню (09.10.2026); отступ под фиксированную
+              шапку — .footer__col-title--venue в globals.css. */}
+          <h5 className="footer__col-title footer__col-title--venue" id="venue-hours">
+            {t('footer.hoursTitle')}
+          </h5>
           <div className="hours">
             <div className="hours__row">
               <span className="hours__time">{t('footer.hoursCafe')}</span>
