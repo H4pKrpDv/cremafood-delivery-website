@@ -9,10 +9,10 @@
  *  - hreflang и индексация — по INDEXABLE_LANGS (lib/i18nConfig.ts): пока
  *    ro/en не переведены, их страницы позиций — noindex, follow и без
  *    hreflang (тот же механизм, что у главной).
- *  - BreadcrumbList в JSON-LD: «Главная → Подкатегория → Позиция» (с
- *    08.10.2026, когда появились страницы подкатегорий). Уровня раздела
- *    (Напитки/Блюда) нет: страниц разделов пока нет, а ссылаться на
- *    несуществующие адреса нельзя. Когда появятся — вставить между ними.
+ *  - BreadcrumbList в JSON-LD: «Главная → Категория → Подкатегория →
+ *    Позиция» (уровни категории и подкатегории — когда у них есть
+ *    страницы; ссылаться на несуществующие адреса нельзя). Повторяет
+ *    видимые крошки (components/Breadcrumbs.tsx).
  *  - Статус позиции влияет на Offer.availability (unavailable → OutOfStock).
  * ------------------------------------------------------------------
  */
@@ -24,6 +24,8 @@ import { HREFLANG, INDEXABLE_LANGS, LANGS, OG_LOCALE, DEFAULT_LANG, isIndexableL
 import { BUSINESS, SITE_URL, absoluteUrl } from '@/lib/seo';
 import { getItemInternalPath, getItemPathname, getItemStatus } from '@/lib/itemRoutes';
 import { hasSubcategoryPage } from '@/lib/subcategoryRoutes';
+import { hasCategoryPage } from '@/lib/categoryRoutes';
+import { categoryUrl } from '@/lib/categorySeo';
 import { subcategoryUrl } from '@/lib/subcategorySeo';
 
 const DESCRIPTION_SNIPPET_MAX = 90;
@@ -130,17 +132,18 @@ export function buildItemJsonLd(lang: Lang, itemId: string): Record<string, any>
     }
   };
 
+  const crumbs: { name: string; item: string }[] = [{ name: t('itemPage.home'), item: absoluteUrl(lang) }];
+  if (hasCategoryPage(base.categoryId)) {
+    crumbs.push({ name: t(`categories.${base.categoryId}`), item: categoryUrl(lang, base.categoryId) });
+  }
+  if (hasSubcategoryPage(base.subcategoryId)) {
+    crumbs.push({ name: t(`subcategories.${base.subcategoryId}.title`), item: subcategoryUrl(lang, base.subcategoryId) });
+  }
+  crumbs.push({ name, item: url });
   const breadcrumbs = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: t('itemPage.home'), item: absoluteUrl(lang) },
-      // 08.10.2026: у подкатегории появилась своя страница — уровень «Подкатегория».
-      ...(hasSubcategoryPage(base.subcategoryId)
-        ? [{ '@type': 'ListItem', position: 2, name: t(`subcategories.${base.subcategoryId}.title`), item: subcategoryUrl(lang, base.subcategoryId) }]
-        : []),
-      { '@type': 'ListItem', position: hasSubcategoryPage(base.subcategoryId) ? 3 : 2, name, item: url }
-    ]
+    itemListElement: crumbs.map((crumb, index) => ({ '@type': 'ListItem', position: index + 1, ...crumb }))
   };
 
   return [product, breadcrumbs];

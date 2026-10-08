@@ -21,16 +21,15 @@
 
 'use client';
 
-import Link from 'next/link';
 import { useI18n } from '@/i18n/I18nProvider';
 import { useCartStore, useCartHydrated } from '@/store/cartStore';
 import { useItemMeta } from '@/lib/useItemMeta';
 import { useImageFallback } from '@/lib/useImageFallback';
 import { hasRealImage, itemMetaIndex, modifierGroups, publicImagePath } from '@/lib/data';
-import { localizedPath } from '@/lib/i18nConfig';
 import { getItemStatus } from '@/lib/itemRoutes';
 import { getSubcategoryInternalPath } from '@/lib/subcategoryRoutes';
 import type { ModifierOption } from '@/types/menu';
+import { Breadcrumbs, categoryCrumb } from './Breadcrumbs';
 
 const CUTLERY_EXTRA_PRICE = 2; // MDL за каждый набор сверх числа порций (то же правило, что lib/cartSummary.ts)
 
@@ -142,32 +141,13 @@ export function ItemPage({ itemId }: { itemId: string }) {
   return (
     <main className="item-page">
       <div className="container">
-        <nav className="breadcrumbs" aria-label={t('itemPage.breadcrumbsLabel')}>
-          <ol className="breadcrumbs__list">
-            <li>
-              <Link href={localizedPath(lang)} className="breadcrumbs__link">
-                {t('itemPage.home')}
-              </Link>
-            </li>
-            <li>
-              <span>{t(`categories.${base.categoryId}`)}</span>
-            </li>
-            <li>
-              {subcategoryPath ? (
-                <Link href={localizedPath(lang, subcategoryPath)} className="breadcrumbs__link">
-                  {t(`subcategories.${base.subcategoryId}.title`)}
-                </Link>
-              ) : (
-                <span>{t(`subcategories.${base.subcategoryId}.title`)}</span>
-              )}
-            </li>
-            <li>
-              <span className="breadcrumbs__current" aria-current="page">
-                {name}
-              </span>
-            </li>
-          </ol>
-        </nav>
+        <Breadcrumbs
+          items={[
+            categoryCrumb(t(`categories.${base.categoryId}`), base.categoryId),
+            { label: t(`subcategories.${base.subcategoryId}.title`), path: subcategoryPath ?? undefined },
+            { label: name }
+          ]}
+        />
 
         <article className="item-page__layout">
           <div className="item-page__media">

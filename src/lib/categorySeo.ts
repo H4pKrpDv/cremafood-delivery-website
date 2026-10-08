@@ -8,9 +8,8 @@
  *
  * Правила — те же, что у подкатегорий (lib/subcategorySeo.ts): hreflang и
  * индексация по INDEXABLE_LANGS (пока ro/en не переведены — noindex,
- * follow и без hreflang). BreadcrumbList не выводится: на странице нет
- * видимых хлебных крошек (решение «максимально просто», 08.10.2026) —
- * когда добавим крошки, добавить и разметку.
+ * follow и без hreflang). BreadcrumbList: «Главная → Категория» — как и
+ * видимые крошки на странице (components/Breadcrumbs.tsx).
  * ------------------------------------------------------------------
  */
 
@@ -100,5 +99,14 @@ export function buildCategoryJsonLd(lang: Lang, categoryId: string): Record<stri
     }
   };
 
-  return [collection];
+  const breadcrumbs = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: t('itemPage.home'), item: absoluteUrl(lang) },
+      { '@type': 'ListItem', position: 2, name: title, item: categoryUrl(lang, categoryId) }
+    ]
+  };
+
+  return [collection, breadcrumbs];
 }

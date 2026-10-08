@@ -8,10 +8,10 @@
  * Правила — те же, что у позиций (lib/itemSeo.ts):
  *  - hreflang и индексация — по INDEXABLE_LANGS: пока ro/en не переведены,
  *    их страницы — noindex, follow и без hreflang;
- *  - BreadcrumbList: «Главная → Подкатегория». Уровня раздела (Напитки/
- *    Блюда) нет — у раздела пока нет своей страницы, а в BreadcrumbList
- *    каждый пункт, кроме последнего, обязан иметь реальный URL. Когда
- *    появятся страницы разделов — вставить между ними.
+ *  - BreadcrumbList: «Главная → Категория → Подкатегория» (уровень
+ *    категории — когда у неё есть страница, lib/categoryRoutes.ts; в
+ *    BreadcrumbList у каждого пункта, кроме последнего, должен быть
+ *    реальный URL). Повторяет видимые крошки (components/Breadcrumbs.tsx).
  * ------------------------------------------------------------------
  */
 
@@ -21,7 +21,9 @@ import { createTranslator } from '@/lib/i18nCore';
 import { HREFLANG, INDEXABLE_LANGS, LANGS, OG_LOCALE, DEFAULT_LANG, isIndexableLang, type Lang } from '@/lib/i18nConfig';
 import { BUSINESS, SITE_URL, absoluteUrl } from '@/lib/seo';
 import { getItemInternalPath } from '@/lib/itemRoutes';
-import { getSubcategoryData, getSubcategoryInternalPath, getSubcategoryPathname } from '@/lib/subcategoryRoutes';
+import { getSubcategoryCategoryId, getSubcategoryData, getSubcategoryInternalPath, getSubcategoryPathname } from '@/lib/subcategoryRoutes';
+import { hasCategoryPage } from '@/lib/categoryRoutes';
+import { categoryUrl } from '@/lib/categorySeo';
 
 function fill(template: string, values: Record<string, string>): string {
   return template.replace(/\{(\w+)\}/g, (match, key: string) => (key in values ? values[key] : match));
@@ -110,13 +112,16 @@ export function buildSubcategoryJsonLd(lang: Lang, subId: string): Record<string
     }
   };
 
+  const categoryId = getSubcategoryCategoryId(subId);
+  const crumbs: { name: string; item: string }[] = [{ name: t('itemPage.home'), item: absoluteUrl(lang) }];
+  if (categoryId && hasCategoryPage(categoryId)) {
+    crumbs.push({ name: t(`categories.${categoryId}`), item: categoryUrl(lang, categoryId) });
+  }
+  crumbs.push({ name: title, item: url });
   const breadcrumbs = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: t('itemPage.home'), item: absoluteUrl(lang) },
-      { '@type': 'ListItem', position: 2, name: title, item: url }
-    ]
+    itemListElement: crumbs.map((crumb, index) => ({ '@type': 'ListItem', position: index + 1, ...crumb }))
   };
 
   return [collection, breadcrumbs];

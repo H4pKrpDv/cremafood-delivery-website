@@ -9,18 +9,17 @@
  * Footer — общие из layout. Баннер подкатегории на странице не повторяется
  * (он служит плиткой-ссылкой на главной).
  *
- * Крошки: «Главная» — ссылка; раздел (Напитки/Блюда/Спец. предложения) —
- * пока обычный текст (страниц разделов нет, см. lib/subcategoryRoutes.ts);
- * текущая подкатегория — aria-current.
+ * Крошки (components/Breadcrumbs.tsx): «Главная» и категория — ссылки
+ * (страница категории есть, см. lib/categoryRoutes.ts), текущая
+ * подкатегория — aria-current.
  * ------------------------------------------------------------------
  */
 
 'use client';
 
-import Link from 'next/link';
 import { useI18n } from '@/i18n/I18nProvider';
-import { localizedPath } from '@/lib/i18nConfig';
 import { getSubcategoryCategoryId, getSubcategoryData } from '@/lib/subcategoryRoutes';
+import { Breadcrumbs, categoryCrumb } from './Breadcrumbs';
 import { ItemCard } from './ItemCard';
 import { LoyaltyCard } from './LoyaltyCard';
 
@@ -35,23 +34,9 @@ export function SubcategoryPage({ subId }: { subId: string }) {
   return (
     <main className="sub-page">
       <div className="container">
-        <nav className="breadcrumbs" aria-label={t('itemPage.breadcrumbsLabel')}>
-          <ol className="breadcrumbs__list">
-            <li>
-              <Link href={localizedPath(lang)} className="breadcrumbs__link">
-                {t('itemPage.home')}
-              </Link>
-            </li>
-            <li>
-              <span>{t(`categories.${categoryId}`)}</span>
-            </li>
-            <li>
-              <span className="breadcrumbs__current" aria-current="page">
-                {title}
-              </span>
-            </li>
-          </ol>
-        </nav>
+        <Breadcrumbs
+          items={[categoryCrumb(t(`categories.${categoryId}`), categoryId), { label: title }]}
+        />
 
         <header className="sub-page__header">
           <h1 className="sub-page__title">{title}</h1>
