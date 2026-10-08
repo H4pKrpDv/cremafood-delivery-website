@@ -16,6 +16,10 @@
  * (setModifierQty/setItemCutlery без записи позиции ничего не делают).
  * Правила цен — те же (lib/cartSummary.ts): первый набор приборов на
  * каждую порцию бесплатно, дальше +2 MDL; соусы по цене из menu.json.
+ *
+ * 09.10.2026 (SEO этап 4): под карточкой — «Похожие позиции»
+ * (components/RelatedItems.tsx) и SEO-плашка «{Название} — заказать с
+ * доставкой Crema Food в Бельцах» (components/ItemSeoPlate.tsx).
  * ------------------------------------------------------------------
  */
 
@@ -30,6 +34,8 @@ import { getItemStatus } from '@/lib/itemRoutes';
 import { getSubcategoryInternalPath } from '@/lib/subcategoryRoutes';
 import type { ModifierOption } from '@/types/menu';
 import { Breadcrumbs, categoryCrumb } from './Breadcrumbs';
+import { RelatedItems } from './RelatedItems';
+import { ItemSeoPlate } from './ItemSeoPlate';
 
 const CUTLERY_EXTRA_PRICE = 2; // MDL за каждый набор сверх числа порций (то же правило, что lib/cartSummary.ts)
 
@@ -257,6 +263,9 @@ export function ItemPage({ itemId }: { itemId: string }) {
             ) : null}
           </div>
         </article>
+
+        <RelatedItems itemId={itemId} />
+        <ItemSeoPlate itemId={itemId} />
       </div>
     </main>
   );

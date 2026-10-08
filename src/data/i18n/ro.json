@@ -556,7 +556,16 @@
     "modifiersHint": "Sosurile pot fi adăugate după ce preparatul este în coș",
     "cutleryNote": "Gratuit — un set pentru fiecare porție, setul suplimentar +2 MDL",
     "metaTitle": "{name} — livrare în Bălți | Crema Food",
-    "metaDescription": "{name} — {desc} Preț: {price} MDL. Comandați cu livrare în Bălți la Crema Food."
+    "metaDescription": "{name} — {desc} Preț: {price} MDL. Comandați cu livrare în Bălți la Crema Food.",
+    "relatedTitle": "Poziții similare",
+    "seoTitle": "{name} — comandă cu livrare de la Crema Food în Bălți",
+    "seoPortion": "Porție: {weight}.",
+    "seoOrder": "Comandați „{name}” online: livrarea în Bălți costă 60 MDL, iar de la 399 MDL este gratuită; plata la primire.",
+    "seoHoursBar": "Băuturile se pregătesc și se livrează între 7:00 și 22:00.",
+    "seoHoursKitchen": "Preparatele din bucătărie se pregătesc și se livrează între 9:00 și 02:00.",
+    "seoHoursBoth": "Băuturile din bar se livrează între 7:00 și 22:00, iar preparatele din bucătărie — între 9:00 și 02:00.",
+    "seoAge": "Vânzare doar persoanelor peste 18 ani.",
+    "seoMore": "Mai multe poziții — în subcategoria {sub} și în categoria {cat}."
   },
   "subcategoryPage": {
     "metaTitle": "{title} — livrare în Bălți | Crema Food",
@@ -602,6 +611,31 @@
       "h1": "Băuturi alcoolice cu livrare în Bălți",
       "metaTitle": "Băuturi alcoolice cu livrare în Bălți | Crema Food",
       "metaDescription": "Cocktailuri și băuturi tari cu livrare în Bălți: Crema Kick The Rules, Jack Daniel's, Johnnie Walker, Jägermeister. Doar persoanelor peste 18 ani."
+    },
+    "breakfast": {
+      "h1": "Livrare de mic dejun în Bălți",
+      "metaTitle": "Livrare de mic dejun în Bălți: shakshuka, syrniki | Crema Food",
+      "metaDescription": "Comandați mic dejun cu livrare în Bălți: mic dejun englezesc, shakshuka, syrniki, scrambled cu somon, sandviș cu pui. Livrare 60 MDL, gratuită de la 399 MDL."
+    },
+    "mexican": {
+      "h1": "Bucătărie mexicană cu livrare în Bălți",
+      "metaTitle": "Bucătărie mexicană cu livrare în Bălți: nachos, burrito | Crema Food",
+      "metaDescription": "Comandați bucătărie mexicană în Bălți: nachos, quesadilla, burrito și tacos de la Crema Food. Livrare 60 MDL, gratuită de la 399 MDL."
+    },
+    "desserts": {
+      "h1": "Deserturi cu livrare în Bălți",
+      "metaTitle": "Deserturi cu livrare în Bălți: cheesecake, gogoși | Crema Food",
+      "metaDescription": "Comandați deserturi cu livrare în Bălți: cheesecake cu caramel, cheesecake cu mac, smetannik și gogoși. Livrare 60 MDL, gratuită de la 399 MDL."
+    },
+    "promo-permanent": {
+      "h1": "Oferte permanente și reduceri în Bălți",
+      "metaTitle": "Oferte permanente și reduceri în Bălți: combo, card −20% | Crema Food",
+      "metaDescription": "Ofertele permanente Crema Food în Bălți: combo cu latte sau cappuccino și sandviș, card de reducere −20% la cafea. Livrare 60 MDL, gratuită de la 399 MDL."
+    },
+    "promo-seasonal": {
+      "h1": "Băuturi de sezon cu livrare în Bălți",
+      "metaTitle": "Băuturi de sezon în Bălți: ceaiuri aromate, raf, matcha | Crema Food",
+      "metaDescription": "Meniul de sezon Crema Food în Bălți: ceaiuri aromate, oolong cu lapte, raf, mocha și matcha cu zmeură. Livrare 60 MDL, gratuită de la 399 MDL."
     }
   },
   "categoryPage": {

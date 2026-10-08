@@ -556,7 +556,16 @@
     "modifiersHint": "Sauces can be added once the dish is in your cart",
     "cutleryNote": "Free — one set per portion, each extra set +2 MDL",
     "metaTitle": "{name} — delivery in Bălți | Crema Food",
-    "metaDescription": "{name} — {desc} Price: {price} MDL. Order with delivery in Bălți from Crema Food."
+    "metaDescription": "{name} — {desc} Price: {price} MDL. Order with delivery in Bălți from Crema Food.",
+    "relatedTitle": "Similar items",
+    "seoTitle": "{name} — order with Crema Food delivery in Bălți",
+    "seoPortion": "Portion: {weight}.",
+    "seoOrder": "Order “{name}” online: delivery in Bălți costs 60 MDL and is free from 399 MDL; pay on receipt.",
+    "seoHoursBar": "Drinks are prepared and delivered from 7:00 to 22:00.",
+    "seoHoursKitchen": "Kitchen dishes are prepared and delivered from 9:00 to 02:00.",
+    "seoHoursBoth": "Bar drinks are delivered from 7:00 to 22:00 and kitchen dishes from 9:00 to 02:00.",
+    "seoAge": "Sold only to people over 18.",
+    "seoMore": "More items — in the subcategory {sub} and in the category {cat}."
   },
   "subcategoryPage": {
     "metaTitle": "{title} — delivery in Bălți | Crema Food",
@@ -602,6 +611,31 @@
       "h1": "Alcoholic drinks delivery in Bălți",
       "metaTitle": "Alcoholic drinks delivery in Bălți | Crema Food",
       "metaDescription": "Cocktails and spirits for delivery in Bălți: Crema Kick The Rules, Jack Daniel's, Johnnie Walker, Jägermeister. Only for ages 18+."
+    },
+    "breakfast": {
+      "h1": "Breakfast delivery in Bălți",
+      "metaTitle": "Breakfast delivery in Bălți: shakshuka, syrniki, scramble | Crema Food",
+      "metaDescription": "Order breakfast for delivery in Bălți: English breakfast, shakshuka, syrniki, salmon scramble, chicken sandwich. Delivery 60 MDL, free from 399 MDL."
+    },
+    "mexican": {
+      "h1": "Mexican food delivery in Bălți",
+      "metaTitle": "Mexican food delivery in Bălți: nachos, burrito | Crema Food",
+      "metaDescription": "Order Mexican food in Bălți: nachos, quesadilla, burrito and tacos from Crema Food. Delivery 60 MDL, free from 399 MDL."
+    },
+    "desserts": {
+      "h1": "Dessert delivery in Bălți",
+      "metaTitle": "Dessert delivery in Bălți: cheesecakes, donuts | Crema Food",
+      "metaDescription": "Order desserts for delivery in Bălți: caramel cheesecake, poppy seed cheesecake, smetannik and donuts. Delivery 60 MDL, free from 399 MDL."
+    },
+    "promo-permanent": {
+      "h1": "Permanent offers and discounts in Bălți",
+      "metaTitle": "Permanent offers and discounts in Bălți: combo, −20% card | Crema Food",
+      "metaDescription": "Permanent Crema Food offers in Bălți: a latte or cappuccino and sandwich combo, a −20% coffee discount card. Delivery 60 MDL, free from 399 MDL."
+    },
+    "promo-seasonal": {
+      "h1": "Seasonal drinks delivery in Bălți",
+      "metaTitle": "Seasonal drinks in Bălți: spiced teas, raf, matcha | Crema Food",
+      "metaDescription": "Crema Food seasonal menu in Bălți: spiced teas, milk oolong, raf, mocha and raspberry matcha. Delivery 60 MDL, free from 399 MDL."
     }
   },
   "categoryPage": {
