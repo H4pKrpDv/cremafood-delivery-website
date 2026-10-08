@@ -119,9 +119,12 @@ export function ItemCard({ itemId }: { itemId: string }) {
         onError={img.onError}
       />
       <div className="item-card__body">
-        {/* 07.10.2026: название — ссылка на страницу позиции (клик именно по
-            названию, решение пользователя). prefetch отключён: на странице
-            ~70 таких ссылок, предзагружать все страницы позиций незачем. */}
+        {/* 07.10.2026: название — ссылка на страницу позиции. 09.10.2026: по
+            решению пользователя кликабельна вся карточка — ссылка растянута на
+            неё CSS-приёмом (.item-card__name-link::after, см. globals.css), а
+            кнопки степпера и «ещё» подняты над ней и на страницу не ведут.
+            prefetch отключён: на странице ~70 таких ссылок, предзагружать все
+            страницы позиций незачем. */}
         <h5 className="item-card__name">
           {itemInternalPath ? (
             <Link href={localizedPath(lang, itemInternalPath)} className="item-card__name-link" prefetch={false}>

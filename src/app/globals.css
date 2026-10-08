@@ -3157,16 +3157,53 @@
       }
 
       /* Название позиции в карточке меню — ссылка на страницу позиции. По
-         виду остаётся заголовком карточки, подсвечивается при наведении. */
+         виду остаётся заголовком карточки, подсвечивается при наведении.
+
+         09.10.2026: кликабельна ВСЯ карточка (решение пользователя) приёмом
+         "stretched link": ::after у ссылки растягивается на весь .item-card
+         (position: relative), поэтому клик по фото, описанию, цене и пустому
+         месту ведёт на страницу позиции. Ссылка остаётся ОДНОЙ и настоящей
+         (<a> в заголовке): работают открытие в новой вкладке, правый клик,
+         клавиатура и индексация. Кнопки (степпер/«Добавить», «ещё») подняты
+         выше слоем (z-index) — они ловят клик сами и на страницу не ведут. */
+      .item-card {
+        position: relative;
+      }
+
       .item-card__name-link {
         color: inherit;
         text-decoration: none;
         transition: color var(--transition);
       }
 
+      .item-card__name-link::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        border-radius: inherit;
+      }
+
+      .item-card:hover .item-card__name-link,
       .item-card__name-link:hover,
       .item-card__name-link:focus-visible {
         color: var(--gold);
+      }
+
+      /* Кольцо фокуса рисуем вокруг всей карточки, а не только вокруг названия. */
+      .item-card__name-link:focus-visible {
+        outline: none;
+      }
+
+      .item-card__name-link:focus-visible::after {
+        outline: 2px solid var(--gold);
+        outline-offset: -2px;
+      }
+
+      .item-card__desc-toggle,
+      .item-card__stepper {
+        position: relative;
+        z-index: 2;
       }
 
       @media (min-width: 481px) {
