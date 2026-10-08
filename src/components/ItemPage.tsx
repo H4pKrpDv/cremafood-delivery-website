@@ -19,12 +19,15 @@
  *
  * 09.10.2026 (SEO этап 4): под карточкой — «Похожие позиции»
  * (components/RelatedItems.tsx) и SEO-плашка «{Название} — заказать с
- * доставкой Crema Food в Бельцах» (components/ItemSeoPlate.tsx).
+ * доставкой Crema Food в Бельцах» (components/ItemSeoPlate.tsx). Плашка —
+ * СЕРВЕРНЫЙ компонент (уникальный текст позиции из data/seo/items.ru.json):
+ * серверная страница позиции передаёт её сюда как children.
  * ------------------------------------------------------------------
  */
 
 'use client';
 
+import type { ReactNode } from 'react';
 import { useI18n } from '@/i18n/I18nProvider';
 import { useCartStore, useCartHydrated } from '@/store/cartStore';
 import { useItemMeta } from '@/lib/useItemMeta';
@@ -35,7 +38,6 @@ import { getSubcategoryInternalPath } from '@/lib/subcategoryRoutes';
 import type { ModifierOption } from '@/types/menu';
 import { Breadcrumbs, categoryCrumb } from './Breadcrumbs';
 import { RelatedItems } from './RelatedItems';
-import { ItemSeoPlate } from './ItemSeoPlate';
 
 const CUTLERY_EXTRA_PRICE = 2; // MDL за каждый набор сверх числа порций (то же правило, что lib/cartSummary.ts)
 
@@ -112,7 +114,7 @@ function ModifierCard({ itemId, groupId, option, interactive }: ModifierCardProp
   );
 }
 
-export function ItemPage({ itemId }: { itemId: string }) {
+export function ItemPage({ itemId, children }: { itemId: string; children?: ReactNode }) {
   const { t, lang } = useI18n();
   const meta = useItemMeta(itemId);
   const base = itemMetaIndex[itemId];
@@ -265,7 +267,7 @@ export function ItemPage({ itemId }: { itemId: string }) {
         </article>
 
         <RelatedItems itemId={itemId} />
-        <ItemSeoPlate itemId={itemId} />
+        {children}
       </div>
     </main>
   );

@@ -4,6 +4,7 @@ import { isLang } from '@/lib/i18nConfig';
 import { listItemPageParams, resolveItemRoute } from '@/lib/itemRoutes';
 import { buildItemJsonLd, buildItemMetadata } from '@/lib/itemSeo';
 import { ItemPage } from '@/components/ItemPage';
+import { ItemSeoPlate } from '@/components/ItemSeoPlate';
 
 /**
  * app/[lang]/[section]/[subcategory]/[item]/page.tsx — страница позиции меню
@@ -58,7 +59,9 @@ export default async function ItemRoutePage({ params }: ItemParams) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(block).replace(/</g, '\\u003c') }}
         />
       ))}
-      <ItemPage itemId={resolution.itemId} />
+      <ItemPage itemId={resolution.itemId}>
+        <ItemSeoPlate lang={lang} itemId={resolution.itemId} />
+      </ItemPage>
     </>
   );
 }

@@ -26,6 +26,7 @@
  */
 
 import ruTexts from '@/data/seo/ru.json';
+import ruItemTexts from '@/data/seo/items.ru.json';
 import { DEFAULT_LANG, localizedPath, type Lang } from '@/lib/i18nConfig';
 import { getCategoryPathname } from '@/lib/categoryRoutes';
 import { getSubcategoryPathname } from '@/lib/subcategoryRoutes';
@@ -37,6 +38,20 @@ const TEXTS: Record<Lang, Record<string, string[]>> = {
   ro: ruTexts as Record<string, string[]>,
   en: ruTexts as Record<string, string[]>
 };
+
+// 10.10.2026: уникальные тексты позиций (плашка внизу страницы позиции,
+// components/ItemSeoPlate.tsx): id позиции → ОДИН абзац с той же
+// мини-разметкой ссылок [текст](токен). Пока только русский (ro/en — его копия).
+const ITEM_TEXTS: Record<Lang, Record<string, string>> = {
+  ru: ruItemTexts as Record<string, string>,
+  ro: ruItemTexts as Record<string, string>,
+  en: ruItemTexts as Record<string, string>
+};
+
+/** Строка уникального текста позиции (с разметкой ссылок) или null. */
+export function getItemSeoLine(lang: Lang, itemId: string): string | null {
+  return ITEM_TEXTS[lang]?.[itemId] ?? ITEM_TEXTS[DEFAULT_LANG][itemId] ?? null;
+}
 
 /** Строки SEO-текста страницы или null, если для неё текста нет. */
 export function getSeoLines(lang: Lang, key: string): string[] | null {
