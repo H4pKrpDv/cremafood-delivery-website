@@ -36,14 +36,27 @@ function buildCategoryAlternates(categoryId: string): Record<string, string> | u
   return languages;
 }
 
+/**
+ * Ключевой H1 страницы категории («Доставка напитков в Бельцах») — i18n-блок
+ * categorySeo (09.10.2026, SEO этап 2). Если для категории блока нет —
+ * обычное короткое название (как на вкладке главной).
+ */
+export function categoryH1(lang: Lang, categoryId: string): string {
+  const t = createTranslator(lang);
+  return t(`categorySeo.${categoryId}.h1`) || t(`categories.${categoryId}`) || categoryId;
+}
+
 export function buildCategoryMetadata(lang: Lang, categoryId: string): Metadata {
   const t = createTranslator(lang);
   const title = t(`categories.${categoryId}`) || categoryId;
   const list = getCategorySubcategoryIds(categoryId)
     .map((subId) => t(`subcategories.${subId}.title`))
     .join(', ');
-  const metaTitle = fill(t('categoryPage.metaTitle'), { title });
-  const metaDescription = fill(t('categoryPage.metaDescription'), { title, list });
+  // Уникальные title/description категории (categorySeo.<id>.*); общий
+  // шаблон categoryPage.* — запасной вариант для категорий без своих строк.
+  const metaTitle = t(`categorySeo.${categoryId}.metaTitle`) || fill(t('categoryPage.metaTitle'), { title });
+  const metaDescription =
+    t(`categorySeo.${categoryId}.metaDescription`) || fill(t('categoryPage.metaDescription'), { title, list });
   const indexable = isIndexableLang(lang);
   const languages = indexable ? buildCategoryAlternates(categoryId) : undefined;
   const canonicalPath = getCategoryPathname(lang, categoryId) ?? undefined;
@@ -83,7 +96,8 @@ export function buildCategoryJsonLd(lang: Lang, categoryId: string): Record<stri
   const collection = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: title,
+    name: categoryH1(lang, categoryId),
+    description: t(`categorySeo.${categoryId}.metaDescription`) || undefined,
     url: categoryUrl(lang, categoryId),
     inLanguage: HREFLANG[lang],
     isPartOf: { '@type': 'WebSite', name: BUSINESS.name, url: absoluteUrl(lang) },

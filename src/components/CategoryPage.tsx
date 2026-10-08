@@ -11,6 +11,11 @@
  * / .sub-grid, поэтому вид совпадает с вкладкой). Над заголовком — хлебные
  * крошки «Главная → Категория» (добавлены позже, 08.10.2026), описания нет.
  * Заголовок здесь — h1 (на главной тот же стиль у h3).
+ *
+ * 09.10.2026 (SEO этап 2): h1 — ключевой («Доставка напитков в Бельцах»,
+ * i18n categorySeo.<id>.h1), в крошках и на вкладках остаётся короткое
+ * название. children — SEO-текст «Читать далее» (серверный компонент SeoText,
+ * передаётся из серверной страницы), выводится под сеткой, внутри <main>.
  * ------------------------------------------------------------------
  */
 
@@ -18,10 +23,11 @@
 
 import { useI18n } from '@/i18n/I18nProvider';
 import { getCategorySubcategoryIds } from '@/lib/categoryRoutes';
+import type { ReactNode } from 'react';
 import { Breadcrumbs } from './Breadcrumbs';
 import { SubcategoryBanner } from './SubcategoryBanner';
 
-export function CategoryPage({ categoryId }: { categoryId: string }) {
+export function CategoryPage({ categoryId, children }: { categoryId: string; children?: ReactNode }) {
   const { t } = useI18n();
   const subIds = getCategorySubcategoryIds(categoryId);
   if (subIds.length === 0) return null;
@@ -30,13 +36,14 @@ export function CategoryPage({ categoryId }: { categoryId: string }) {
     <main className="sub-page category-page">
       <div className="container">
         <Breadcrumbs items={[{ label: t(`categories.${categoryId}`) }]} />
-        <h1 className="category-group__title">{t(`categories.${categoryId}`)}</h1>
+        <h1 className="category-group__title">{t(`categorySeo.${categoryId}.h1`) || t(`categories.${categoryId}`)}</h1>
         <div className="sub-grid">
           {subIds.map((subId) => (
             <SubcategoryBanner key={subId} subId={subId} />
           ))}
         </div>
       </div>
+      {children}
     </main>
   );
 }

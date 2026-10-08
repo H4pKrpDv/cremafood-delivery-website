@@ -4,6 +4,7 @@ import { isLang } from '@/lib/i18nConfig';
 import { listCategoryPageParams, resolveCategoryRoute } from '@/lib/categoryRoutes';
 import { buildCategoryJsonLd, buildCategoryMetadata } from '@/lib/categorySeo';
 import { CategoryPage } from '@/components/CategoryPage';
+import { SeoText } from '@/components/SeoText';
 
 /**
  * app/[lang]/[section]/page.tsx — страница категории меню (08.10.2026).
@@ -50,7 +51,9 @@ export default async function CategoryRoutePage({ params }: CategoryParams) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(block).replace(/</g, '\\u003c') }}
         />
       ))}
-      <CategoryPage categoryId={resolution.categoryId} />
+      <CategoryPage categoryId={resolution.categoryId}>
+        <SeoText lang={lang} textKey={`cat:${resolution.categoryId}`} />
+      </CategoryPage>
     </>
   );
 }

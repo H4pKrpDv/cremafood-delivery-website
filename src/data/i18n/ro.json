@@ -566,6 +566,23 @@
     "metaTitle": "{title} — livrare în Bălți | Crema Food",
     "metaDescription": "{title}: {list}. Comandați cu livrare în Bălți la Crema Food."
   },
+  "categorySeo": {
+    "cafe": {
+      "h1": "Livrare de băuturi în Bălți",
+      "metaTitle": "Livrare de băuturi în Bălți: cafea, limonade, matcha | Crema Food",
+      "metaDescription": "Comandați băuturi cu livrare în Bălți: cafea, cafea rece, milkshake-uri, limonade, matcha, Ube și Bubble Tea. Livrare 60 MDL, gratuită de la 399 MDL."
+    },
+    "kitchen": {
+      "h1": "Livrare de preparate în Bălți",
+      "metaTitle": "Livrare de preparate în Bălți: mic dejun, bucătărie mexicană | Crema Food",
+      "metaDescription": "Comandați preparate cu livrare în Bălți: mic dejun, bucătărie mexicană și deserturi de la Crema Food. Livrare 60 MDL, gratuită de la 399 MDL."
+    },
+    "special-offers": {
+      "h1": "Oferte speciale în Bălți",
+      "metaTitle": "Oferte speciale la cafea și mâncare în Bălți | Crema Food",
+      "metaDescription": "Ofertele Crema Food în Bălți: combo la preț special, card de reducere −20% la cafea și băuturi de sezon. Comandați online cu livrare."
+    }
+  },
   "seoText": {
     "label": "Detalii despre livrarea Crema Food",
     "readMore": "Citește mai departe",
