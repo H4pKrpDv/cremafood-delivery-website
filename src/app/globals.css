@@ -3208,17 +3208,28 @@
          2 колонки → 3 (≥769px) → 4 (≥1025px). Плитки в неполном последнем ряду
          центрируются (flex + justify-content:center, ширина плитки считается
          из числа колонок --sub-cols).
-         Подпись лежит поверх фото. Цвета плашек подписи ЗАДАНЫ ЖЁСТКО (не
-         токенами темы): текст на фото должен читаться одинаково в светлой и
-         тёмной теме, а не инвертироваться вместе с ней. Три варианта места
-         подписи (chip / strip / pill) — эксперимент, см. SubcategoryBanner.tsx. */
+         Подпись («chip», как на cappi.ua) лежит поверх фото в левом верхнем
+         углу. Цвета плашки — через --sub-chip-* и зависят от темы: в светлой
+         плашка белая, в тёмной — тёмное полупрозрачное «стекло» с золотистой
+         рамкой и светлым текстом (чистый белый на тёмной теме слишком
+         контрастен и выбивается из палитры). Цвета не берём из токенов
+         напрямую, потому что плашка лежит на ФОТО, а не на фоне темы. */
       .sub-grid {
         --sub-cols: 2;
         --sub-gap: 0.75rem;
+        --sub-chip-bg: rgba(255, 255, 255, 0.94);
+        --sub-chip-fg: #1c1c1c;
+        --sub-chip-border: transparent;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
         gap: var(--sub-gap);
+      }
+
+      html[data-theme="dark"] .sub-grid {
+        --sub-chip-bg: rgba(19, 14, 9, 0.78);
+        --sub-chip-fg: var(--cream);
+        --sub-chip-border: rgba(200, 150, 74, 0.4);
       }
 
       .sub-banner {
@@ -3260,47 +3271,19 @@
 
       .sub-banner__label {
         position: absolute;
-        font-family: var(--font-body);
-        font-size: 0.8rem;
-        font-weight: 600;
-        line-height: 1.25;
-        overflow-wrap: anywhere;
-      }
-
-      /* chip — светлая плашка в левом верхнем углу (как на cappi.ua) */
-      .sub-banner--chip .sub-banner__label {
         top: 0.5rem;
         left: 0.5rem;
         max-width: calc(100% - 1rem);
         padding: 0.3rem 0.65rem;
         border-radius: 12px;
-        background: rgba(255, 255, 255, 0.94);
-        color: #1c1c1c;
-      }
-
-      /* strip — полоса на всю ширину внизу, текст по центру */
-      .sub-banner--strip .sub-banner__label {
-        left: 0;
-        right: 0;
-        bottom: 0;
-        padding: 0.65rem 0.5rem;
-        text-align: center;
-        background: rgba(20, 16, 12, 0.7);
-        color: #fff;
-      }
-
-      /* pill — округлая золотая плашка внизу по центру */
-      .sub-banner--pill .sub-banner__label {
-        left: 50%;
-        bottom: 0.6rem;
-        transform: translateX(-50%);
-        width: max-content;
-        max-width: calc(100% - 1rem);
-        padding: 0.4rem 0.9rem;
-        border-radius: 999px;
-        text-align: center;
-        background: var(--gold);
-        color: var(--on-gold);
+        border: 1px solid var(--sub-chip-border);
+        background: var(--sub-chip-bg);
+        color: var(--sub-chip-fg);
+        font-family: var(--font-body);
+        font-size: 0.8rem;
+        font-weight: 600;
+        line-height: 1.25;
+        overflow-wrap: anywhere;
       }
 
       /* ─── SUBCATEGORY PAGE (страница подкатегории, 08.10.2026) ───
@@ -3352,22 +3335,11 @@
           aspect-ratio: 4 / 3;
         }
 
-        .sub-banner--chip .sub-banner__label {
+        .sub-banner__label {
           top: 0.75rem;
           left: 0.75rem;
           max-width: calc(100% - 1.5rem);
           padding: 0.4rem 0.85rem;
-          font-size: 0.95rem;
-        }
-
-        .sub-banner--strip .sub-banner__label {
-          padding: 0.8rem 0.75rem;
-          font-size: 1rem;
-        }
-
-        .sub-banner--pill .sub-banner__label {
-          bottom: 0.9rem;
-          padding: 0.5rem 1.1rem;
           font-size: 0.95rem;
         }
 

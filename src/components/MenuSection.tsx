@@ -128,7 +128,7 @@ export function MenuSection() {
               {bannerSubs.length > 0 ? (
                 <div className="sub-grid">
                   {bannerSubs.map((sub) => (
-                    <SubcategoryBanner key={sub.id} subId={sub.id} categoryId={category.id} />
+                    <SubcategoryBanner key={sub.id} subId={sub.id} />
                   ))}
                 </div>
               ) : null}
