@@ -42,7 +42,12 @@ export const BUSINESS = {
   streetAddress: 'Alexandru cel Bun 1A',
   addressLocality: 'Bălți',
   addressCountry: 'MD',
-  sameAs: ['https://instagram.com/crema.md'],
+  sameAs: [
+    'https://www.instagram.com/cremafood_md',
+    'https://www.tiktok.com/@cremafood',
+    'https://vk.ru/id200003971070',
+    'https://ok.ru/profile/910708448673'
+  ],
   hasMap: 'https://share.google/cIC2PGKOn0GDHVoVd',
   // Часы ОЧНОГО визита (lib/hours.ts VENUE_HOURS — кафе/бар 7–22, кухня 9–22),
   // не часы доставки (DEPARTMENT_HOURS, кухня до 02:00) — то же
