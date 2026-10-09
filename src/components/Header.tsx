@@ -44,8 +44,8 @@ import { useUIStore } from '@/store/uiStore';
 import { useThemeStore } from '@/store/themeStore';
 import { LANGS, HREFLANG, localizedPath } from '@/lib/i18nConfig';
 import { menuData } from '@/lib/data';
-import { DEPARTMENT_HOURS, formatMinutes, getOpenTimeLabel, isSingleDepartmentOpen } from '@/lib/hours';
-import { useNowMinutes } from '@/lib/useNowMinutes';
+import { ScheduleCards } from '@/components/ScheduleCards';
+import { CREMA_OPEN_SCHEDULE_EVENT } from '@/components/HoursLink';
 import { findItemIdByPathname, getItemPathname } from '@/lib/itemRoutes';
 import { findSubcategoryIdByPathname, getSubcategoryPathname } from '@/lib/subcategoryRoutes';
 import { findCategoryIdByPathname, getCategoryPathname, getCategorySubcategoryIds } from '@/lib/categoryRoutes';
@@ -84,20 +84,6 @@ const MENU_CATEGORIES = menuData.categories
   .map((category) => ({ id: category.id, subIds: getCategorySubcategoryIds(category.id) }))
   .filter((category) => category.subIds.length > 0);
 
-// График доставки в бургер-меню (09.10.2026): два отдела — бар (напитки) и
-// кухня (блюда и десерты). Часы берутся из lib/hours.ts (DEPARTMENT_HOURS) —
-// тот же источник правды, что решает, можно ли заказать позицию прямо сейчас,
-// поэтому показанный статус всегда совпадает с кнопкой «Добавить».
-const DELIVERY_DEPARTMENTS = [
-  { id: 'bar', labelKey: 'header.deliveryBar' },
-  { id: 'kitchen', labelKey: 'header.deliveryKitchen' }
-] as const;
-
-function formatRange(departmentId: string): string {
-  const range = DEPARTMENT_HOURS[departmentId];
-  return range ? `${formatMinutes(range.openMinutes)}–${formatMinutes(range.closeMinutes)}` : '';
-}
-
 export function Header() {
   const { t, lang } = useI18n();
   // 07.10.2026: на странице позиции переключатель языка ведёт на ТУ ЖЕ
@@ -120,10 +106,6 @@ export function Header() {
   const theme = useThemeStore((s) => s.theme);
   const toggleTheme = useThemeStore((s) => s.toggleTheme);
   const hydrated = useCartHydrated();
-  // Текущее время (Europe/Chisinau, тикает раз в 30 с). Статус «открыто/закрыто»
-  // показываем только после гидратации — до неё серверная и клиентская
-  // разметка могли бы разойтись по времени.
-  const nowMinutes = useNowMinutes();
   const count = useCartStore((s) =>
     Object.values(s.items).reduce((sum, entry) => sum + (typeof entry.qty === 'number' ? entry.qty : 0), 0)
   );
@@ -181,6 +163,21 @@ export function Header() {
     return () => query.removeEventListener('change', onChange);
   }, []);
 
+  // 10.10.2026: ссылка «график доставки» в SEO-текстах на мобильном (HoursLink)
+  // присылает событие — открываем бургер на текущей странице и прокручиваем
+  // панель к графику. Задержка: панель до открытия inert/скрыта, scrollIntoView
+  // нужен уже после применения состояния.
+  useEffect(() => {
+    function onOpenSchedule() {
+      setMenuPath(pathname ?? '');
+      window.setTimeout(() => {
+        document.getElementById('mobileMenuScheduleDelivery')?.scrollIntoView({ block: 'center' });
+      }, 80);
+    }
+    window.addEventListener(CREMA_OPEN_SCHEDULE_EVENT, onOpenSchedule);
+    return () => window.removeEventListener(CREMA_OPEN_SCHEDULE_EVENT, onOpenSchedule);
+  }, [pathname]);
+
   // Клик по ссылке языка: на текущий язык — просто закрываем список (перехода
   // не нужно), на другой — запоминаем прокрутку и даём браузеру перейти по
   // href (preventDefault НЕ вызываем — это обычная навигация по ссылке).
@@ -200,10 +197,6 @@ export function Header() {
   // «Светлая тема».
   const themeMenuLabel = theme === 'dark' ? t('header.themeNameLight') : t('header.themeNameDark');
   const hoursHref = `${localizedPath(lang)}#delivery-hours`;
-  // Ссылка из меню на блок «График работы» в футере (там и часы заведения, и
-  // часы доставки).
-  const venueHoursHref = `${localizedPath(lang)}#venue-hours`;
-
   return (
     <>
     <header className="header" id="top">
@@ -394,37 +387,22 @@ export function Header() {
               </li>
             </ul>
           </nav>
-          {/* График доставки сразу в меню (решение пользователя): два отдела с
-              часами и живым статусом — видно, работает ли доставка прямо
-              сейчас; кнопка «позвонить» закреплена внизу панели. Часы заведения
-              не расписываем — только ссылка на блок в футере. */}
-          <section className="mobile-menu__delivery" aria-labelledby="mobileMenuDeliveryTitle">
-            <p className="mobile-menu__delivery-title" id="mobileMenuDeliveryTitle">
+          {/* Графики сразу в меню (решение пользователя; 10.10.2026 — и график
+              работы заведения): плашки с живым статусом (ScheduleCards) — видно,
+              работает ли доставка и открыто ли заведение прямо сейчас; кнопка
+              «позвонить» закреплена внизу панели. На десктопе (бургера нет)
+              те же плашки показывает футер. */}
+          <section className="mobile-menu__schedule" aria-labelledby="mobileMenuScheduleDelivery">
+            <p className="mobile-menu__schedule-title" id="mobileMenuScheduleDelivery">
               {t('header.deliveryTitle')}
             </p>
-            <div className="mobile-menu__delivery-grid">
-              {DELIVERY_DEPARTMENTS.map((department) => {
-                const open = hydrated ? isSingleDepartmentOpen(department.id, nowMinutes) : null;
-                return (
-                  <div key={department.id} className="mobile-menu__delivery-card">
-                    <span className="mobile-menu__delivery-label">{t(department.labelKey)}</span>
-                    <span className="mobile-menu__delivery-time">{formatRange(department.id)}</span>
-                    <span
-                      className={`mobile-menu__delivery-status${open === null ? '' : open ? ' mobile-menu__delivery-status--open' : ' mobile-menu__delivery-status--closed'}`}
-                    >
-                      {open === null
-                        ? null
-                        : open
-                          ? t('header.deliveryOpen')
-                          : t('header.deliveryClosed').replace('{time}', getOpenTimeLabel(department.id, nowMinutes))}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-            <Link href={venueHoursHref} className="mobile-menu__venue-link" prefetch={false} onClick={closeBurger}>
-              {t('header.venueHoursLink')}
-            </Link>
+            <ScheduleCards kind="delivery" />
+          </section>
+          <section className="mobile-menu__schedule" aria-labelledby="mobileMenuScheduleVenue">
+            <p className="mobile-menu__schedule-title" id="mobileMenuScheduleVenue">
+              {t('schedule.venueTitle')}
+            </p>
+            <ScheduleCards kind="venue" />
           </section>
           <button type="button" className="mobile-menu__theme" onClick={toggleTheme} aria-label={themeToggleLabel}>
             <ThemeIcon />

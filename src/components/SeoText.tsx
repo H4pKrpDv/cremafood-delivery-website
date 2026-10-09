@@ -9,11 +9,13 @@
  * часть, и все внутренние ссылки попадают в HTML ответа — это то, что
  * видят поисковые роботы. Тексты и разбор мини-разметки — lib/seoTexts.ts
  * (данные — data/seo/<язык>.json), ссылки строятся под язык страницы
- * (next/link работает и в серверных компонентах).
+ * (next/link работает и в серверных компонентах). 10.10.2026: ссылка-токен
+ * `hours` выводится клиентским HoursLink (на мобильном открывает бургер с графиком).
  * ------------------------------------------------------------------
  */
 
 import Link from 'next/link';
+import { HoursLink } from '@/components/HoursLink';
 import { createTranslator } from '@/lib/i18nCore';
 import type { Lang } from '@/lib/i18nConfig';
 import { getSeoLines, parseSeoBlocks, type SeoBlock, type SeoInline } from '@/lib/seoTexts';
@@ -22,7 +24,11 @@ function Inline({ parts }: { parts: SeoInline[] }) {
   return (
     <>
       {parts.map((part, index) =>
-        part.href ? (
+        part.href && part.hours ? (
+          <HoursLink key={index} href={part.href} className="seo-text__link">
+            {part.text}
+          </HoursLink>
+        ) : part.href ? (
           <Link key={index} href={part.href} className="seo-text__link" prefetch={false}>
             {part.text}
           </Link>

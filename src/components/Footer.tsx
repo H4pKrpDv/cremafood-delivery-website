@@ -3,6 +3,9 @@
  * доставки раздельными блоками, соцсети, ссылка на попап "Политика
  * конфиденциальности" (js/privacy.js -> store/uiStore.ts).
  *
+ * 10.10.2026: на мобильных контент футера по центру; графики работы/доставки
+ * — плашки (ScheduleCards) только на десктопе (на мобильных они в бургер-меню).
+ *
  * Соцсети (27.09.2026 — добавление мессенджеров/соцсетей; 02.10.2026 —
  * сами ссылки/иконки вынесены в components/SocialLinks.tsx, т.к.
  * error.tsx (500-страница) тоже должен их показывать — подробности о
@@ -15,6 +18,7 @@ import Link from 'next/link';
 import { useI18n } from '@/i18n/I18nProvider';
 import { useUIStore } from '@/store/uiStore';
 import { SocialLinks } from '@/components/SocialLinks';
+import { ScheduleCards } from '@/components/ScheduleCards';
 import { localizedPath } from '@/lib/i18nConfig';
 
 export function Footer() {
@@ -39,26 +43,22 @@ export function Footer() {
             <p>Alexandru cel Bun 1A</p>
           </address>
         </div>
-        <div className="footer__col">
-          {/* id="venue-hours" — якорь для ссылки «График работы заведения» из
-              мобильного бургер-меню (09.10.2026); отступ под фиксированную
-              шапку — .footer__col-title--venue в globals.css. */}
+        {/* 10.10.2026: графики — плашками с живым статусом (ScheduleCards). Колонка
+            видна только на десктопе (≥769px): на мобильных тот же график лежит
+            в бургер-меню (.footer__col--hours скрыт CSS). id="venue-hours" и
+            id="delivery-hours" — якоря: на них ссылаются «График доставки» в
+            шапке на десктопе и ссылки в SEO-текстах (HoursLink). Отступ под
+            фиксированную шапку — scroll-margin-top у .footer__col-title--venue/
+            --delivery в globals.css. */}
+        <div className="footer__col footer__col--hours">
           <h5 className="footer__col-title footer__col-title--venue" id="venue-hours">
             {t('footer.hoursTitle')}
           </h5>
-          <div className="hours">
-            <div className="hours__row">
-              <span className="hours__time">{t('footer.hoursCafe')}</span>
-            </div>
-          </div>
+          <ScheduleCards kind="venue" />
           <h5 className="footer__col-title footer__col-title--delivery" id="delivery-hours">
             {t('footer.deliveryHoursTitle')}
           </h5>
-          <div className="hours">
-            <div className="hours__row">
-              <span className="hours__time">{t('footer.deliveryHours')}</span>
-            </div>
-          </div>
+          <ScheduleCards kind="delivery" />
         </div>
         <div className="footer__col">
           <h5 className="footer__col-title">{t('footer.contactsTitle')}</h5>

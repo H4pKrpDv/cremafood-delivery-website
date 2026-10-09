@@ -709,11 +709,10 @@
         background: rgba(200, 150, 74, 0.15);
       }
 
-      /* График доставки в меню (09.10.2026): два отдела (напитки / блюда) —
-         карточки в ряд по центру: название, часы, живой статус с точкой
-         (зелёная — принимаем заказы, серая — закрыто, откроется в …).
-         Под ними ссылка на блок «График работы» в футере. */
-      .mobile-menu__delivery {
+      /* Графики в бургер-меню (09.10.2026 — доставка, 10.10.2026 — ещё и график
+         работы заведения): каждый блок — заголовок и две плашки (ScheduleCards,
+         стили .schedule-* ниже) по центру. */
+      .mobile-menu__schedule {
         width: 100%;
         max-width: 28rem;
         display: flex;
@@ -722,7 +721,7 @@
         gap: 0.75rem;
       }
 
-      .mobile-menu__delivery-title {
+      .mobile-menu__schedule-title {
         margin: 0;
         font-size: 0.75rem;
         font-weight: 500;
@@ -731,14 +730,18 @@
         color: var(--gold);
       }
 
-      .mobile-menu__delivery-grid {
+      /* ─── ПЛАШКИ ГРАФИКА (components/ScheduleCards.tsx, 10.10.2026) ───
+         Общие для бургер-меню (мобильные) и футера (десктоп): название отдела,
+         часы и живой статус с точкой (зелёная — открыто, серая — закрыто,
+         «Откроется в …»). */
+      .schedule-grid {
         width: 100%;
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 0.6rem;
       }
 
-      .mobile-menu__delivery-card {
+      .schedule-card {
         min-width: 0;
         display: flex;
         flex-direction: column;
@@ -748,14 +751,15 @@
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: var(--radius);
+        text-align: center;
       }
 
-      .mobile-menu__delivery-label {
+      .schedule-card__label {
         font-size: 0.8rem;
         color: var(--text-3);
       }
 
-      .mobile-menu__delivery-time {
+      .schedule-card__time {
         font-family: var(--font-head);
         font-size: 1.05rem;
         font-weight: 600;
@@ -765,7 +769,7 @@
 
       /* min-height резервирует строку статуса до гидратации — без прыжка
          вёрстки, когда статус появляется. */
-      .mobile-menu__delivery-status {
+      .schedule-card__status {
         min-height: 1.2em;
         display: inline-flex;
         align-items: center;
@@ -775,7 +779,7 @@
         color: var(--text-3);
       }
 
-      .mobile-menu__delivery-status::before {
+      .schedule-card__status::before {
         content: '';
         width: 7px;
         height: 7px;
@@ -784,30 +788,17 @@
         background: var(--text-3);
       }
 
-      .mobile-menu__delivery-status:empty::before {
+      .schedule-card__status:empty::before {
         display: none;
       }
 
-      .mobile-menu__delivery-status--open {
+      .schedule-card__status--open {
         color: var(--cream-2);
       }
 
-      .mobile-menu__delivery-status--open::before {
+      .schedule-card__status--open::before {
         background: #4caf6e;
         box-shadow: 0 0 0 3px rgba(76, 175, 110, 0.2);
-      }
-
-      .mobile-menu__venue-link {
-        font-size: 0.9rem;
-        color: var(--gold);
-        text-decoration: underline;
-        text-underline-offset: 3px;
-        transition: color var(--transition);
-      }
-
-      .mobile-menu__venue-link:hover,
-      .mobile-menu__venue-link:focus-visible {
-        color: var(--gold-light);
       }
 
       /* Переключатель темы в меню (на мобильном он убран из шапки). Подпись —
@@ -2864,6 +2855,44 @@
         margin-top: 1.75rem;
       }
 
+      /* 10.10.2026: на мобильных контент футера по центру (как у конкурентов);
+         с 769px — снова по левому краю (см. медиа-запрос ниже). */
+      .footer__inner {
+        text-align: center;
+        justify-items: center;
+      }
+
+      .footer__brand {
+        align-items: center;
+      }
+
+      .footer__tagline {
+        margin-inline: auto;
+      }
+
+      .footer__contacts {
+        align-items: center;
+      }
+
+      .footer__socials {
+        justify-content: center;
+      }
+
+      /* Графики работы/доставки в футере — только на десктопе: на мобильных они
+         в бургер-меню (решение пользователя). Колонка скрыта CSS, а не убрана из
+         разметки. */
+      .footer__col--hours {
+        display: none;
+      }
+
+      .footer__col--hours .footer__col-title {
+        margin-bottom: 0.9rem;
+      }
+
+      .footer__col--hours .schedule-grid {
+        grid-template-columns: repeat(auto-fit, minmax(7.25rem, 1fr));
+      }
+
       .footer__bottom {
         max-width: 1200px;
         margin: 0 auto;
@@ -3213,6 +3242,28 @@
         .footer__inner {
           grid-template-columns: 1fr 1fr;
           gap: 2.5rem;
+          text-align: left;
+          justify-items: stretch;
+        }
+
+        .footer__brand {
+          align-items: flex-start;
+        }
+
+        .footer__tagline {
+          margin-inline: 0;
+        }
+
+        .footer__contacts {
+          align-items: flex-start;
+        }
+
+        .footer__socials {
+          justify-content: flex-start;
+        }
+
+        .footer__col--hours {
+          display: block;
         }
       }
 
@@ -3227,7 +3278,7 @@
         }
 
         .footer__inner {
-          grid-template-columns: 1.5fr 1fr 1.25fr 1fr;
+          grid-template-columns: 1.4fr 1fr 1.6fr 1fr;
           gap: 3rem;
           padding: 4.5rem 2rem 3rem;
         }

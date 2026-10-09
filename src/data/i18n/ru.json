@@ -22,8 +22,7 @@
     "deliveryBar": "Напитки",
     "deliveryKitchen": "Блюда",
     "deliveryOpen": "Принимаем заказы",
-    "deliveryClosed": "Откроется в {time}",
-    "venueHoursLink": "График работы заведения"
+    "deliveryClosed": "Откроется в {time}"
   },
   "hero": {
     "eyebrow": "Добро пожаловать в",
@@ -778,5 +777,12 @@
     "pdfTitle": "Полное меню в PDF",
     "metaTitle": "Меню Crema Food в Бельцах: напитки, блюда, десерты",
     "metaDescription": "Меню Crema Food в Бельцах: кофе и напитки, завтраки, мексиканская кухня, десерты. Заказ онлайн, доставка 60 MDL, бесплатно от 399 MDL. Полное меню в PDF."
+  },
+  "schedule": {
+    "venueTitle": "График работы заведения",
+    "venueBar": "Кафе и бар",
+    "venueKitchen": "Кухня",
+    "venueOpen": "Ждём гостей",
+    "venueClosed": "Откроется в {time}"
   }
 }

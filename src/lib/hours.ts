@@ -36,6 +36,24 @@ export const DEPARTMENT_HOURS: Record<string, DepartmentHoursRange> = {
   bar: { openMinutes: 7 * 60, closeMinutes: 22 * 60 } // 07:00–22:00
 };
 
+// 10.10.2026. Часы ЗАВЕДЕНИЯ (очный визит) — для плашек «График работы»
+// (components/ScheduleCards.tsx, kind="venue"): бар/кафе 07:00–22:00, кухня
+// 09:00–22:00. Отдельно от DEPARTMENT_HOURS: у доставки кухня работает до
+// 02:00, а в зале — до 22:00. Заказы на сайте эти часы НЕ ограничивают.
+// При смене часов обновить также lib/seo.ts (BUSINESS.openingHours).
+export const VENUE_HOURS: Record<string, DepartmentHoursRange> = {
+  kitchen: { openMinutes: 9 * 60, closeMinutes: 22 * 60 }, // 09:00–22:00
+  bar: { openMinutes: 7 * 60, closeMinutes: 22 * 60 } // 07:00–22:00
+};
+
+// Открыт ли интервал сейчас (в том числе интервал через полночь).
+export function isRangeOpen(range: DepartmentHoursRange, nowMinutes: number): boolean {
+  if (range.openMinutes <= range.closeMinutes) {
+    return nowMinutes >= range.openMinutes && nowMinutes < range.closeMinutes;
+  }
+  return nowMinutes >= range.openMinutes || nowMinutes < range.closeMinutes;
+}
+
 export function getNowMinutes(date: Date = new Date()): number {
   const parts = new Intl.DateTimeFormat('en-GB', {
     timeZone: TIMEZONE,
@@ -68,11 +86,8 @@ export function isSingleDepartmentOpen(departmentId: string, nowMinutes: number)
   // (лучше по умолчанию считать открытым, чем случайно "выключить" продажи
   // из-за опечатки в menu.json).
   if (!range) return true;
-  if (range.openMinutes <= range.closeMinutes) {
-    return nowMinutes >= range.openMinutes && nowMinutes < range.closeMinutes;
-  }
-  // Интервал через полночь (кухня: 09:00–02:00).
-  return nowMinutes >= range.openMinutes || nowMinutes < range.closeMinutes;
+  // Интервал через полночь (кухня: 09:00–02:00) учитывает isRangeOpen.
+  return isRangeOpen(range, nowMinutes);
 }
 
 // Открыт товар, только если открыты ВСЕ перечисленные отделы.

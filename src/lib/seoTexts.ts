@@ -74,7 +74,7 @@ export function resolveSeoHref(lang: Lang, token: string): string | null {
   return null;
 }
 
-export type SeoInline = { text: string; href?: string };
+export type SeoInline = { text: string; href?: string; hours?: boolean };
 export type SeoBlock =
   | { type: 'h2'; text: string }
   | { type: 'h3'; text: string }
@@ -90,7 +90,9 @@ export function parseInline(lang: Lang, line: string): SeoInline[] {
     const index = match.index ?? 0;
     if (index > last) parts.push({ text: line.slice(last, index) });
     const href = resolveSeoHref(lang, match[2]);
-    parts.push(href ? { text: match[1], href } : { text: match[1] });
+    // 10.10.2026: токен hours помечаем — SeoText выводит его как HoursLink (на
+    // мобильном открывает бургер с графиком, на десктопе ведёт к футеру).
+    parts.push(href ? { text: match[1], href, ...(match[2] === 'hours' ? { hours: true } : {}) } : { text: match[1] });
     last = index + match[0].length;
   }
   if (last < line.length) parts.push({ text: line.slice(last) });
