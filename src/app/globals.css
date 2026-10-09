@@ -2780,24 +2780,6 @@
         line-height: 1.8;
       }
 
-      .hours__row {
-        display: flex;
-        flex-direction: column;
-        gap: 0.15rem;
-        margin-bottom: 0.875rem;
-        font-size: 0.875rem;
-        color: var(--text-2);
-      }
-
-      .hours__row:last-child {
-        margin-bottom: 0;
-      }
-
-      .hours__time {
-        color: var(--cream-2);
-        font-weight: 500;
-      }
-
       .footer__contacts {
         display: flex;
         flex-direction: column;
@@ -3264,6 +3246,12 @@
 
         .footer__col--hours {
           display: block;
+        }
+
+        /* 10.10.2026: подписи колонок (Местоположение, График работы/доставки,
+           Контакты) — по центру своей колонки. */
+        .footer__col-title {
+          text-align: center;
         }
       }
 

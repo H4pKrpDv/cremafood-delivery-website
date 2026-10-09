@@ -44,8 +44,8 @@ export const BUSINESS = {
   addressCountry: 'MD',
   sameAs: ['https://instagram.com/crema.md'],
   hasMap: 'https://share.google/cIC2PGKOn0GDHVoVd',
-  // Часы ОЧНОГО визита (footer.hoursCafe — "Кафе/бар 7–22, кухня 9–22"),
-  // не часы доставки (footer.deliveryHours, кухня до 02:00) — то же
+  // Часы ОЧНОГО визита (lib/hours.ts VENUE_HOURS — кафе/бар 7–22, кухня 9–22),
+  // не часы доставки (DEPARTMENT_HOURS, кухня до 02:00) — то же
   // разграничение, что и в build.js: openingHoursSpecification описывает,
   // когда можно физически прийти, а не когда работает курьерская доставка.
   openingHours: { opens: '07:00', closes: '22:00' }
