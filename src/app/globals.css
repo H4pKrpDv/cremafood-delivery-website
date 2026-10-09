@@ -2837,8 +2837,8 @@
         margin-top: 1.75rem;
       }
 
-      /* 10.10.2026: на мобильных контент футера по центру (как у конкурентов);
-         с 769px — снова по левому краю (см. медиа-запрос ниже). */
+      /* 10.10.2026: контент футера по центру (как у конкурентов) — на мобильных
+         колонки друг под другом, с 769px — в ряд, но тоже по центру. */
       .footer__inner {
         text-align: center;
         justify-items: center;
@@ -3224,34 +3224,14 @@
         .footer__inner {
           grid-template-columns: 1fr 1fr;
           gap: 2.5rem;
-          text-align: left;
+          /* 10.10.2026: контент колонок по центру и на десктопе (как на мобильных):
+             колонка тянется на всю ячейку (stretch), внутри всё центрируется
+             (text-align / align-items / justify-content из базовых правил). */
           justify-items: stretch;
-        }
-
-        .footer__brand {
-          align-items: flex-start;
-        }
-
-        .footer__tagline {
-          margin-inline: 0;
-        }
-
-        .footer__contacts {
-          align-items: flex-start;
-        }
-
-        .footer__socials {
-          justify-content: flex-start;
         }
 
         .footer__col--hours {
           display: block;
-        }
-
-        /* 10.10.2026: подписи колонок (Местоположение, График работы/доставки,
-           Контакты) — по центру своей колонки. */
-        .footer__col-title {
-          text-align: center;
         }
       }
 
