@@ -7,7 +7,7 @@
  * язык ровно один URL — тот же changefreq/priority, что и раньше.
  * lastModified пересчитывается сам на каждый билд/запрос.
  *
- * 08.10.2026: добавлены страницы подкатегорий и категорий; 09.10.2026 — /menu.
+ * 08.10.2026: добавлены страницы подкатегорий и категорий; 09.10.2026 — /full-menu.
  *
  * 05.10.2026: страницы по языкам (/, /ro, /en). В карту попадают ТОЛЬКО
  * языки из INDEXABLE_LANGS (lib/i18nConfig.ts) — сейчас это один русский
@@ -105,7 +105,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })
   );
 
-  // 09.10.2026: страница «Полное меню» (/menu) — как страницы категорий.
+  // 09.10.2026: страница «Полное меню» (/full-menu) — как страницы категорий.
   const menuUrl = (lang: (typeof INDEXABLE_LANGS)[number]) => absoluteUrl(lang, MENU_PAGE_INTERNAL_PATH);
   const menuPage: MetadataRoute.Sitemap = INDEXABLE_LANGS.map((lang) => {
     let menuLanguages: Record<string, string> | undefined;

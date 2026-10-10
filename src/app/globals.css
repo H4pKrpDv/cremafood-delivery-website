@@ -2183,7 +2183,7 @@
         margin-top: 0.25rem;
       }
 
-      /* ─── СТРАНИЦА «ПОЛНОЕ МЕНЮ» (/menu, 09.10.2026) ─── */
+      /* ─── СТРАНИЦА «ПОЛНОЕ МЕНЮ» (/full-menu, 09.10.2026; адрес сменён 10.10.2026) ─── */
       .menu-page__intro {
         max-width: 640px;
         margin: -0.5rem auto 2rem;
@@ -2193,67 +2193,189 @@
         line-height: 1.7;
       }
 
-      .menu-page__sections {
-        display: grid;
-        gap: 1rem;
-        margin-bottom: 2rem;
-      }
-
-      .menu-page__section {
-        background: var(--bg-2);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-        padding: 1.25rem;
+      /* Кнопки «Заказать напитки / блюда» под слайдером. */
+      .menu-page__order {
+        margin: 2.25rem 0 2rem;
         text-align: center;
       }
 
-      .menu-page__section-title {
+      .menu-page__order-title {
         font-family: var(--font-head);
         font-size: 1.25rem;
         font-weight: 600;
         color: var(--cream);
-        margin-bottom: 0.9rem;
+        margin-bottom: 1rem;
+      }
+
+      .menu-page__order-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem;
+      }
+
+      .menu-page__order-btn {
+        text-decoration: none;
+        min-width: 11rem;
         text-align: center;
       }
 
-      .menu-page__section-link {
-        color: inherit;
-        text-decoration: none;
-        transition: color var(--transition);
+      /* ─── ПРОСМОТР СТРАНИЦ МЕНЮ (components/MenuViewer.tsx, 10.10.2026) ───
+         Нативная прокрутка со scroll-snap: каждая страница — слайд на всю ширину
+         сцены. Сцена ограничена по ширине (на десктопе страница узкая, как лист
+         меню), высота страницы — не больше 80vh. */
+      .menu-viewer {
+        max-width: 560px;
+        margin: 0 auto;
       }
 
-      .menu-page__section-link:hover {
-        color: var(--gold-light);
+      .menu-viewer__stage {
+        position: relative;
+        border-radius: var(--radius-lg);
+        outline-offset: 4px;
       }
 
-      .menu-page__links {
+      .menu-viewer__track {
         list-style: none;
         margin: 0;
         padding: 0;
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 0.5rem;
-      }
-
-      .menu-page__link {
-        display: inline-block;
-        padding: 0.4rem 0.95rem;
-        border-radius: 999px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        border-radius: var(--radius-lg);
         border: 1px solid var(--border);
-        color: var(--text-2);
-        font-size: 0.85rem;
-        text-decoration: none;
-        transition: all var(--transition);
+        background: var(--bg-2);
       }
 
-      .menu-page__link:hover {
+      .menu-viewer__track::-webkit-scrollbar {
+        display: none;
+      }
+
+      .menu-viewer__slide {
+        flex: 0 0 100%;
+        scroll-snap-align: center;
+        scroll-snap-stop: always;
+        display: flex;
+        justify-content: center;
+      }
+
+      .menu-viewer__img {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: 80vh;
+        aspect-ratio: 2 / 3;
+        object-fit: contain;
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+
+      .menu-viewer__nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 2;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        border: 1px solid var(--border);
+        background: var(--surface);
         color: var(--gold-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0.92;
+        transition: opacity var(--transition), background var(--transition), border-color var(--transition);
+      }
+
+      .menu-viewer__nav svg {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+
+      .menu-viewer__nav:hover:not(:disabled) {
+        background: var(--surface-2);
         border-color: var(--gold-dark);
       }
 
-      .menu-page__pdf {
-        margin-bottom: 2rem;
+      .menu-viewer__nav:disabled {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .menu-viewer__nav--prev {
+        left: 0.5rem;
+      }
+
+      .menu-viewer__nav--next {
+        right: 0.5rem;
+      }
+
+      .menu-viewer__counter {
+        margin: 0.9rem 0 0.6rem;
+        text-align: center;
+        font-size: 0.85rem;
+        letter-spacing: 0.04em;
+        color: var(--text-3);
+      }
+
+      .menu-viewer__thumbs {
+        display: flex;
+        gap: 0.5rem;
+        overflow-x: auto;
+        padding: 0.25rem 0.25rem 0.5rem;
+        scrollbar-width: thin;
+      }
+
+      /* Центрируем ленту, пока она короче контейнера (margin:auto у крайних
+         элементов, а не justify-content — иначе при переполнении левый край
+         недоступен для прокрутки). */
+      .menu-viewer__thumb:first-child {
+        margin-left: auto;
+      }
+
+      .menu-viewer__thumb:last-child {
+        margin-right: auto;
+      }
+
+      .menu-viewer__thumb {
+        flex: 0 0 auto;
+        width: 3.5rem;
+        padding: 0;
+        border-radius: 0.5rem;
+        border: 2px solid var(--border);
+        background: var(--bg-2);
+        overflow: hidden;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity var(--transition), border-color var(--transition);
+      }
+
+      .menu-viewer__thumb:hover {
+        opacity: 1;
+      }
+
+      .menu-viewer__thumb--active {
+        opacity: 1;
+        border-color: var(--gold);
+      }
+
+      .menu-viewer__thumb-img {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 2 / 3;
+        object-fit: cover;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .menu-viewer__track {
+          scroll-behavior: auto;
+        }
       }
 
       /* ─── .pill — базовый вид пилюль (с 08.10.2026 используется только
@@ -3189,15 +3311,6 @@
 
         .category-group {
           margin-bottom: 0;
-        }
-
-        .menu-page__sections {
-          grid-template-columns: repeat(3, 1fr);
-          gap: 1.25rem;
-        }
-
-        .menu-page__section {
-          padding: 1.5rem;
         }
 
         .category-group__title {

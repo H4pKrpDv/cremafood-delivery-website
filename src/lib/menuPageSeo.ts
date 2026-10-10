@@ -1,7 +1,7 @@
 /**
  * lib/menuPageSeo.ts
  * ------------------------------------------------------------------
- * 09.10.2026. SEO страницы «Полное меню» (/menu): <title>/description/
+ * 09.10.2026. SEO страницы «Полное меню» (/full-menu): <title>/description/
  * canonical/hreflang/Open Graph (generateMetadata) и JSON-LD (CollectionPage
  * со списком разделов + BreadcrumbList «Главная → Меню»). Только серверная
  * логика. Правила те же, что у категорий (lib/categorySeo.ts): hreflang и

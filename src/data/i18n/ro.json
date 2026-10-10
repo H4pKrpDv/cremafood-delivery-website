@@ -124,7 +124,7 @@
     "full-menu": {
       "title": "Полное меню",
       "text": "Comanda online este disponibilă pentru o listă limitată de produse. Lista completă a preparatelor și băuturilor noastre este disponibilă în meniul principal al restaurantului.",
-      "buttonText": "Vezi meniul complet"
+      "buttonText": "Смотреть полное меню"
     },
     "matcha": {
       "title": "Matcha",
@@ -772,10 +772,9 @@
   "menuPage": {
     "crumb": "Меню",
     "h1": "Меню кафе-ресторана Crema Food в Бельцах",
-    "intro": "В меню Crema Food — кофе и напитки, завтраки, мексиканская кухня и десерты. Выберите раздел, чтобы заказать онлайн, или откройте полное меню заведения в PDF.",
-    "pdfTitle": "Полное меню в PDF",
+    "intro": "В меню Crema Food — кофе и напитки, завтраки, мексиканская кухня и десерты. Листайте страницы полного меню ниже, а чтобы заказать онлайн, выберите раздел.",
     "metaTitle": "Меню Crema Food в Бельцах: напитки, блюда, десерты",
-    "metaDescription": "Меню Crema Food в Бельцах: кофе и напитки, завтраки, мексиканская кухня, десерты. Заказ онлайн, доставка 60 MDL, бесплатно от 399 MDL. Полное меню в PDF."
+    "metaDescription": "Полное меню Crema Food в Бельцах: кофе и напитки, завтраки, мексиканская кухня, десерты. Листайте страницы меню онлайн. Заказ онлайн, доставка 60 MDL, бесплатно от 399 MDL."
   },
   "schedule": {
     "venueTitle": "График работы заведения",
@@ -783,5 +782,17 @@
     "venueKitchen": "Кухня",
     "venueOpen": "Ждём гостей",
     "venueClosed": "Откроется в {time}"
+  },
+  "fullMenu": {
+    "viewerLabel": "Полное меню Crema Food — страницы меню",
+    "pageAlt": "Меню Crema Food, страница",
+    "pageOf": "из",
+    "prev": "Предыдущая страница",
+    "next": "Следующая страница",
+    "thumbsLabel": "Страницы меню",
+    "goTo": "Перейти на страницу",
+    "orderTitle": "Хотите заказать?",
+    "orderDrinks": "Заказать напитки",
+    "orderFood": "Заказать блюда"
   }
 }

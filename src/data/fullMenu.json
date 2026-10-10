@@ -1,0 +1,34 @@
+{
+  "pages": [
+    {
+      "id": "1",
+      "image": "img/full-menu/page-1.webp",
+      "thumb": "img/full-menu/thumb-1.webp"
+    },
+    {
+      "id": "2",
+      "image": "img/full-menu/page-2.webp",
+      "thumb": "img/full-menu/thumb-2.webp"
+    },
+    {
+      "id": "3",
+      "image": "img/full-menu/page-3.webp",
+      "thumb": "img/full-menu/thumb-3.webp"
+    },
+    {
+      "id": "4",
+      "image": "img/full-menu/page-4.webp",
+      "thumb": "img/full-menu/thumb-4.webp"
+    },
+    {
+      "id": "5",
+      "image": "img/full-menu/page-5.webp",
+      "thumb": "img/full-menu/thumb-5.webp"
+    },
+    {
+      "id": "6",
+      "image": "img/full-menu/page-6.webp",
+      "thumb": "img/full-menu/thumb-6.webp"
+    }
+  ]
+}

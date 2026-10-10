@@ -50,7 +50,8 @@ const publicDir = path.join(projectRoot, 'public');
 // Те же подкаталоги, которые раньше были в зоне действия middleware.ts
 // (теперь он не нужен — см. комментарий выше). 07.10.2026 добавлен
 // img/modifiers — фото соусов/добавок на страницах позиций.
-const WATCHED_DIRS = ['img/items', 'img/categories', 'img/modifiers'];
+// 10.10.2026 добавлен img/full-menu — страницы и миниатюры слайдера «Полное меню».
+const WATCHED_DIRS = ['img/items', 'img/categories', 'img/modifiers', 'img/full-menu'];
 
 // Учитываем только настоящие картинки. В этих же папках лежат README.md с
 // памяткой по фото (04.10.2026) — без фильтра он попал бы в манифест как

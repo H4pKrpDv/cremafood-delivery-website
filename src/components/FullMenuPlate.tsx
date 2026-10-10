@@ -1,37 +1,32 @@
 /**
  * components/FullMenuPlate.tsx
  * ------------------------------------------------------------------
- * 10.10.2026. Плашка «Полное меню»: пояснение + кнопка со ссылкой на PDF
- * полного меню. Общая для главной (последний блок, MenuSection) и страницы
- * /menu (MenuPage). Адрес PDF — pdfUrl из menu.json (сейчас
- * /full-menu.pdf → public/full-menu.pdf).
+ * 10.10.2026. Плашка «Полное меню» на главной (последний блок, MenuSection):
+ * пояснение + кнопка-ссылка на страницу /full-menu.
  *
- * PDF открывается в НОВОЙ вкладке (target="_blank"): во встроенном
- * просмотрщике браузера (на мобильных часто без кнопки «назад») посетитель
- * потерял бы страницу. rel="noopener noreferrer" — защита для _blank.
+ * 10.10.2026 (позже): раньше кнопка вела на PDF в новой вкладке; теперь
+ * на странице «Полное меню» есть онлайн-просмотр страниц меню (слайдер,
+ * components/MenuViewer.tsx), поэтому это обычная внутренняя ссылка — без
+ * target="_blank", посетитель остаётся на сайте. Поле pdfUrl в menu.json
+ * больше не используется (оставлено на случай кнопки «Скачать PDF»).
  * ------------------------------------------------------------------
  */
 
 'use client';
 
+import Link from 'next/link';
 import { useI18n } from '@/i18n/I18nProvider';
-import { menuData } from '@/lib/data';
-import { FULL_MENU_CATEGORY_ID } from '@/lib/menuPageRoutes';
-import { isFullMenuSubcategory } from '@/types/menu';
+import { getMenuPagePathname } from '@/lib/menuPageRoutes';
 
 export function FullMenuPlate() {
-  const { t } = useI18n();
-  const sub = menuData.categories
-    .find((category) => category.id === FULL_MENU_CATEGORY_ID)
-    ?.subcategories.find(isFullMenuSubcategory);
-  if (!sub) return null;
+  const { t, lang } = useI18n();
 
   return (
     <div className="full-menu-card">
       <p>{t('subcategories.full-menu.text')}</p>
-      <a className="btn btn--primary full-menu-card__btn" href={sub.pdfUrl} target="_blank" rel="noopener noreferrer">
+      <Link className="btn btn--primary full-menu-card__btn" href={getMenuPagePathname(lang)} prefetch={false}>
         {t('subcategories.full-menu.buttonText')}
-      </a>
+      </Link>
     </div>
   );
 }

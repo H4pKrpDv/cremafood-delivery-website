@@ -307,7 +307,7 @@ export function Header() {
           <nav className="mobile-menu__nav" aria-label={t('header.navLabel')}>
             {/* 10.10.2026: один раскрывающийся список «Меню» вместо списков по
                 категориям — внутри ссылки на страницы разделов (/promo, /drinks,
-                /food, /menu); подкатегории показаны на главной и на самих
+                /food, /full-menu); подкатегории показаны на главной и на самих
                 страницах разделов. */}
             <ul className="mobile-menu__cats">
               <li className="mobile-menu__cat-item">

@@ -1,13 +1,17 @@
 /**
  * lib/menuPageRoutes.ts
  * ------------------------------------------------------------------
- * 09.10.2026. Адрес страницы «Полное меню» (/menu). Раньше «Полное меню» было
+ * 09.10.2026. Адрес страницы «Полное меню». Раньше «Полное меню» было
  * четвёртой вкладкой главной с плашкой-ссылкой на PDF; теперь это отдельная
  * страница (решение пользователя), а пилюля «Полное меню» — обычная ссылка
  * на неё. Слаг один на все языки (как у разделов /drinks, /food, /promo):
- * ru /menu, ro /ro/menu, en /en/menu.
+ * ru /full-menu, ro /ro/full-menu, en /en/full-menu.
  *
- * Статический сегмент app/[lang]/menu имеет приоритет над динамическим
+ * 10.10.2026: адрес сменён с /menu на /full-menu (решение пользователя: слово
+ * «menu» само по себе путает — разделы лежат на /drinks, /food, /promo). Старые
+ * адреса /menu, /ro/menu, /en/menu — 301 на новые, см. data/redirects.ts.
+ *
+ * Статический сегмент app/[lang]/full-menu имеет приоритет над динамическим
  * [section], поэтому конфликта с разделами нет.
  *
  * Файл без React и серверных API — его используют серверные компоненты
@@ -21,9 +25,9 @@ import { isLang, localizedPath, type Lang } from '@/lib/i18nConfig';
 export const FULL_MENU_CATEGORY_ID = 'full-menu';
 
 /** Внутренний путь БЕЗ префикса языка. */
-export const MENU_PAGE_INTERNAL_PATH = '/menu';
+export const MENU_PAGE_INTERNAL_PATH = '/full-menu';
 
-/** Публичный путь: ru → '/menu', ro → '/ro/menu'. */
+/** Публичный путь: ru → '/full-menu', ro → '/ro/full-menu'. */
 export function getMenuPagePathname(lang: Lang): string {
   return localizedPath(lang, MENU_PAGE_INTERNAL_PATH);
 }
