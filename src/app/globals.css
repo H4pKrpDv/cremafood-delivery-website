@@ -2207,29 +2207,42 @@
         margin-bottom: 1rem;
       }
 
-      /* Две кнопки одной ширины: на мобильных друг под другом, с 480px — в ряд.
-         Раньше это был flex с переносом, и ширину каждой кнопки задавал её
-         текст — «Заказать блюда» получалась уже, чем «Заказать напитки». */
+      /* Две кнопки одной ширины. Мобильные (<640px): друг под другом, ширина до
+         18rem. С 640px: в один ряд, обе кнопки — по ширине более длинного текста
+         (grid-auto-columns:1fr + width:max-content), текст не переносится.
+         Раньше был flex с переносом — ширину каждой кнопки задавал её текст
+         («Заказать блюда» получалась уже, чем «Заказать напитки»). Текст внутри
+         кнопки центрируется и по вертикали (flex), поэтому он по центру и тогда,
+         когда соседняя кнопка выше. */
       .menu-page__order-actions {
         display: grid;
         grid-template-columns: 1fr;
         gap: 0.75rem;
-        max-width: 18rem;
+        width: min(100%, 18rem);
         margin: 0 auto;
       }
 
-      @media (min-width: 480px) {
+      @media (min-width: 640px) {
         .menu-page__order-actions {
-          grid-template-columns: 1fr 1fr;
-          max-width: 28rem;
+          grid-auto-flow: column;
+          grid-auto-columns: 1fr;
+          grid-template-columns: none;
+          width: max-content;
+          max-width: 100%;
+        }
+
+        .menu-page__order-btn {
+          white-space: nowrap;
         }
       }
 
       .menu-page__order-btn {
-        display: block;
-        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         text-decoration: none;
         text-align: center;
+        padding-block: 0.75rem;
       }
 
       /* ─── ПРОСМОТР СТРАНИЦ МЕНЮ (components/MenuViewer.tsx, 10.10.2026) ───
