@@ -3294,6 +3294,27 @@
         }
       }
 
+      /* 10.10.2026: футер на планшете (769–1024px) — две колонки без пустот:
+         бренд сверху на всю ширину, «Меню» и «Местоположение» рядом одной
+         строкой, ниже график и контакты. (С 1025px — четыре колонки.) */
+      @media (min-width: 769px) and (max-width: 1024px) {
+        .footer__brand,
+        .footer__stack {
+          grid-column: 1 / -1;
+        }
+
+        .footer__stack {
+          flex-direction: row;
+          align-items: flex-start;
+          gap: 2.5rem;
+        }
+
+        .footer__stack > .footer__col {
+          flex: 1 1 0;
+          min-width: 0;
+        }
+      }
+
       /* ─── ERROR PAGES (404/500, 02.10.2026) ───
          Общий контейнер для app/not-found.tsx (и будущего error.tsx под
          500) — иллюстрация + текст + кнопка. Mobile-first: на маленьком
