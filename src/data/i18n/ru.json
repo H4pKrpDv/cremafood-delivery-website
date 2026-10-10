@@ -14,7 +14,6 @@
       "toDark": "Переключить на тёмную тему"
     },
     "menuClose": "Закрыть меню",
-    "menuAll": "Все позиции",
     "navLabel": "Меню сайта",
     "themeNameLight": "Светлая тема",
     "themeNameDark": "Тёмная тема",
@@ -22,7 +21,8 @@
     "deliveryBar": "Напитки",
     "deliveryKitchen": "Блюда",
     "deliveryOpen": "Принимаем заказы",
-    "deliveryClosed": "Откроется в {time}"
+    "deliveryClosed": "Откроется в {time}",
+    "menuTitle": "Меню"
   },
   "hero": {
     "eyebrow": "Добро пожаловать в",
@@ -742,7 +742,8 @@
     "vkLabel": "VK",
     "okLabel": "OK",
     "mapTitle": "Crema Food на карте",
-    "mapLink": "Открыть в Google Maps"
+    "mapLink": "Открыть в Google Maps",
+    "menuTitle": "Меню"
   },
   "privacy": {
     "title": "Политика конфиденциальности",

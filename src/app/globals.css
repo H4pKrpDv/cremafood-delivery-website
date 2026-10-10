@@ -685,6 +685,13 @@
         gap: 0.2rem 0.3rem;
       }
 
+      /* 10.10.2026: список «Меню» — ссылки на разделы столбиком по центру. */
+      .mobile-menu__sublist--stack {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-items: center;
+      }
+
       .mobile-menu__sublink {
         display: inline-block;
         padding: 0.45rem 0.8rem;
@@ -698,10 +705,6 @@
       .mobile-menu__sublink:focus-visible {
         color: var(--gold-light);
         background: var(--surface-2);
-      }
-
-      .mobile-menu__sublink--all {
-        color: var(--gold);
       }
 
       .mobile-menu__sublink--current {
@@ -2319,6 +2322,11 @@
         margin-bottom: 0;
       }
 
+      /* 10.10.2026: на главной все разделы идут столбиком — между блоками отступ. */
+      .category-group + .category-group {
+        margin-top: 2.75rem;
+      }
+
       .category-group--hidden {
         display: none;
       }
@@ -2867,6 +2875,33 @@
         display: none;
       }
 
+      /* 10.10.2026: колонка «Меню» — ссылки на разделы столбиком; как и график,
+         только на десктопе (на мобильных — список «Меню» в бургере). */
+      .footer__col--menu {
+        display: none;
+      }
+
+      .footer__menu-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.625rem;
+      }
+
+      .footer__menu-link {
+        font-size: 0.9rem;
+        color: var(--text-2);
+        transition: color var(--transition);
+      }
+
+      .footer__menu-link:hover,
+      .footer__menu-link:focus-visible {
+        color: var(--gold-light);
+      }
+
       .footer__col--hours .footer__col-title {
         margin-bottom: 0.9rem;
       }
@@ -3230,8 +3265,14 @@
           justify-items: stretch;
         }
 
-        .footer__col--hours {
+        .footer__col--hours,
+        .footer__col--menu {
           display: block;
+        }
+
+        /* Планшет: пять блоков в две колонки — бренд на всю ширину сверху. */
+        .footer__brand {
+          grid-column: 1 / -1;
         }
       }
 
@@ -3246,9 +3287,20 @@
         }
 
         .footer__inner {
-          grid-template-columns: 1.4fr 1fr 1.6fr 1fr;
-          gap: 3rem;
           padding: 4.5rem 2rem 3rem;
+        }
+      }
+
+      /* 5 колонок футера (бренд, меню, место, график, контакты) — с 1200px:
+         у колонки графика должно хватать места для двух плашек в ряд. */
+      @media (min-width: 1200px) {
+        .footer__inner {
+          grid-template-columns: 1.2fr 0.9fr 0.95fr 1.5fr 1fr;
+          gap: 2.5rem;
+        }
+
+        .footer__brand {
+          grid-column: auto;
         }
       }
 

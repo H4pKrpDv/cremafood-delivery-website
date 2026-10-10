@@ -43,14 +43,14 @@ import { useCartStore, useCartHydrated } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
 import { useThemeStore } from '@/store/themeStore';
 import { LANGS, HREFLANG, localizedPath } from '@/lib/i18nConfig';
-import { menuData } from '@/lib/data';
 import { ScheduleCards } from '@/components/ScheduleCards';
 import { CREMA_OPEN_SCHEDULE_EVENT } from '@/components/HoursLink';
 import { findItemIdByPathname, getItemPathname } from '@/lib/itemRoutes';
 import { findSubcategoryIdByPathname, getSubcategoryPathname } from '@/lib/subcategoryRoutes';
-import { findCategoryIdByPathname, getCategoryPathname, getCategorySubcategoryIds } from '@/lib/categoryRoutes';
+import { findCategoryIdByPathname, getCategoryPathname } from '@/lib/categoryRoutes';
 import { rememberScrollForLangSwitch } from '@/components/LangScrollRestore';
 import { getMenuPagePathname, isMenuPagePathname } from '@/lib/menuPageRoutes';
+import { getMenuLinks } from '@/lib/menuLinks';
 
 // Иконки солнца/полумесяца — тот же визуальный язык, что и у иконки
 // корзины ниже (stroke, currentColor, viewBox 0 24 24), декоративная
@@ -76,13 +76,6 @@ function ThemeIcon() {
     </>
   );
 }
-
-// Категории бургер-меню: те, у кого есть своя страница (promo / drinks /
-// food), и их подкатегории со страницами — в порядке menu.json. Считается
-// один раз на модуль (данные статичны).
-const MENU_CATEGORIES = menuData.categories
-  .map((category) => ({ id: category.id, subIds: getCategorySubcategoryIds(category.id) }))
-  .filter((category) => category.subIds.length > 0);
 
 export function Header() {
   const { t, lang } = useI18n();
@@ -117,7 +110,9 @@ export function Header() {
   const [menuPath, setMenuPath] = useState<string | null>(null);
   const burgerOpen = menuPath !== null && menuPath === (pathname ?? '');
   const closeBurger = () => setMenuPath(null);
-  const [openCategoryId, setOpenCategoryId] = useState<string | null>(null);
+  // 10.10.2026: раскрывающийся список «Меню» в бургере (закрыт по умолчанию).
+  const [menuListOpen, setMenuListOpen] = useState(false);
+  const menuLinks = getMenuLinks(lang);
   const [langListOpen, setLangListOpen] = useState(false);
   const langSwitcherRef = useRef<HTMLDivElement>(null);
 
@@ -310,80 +305,50 @@ export function Header() {
       >
         <div className="mobile-menu__scroll">
           <nav className="mobile-menu__nav" aria-label={t('header.navLabel')}>
+            {/* 10.10.2026: один раскрывающийся список «Меню» вместо списков по
+                категориям — внутри ссылки на страницы разделов (/promo, /drinks,
+                /food, /menu); подкатегории показаны на главной и на самих
+                страницах разделов. */}
             <ul className="mobile-menu__cats">
-              {MENU_CATEGORIES.map((category) => {
-                const open = openCategoryId === category.id;
-                const categoryHref = getCategoryPathname(lang, category.id);
-                return (
-                  <li key={category.id} className="mobile-menu__cat-item">
-                    <button
-                      type="button"
-                      className="mobile-menu__cat"
-                      aria-expanded={open}
-                      aria-controls={`mobileMenuSub-${category.id}`}
-                      onClick={() => setOpenCategoryId(open ? null : category.id)}
-                    >
-                      <span>{t(`categories.${category.id}`)}</span>
-                      <svg className="mobile-menu__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <path d="M6 9l6 6 6-6" />
-                      </svg>
-                    </button>
-                    <div
-                      className={`mobile-menu__sub${open ? ' mobile-menu__sub--open' : ''}`}
-                      id={`mobileMenuSub-${category.id}`}
-                      inert={!open}
-                    >
-                      <div className="mobile-menu__sub-inner">
-                        <ul className="mobile-menu__sublist">
-                          {categoryHref ? (
-                            <li>
-                              <Link
-                                href={categoryHref}
-                                className={`mobile-menu__sublink mobile-menu__sublink--all${pathname === categoryHref ? ' mobile-menu__sublink--current' : ''}`}
-                                aria-current={pathname === categoryHref ? 'page' : undefined}
-                                prefetch={false}
-                                onClick={closeBurger}
-                              >
-                                {t('header.menuAll')}
-                              </Link>
-                            </li>
-                          ) : null}
-                          {category.subIds.map((subId) => {
-                            const href = getSubcategoryPathname(lang, subId);
-                            if (!href) return null;
-                            const current = pathname === href;
-                            return (
-                              <li key={subId}>
-                                <Link
-                                  href={href}
-                                  className={`mobile-menu__sublink${current ? ' mobile-menu__sublink--current' : ''}`}
-                                  aria-current={current ? 'page' : undefined}
-                                  prefetch={false}
-                                  onClick={closeBurger}
-                                >
-                                  {t(`subcategories.${subId}.title`)}
-                                </Link>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </div>
-                    </div>
-                  </li>
-                );
-              })}
-              {/* 09.10.2026: «Полное меню» — отдельная страница /menu, в бургере
-                  обычная ссылка (без раскрывающегося списка). */}
               <li className="mobile-menu__cat-item">
-                <Link
-                  href={getMenuPagePathname(lang)}
-                  className="mobile-menu__cat mobile-menu__cat--link"
-                  aria-current={pathname === getMenuPagePathname(lang) ? 'page' : undefined}
-                  prefetch={false}
-                  onClick={closeBurger}
+                <button
+                  type="button"
+                  className="mobile-menu__cat"
+                  aria-expanded={menuListOpen}
+                  aria-controls="mobileMenuSub"
+                  onClick={() => setMenuListOpen((v) => !v)}
                 >
-                  <span>{t('categories.full-menu')}</span>
-                </Link>
+                  <span>{t('header.menuTitle')}</span>
+                  <svg className="mobile-menu__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </button>
+                <div
+                  className={`mobile-menu__sub${menuListOpen ? ' mobile-menu__sub--open' : ''}`}
+                  id="mobileMenuSub"
+                  inert={!menuListOpen}
+                >
+                  <div className="mobile-menu__sub-inner">
+                    <ul className="mobile-menu__sublist mobile-menu__sublist--stack">
+                      {menuLinks.map((link) => {
+                        const current = pathname === link.href;
+                        return (
+                          <li key={link.id}>
+                            <Link
+                              href={link.href}
+                              className={`mobile-menu__sublink${current ? ' mobile-menu__sublink--current' : ''}`}
+                              aria-current={current ? 'page' : undefined}
+                              prefetch={false}
+                              onClick={closeBurger}
+                            >
+                              {t(link.labelKey)}
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                </div>
               </li>
             </ul>
           </nav>

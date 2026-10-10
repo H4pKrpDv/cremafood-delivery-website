@@ -1,17 +1,14 @@
 /**
  * components/CategoryNav.tsx
  * ------------------------------------------------------------------
- * 09.10.2026. Пилюли разделов меню — НАСТОЯЩИЕ ССЫЛКИ (раньше были
- * кнопками-вкладками на главной, из-за чего адрес не менялся и на раздел
- * нельзя было направить трафик): Спец. предложения → /promo, Напитки →
- * /drinks, Блюда → /food, Полное меню → /menu. Переход обычный
- * (мягкая навигация Next), поэтому ряд на страницах разделов ощущается как
- * вкладки, хотя у каждого раздела свой адрес.
+ * 09.10.2026. Ряд пилюль разделов меню — НАСТОЯЩИЕ ССЫЛКИ: Спец.
+ * предложения → /promo, Напитки → /drinks, Блюда → /food, Полное меню →
+ * /menu. Переход обычный (мягкая навигация Next), поэтому ряд ощущается как
+ * вкладки, хотя у каждого раздела свой адрес. Список — lib/menuLinks.ts.
  *
- * activeId — какая пилюля подсвечена. current=true (страницы разделов и
- * /menu): активная пилюля помечается aria-current="page". На главной
- * (current=false) подсвечены «Напитки» только визуально — главная не
- * совпадает с адресом раздела.
+ * 10.10.2026: с главной ряд убран (там все разделы идут подряд), остался на
+ * страницах разделов и /menu. activeId — подсвеченная пилюля
+ * (aria-current="page").
  * ------------------------------------------------------------------
  */
 
@@ -19,32 +16,22 @@
 
 import Link from 'next/link';
 import { useI18n } from '@/i18n/I18nProvider';
-import { getCategoryPathname } from '@/lib/categoryRoutes';
-import { FULL_MENU_CATEGORY_ID, getMenuPagePathname } from '@/lib/menuPageRoutes';
-import { menuData } from '@/lib/data';
-import type { Lang } from '@/lib/i18nConfig';
+import { getMenuLinks } from '@/lib/menuLinks';
 
-function pillHref(lang: Lang, categoryId: string): string | null {
-  if (categoryId === FULL_MENU_CATEGORY_ID) return getMenuPagePathname(lang);
-  return getCategoryPathname(lang, categoryId);
-}
-
-export function CategoryNav({ activeId, current = true }: { activeId?: string; current?: boolean }) {
+export function CategoryNav({ activeId }: { activeId?: string }) {
   const { t, lang } = useI18n();
   return (
     <nav className="category-tabs" aria-label={t('menu.categoryTabsLabel')}>
-      {menuData.categories.map((category) => {
-        const href = pillHref(lang, category.id);
-        if (!href) return null;
-        const active = category.id === activeId;
+      {getMenuLinks(lang).map((link) => {
+        const active = link.id === activeId;
         return (
           <Link
-            key={category.id}
-            href={href}
+            key={link.id}
+            href={link.href}
             className={`category-tab${active ? ' category-tab--active' : ''}`}
-            aria-current={active && current ? 'page' : undefined}
+            aria-current={active ? 'page' : undefined}
           >
-            {t(`categories.${category.id}`)}
+            {t(link.labelKey)}
           </Link>
         );
       })}

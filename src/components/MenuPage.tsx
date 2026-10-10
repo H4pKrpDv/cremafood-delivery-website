@@ -20,16 +20,13 @@ import { menuData } from '@/lib/data';
 import { getCategoryPathname, getCategorySubcategoryIds } from '@/lib/categoryRoutes';
 import { getSubcategoryPathname } from '@/lib/subcategoryRoutes';
 import { FULL_MENU_CATEGORY_ID } from '@/lib/menuPageRoutes';
-import { isFullMenuSubcategory } from '@/types/menu';
 import { Breadcrumbs } from './Breadcrumbs';
 import { CategoryNav } from './CategoryNav';
+import { FullMenuPlate } from './FullMenuPlate';
 
 export function MenuPage({ children }: { children?: ReactNode }) {
   const { t, lang } = useI18n();
   const sections = menuData.categories.filter((category) => category.id !== FULL_MENU_CATEGORY_ID);
-  const fullMenuSub = menuData.categories
-    .find((category) => category.id === FULL_MENU_CATEGORY_ID)
-    ?.subcategories.find(isFullMenuSubcategory);
 
   return (
     <main className="sub-page category-page menu-page">
@@ -73,28 +70,12 @@ export function MenuPage({ children }: { children?: ReactNode }) {
           })}
         </div>
 
-        {fullMenuSub ? (
-          <section className="menu-page__pdf" aria-labelledby="menu-pdf-title">
-            <h2 className="menu-page__section-title" id="menu-pdf-title">
-              {t('menuPage.pdfTitle')}
-            </h2>
-            <div className="full-menu-card">
-              <p>{t('subcategories.full-menu.text')}</p>
-              {/* PDF открывается в НОВОЙ вкладке: во встроенном просмотрщике
-                  браузера (особенно на мобильных) нет кнопки «назад» и
-                  посетитель потерял бы страницу меню. rel — защита для
-                  target="_blank". Адрес — pdfUrl из menu.json. */}
-              <a
-                className="btn btn--primary full-menu-card__btn"
-                href={fullMenuSub.pdfUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {t('subcategories.full-menu.buttonText')}
-              </a>
-            </div>
-          </section>
-        ) : null}
+        <section className="menu-page__pdf" aria-labelledby="menu-pdf-title">
+          <h2 className="menu-page__section-title" id="menu-pdf-title">
+            {t('menuPage.pdfTitle')}
+          </h2>
+          <FullMenuPlate />
+        </section>
       </div>
       {children}
     </main>

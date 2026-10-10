@@ -1,40 +1,36 @@
 /**
  * components/MenuSection.tsx
  * ------------------------------------------------------------------
- * Секция <section class="menu"> главной: ряд пилюль разделов + сетка
- * мини-баннеров подкатегорий напитков.
+ * Секция <section class="menu"> главной: ВСЕ разделы меню подряд, столбиком —
+ * Спец. предложения, Напитки, Блюда, Полное меню (порядок menu.json). У
+ * каждого — заголовок и сетка баннеров-ссылок на подкатегории
+ * (SubcategoryBanner → /drinks/kofe), у «Полного меню» — только плашка с
+ * PDF (FullMenuPlate).
  *
- * 09.10.2026: пилюли разделов стали НАСТОЯЩИМИ ССЫЛКАМИ (CategoryNav):
- * Спец. предложения → /promo, Напитки → /drinks, Блюда → /food, Полное меню
- * → /menu. Раньше это были кнопки-вкладки: адрес не менялся, а выбор
- * запоминался в sessionStorage — на раздел нельзя было направить трафик.
- * Теперь вкладки на главной нет: показывается всегда один блок — баннеры
- * напитков (решение пользователя), пилюля «Напитки» подсвечена визуально
- * (без aria-current: главная — не страница раздела). Остальные категории
- * на главной больше не рендерятся — на них ведут пилюли; sessionStorage-
- * запоминание категории и inline-скрипт в <head> убраны (lib/
- * menuCategoryPersist.ts больше не используется).
+ * 10.10.2026 (для конверсии): пилюли разделов с главной убраны — все
+ * подкатегории сразу на виду, голодному гостю не нужно искать, где
+ * заказать. Ссылки на страницы разделов (/promo, /drinks, /food, /menu)
+ * теперь в бургер-меню (мобильные) и в футере (десктоп), а ряд пилюль
+ * (CategoryNav) остался только на страницах самих разделов.
  *
- * 08.10.2026: внутри категории — сетка баннеров-ссылок (SubcategoryBanner),
- * каждый ведёт на страницу подкатегории (/drinks/kofe).
+ * История: 09.10.2026 — пилюли были настоящими ссылками и на главной
+ * показывался один блок (напитки); до того — кнопки-вкладки с запоминанием
+ * в sessionStorage (lib/menuCategoryPersist.ts, больше не используется).
  * ------------------------------------------------------------------
  */
 
 'use client';
 
 import { useI18n } from '@/i18n/I18nProvider';
-import { menuData, DEFAULT_ACTIVE_CATEGORY } from '@/lib/data';
+import { menuData } from '@/lib/data';
 import { hasSubcategoryPage } from '@/lib/subcategoryRoutes';
+import { FULL_MENU_CATEGORY_ID } from '@/lib/menuPageRoutes';
 import { isFullMenuSubcategory } from '@/types/menu';
-import { CategoryNav } from './CategoryNav';
+import { FullMenuPlate } from './FullMenuPlate';
 import { SubcategoryBanner } from './SubcategoryBanner';
 
 export function MenuSection() {
   const { t } = useI18n();
-  const category = menuData.categories.find((item) => item.id === DEFAULT_ACTIVE_CATEGORY);
-  const bannerSubs = (category?.subcategories ?? []).filter(
-    (sub) => !isFullMenuSubcategory(sub) && hasSubcategoryPage(sub.id)
-  );
 
   return (
     <section className="menu" id="menu">
@@ -45,20 +41,27 @@ export function MenuSection() {
           <p className="section-desc">{t('menu.desc')}</p>
         </div>
 
-        <CategoryNav activeId={DEFAULT_ACTIVE_CATEGORY} current={false} />
-
-        {category ? (
-          <section className="category-group" id={`cat-${category.id}`}>
-            <h3 className="category-group__title">{t(`categories.${category.id}`)}</h3>
-            {bannerSubs.length > 0 ? (
-              <div className="sub-grid">
-                {bannerSubs.map((sub) => (
-                  <SubcategoryBanner key={sub.id} subId={sub.id} />
-                ))}
-              </div>
-            ) : null}
-          </section>
-        ) : null}
+        {menuData.categories.map((category) => {
+          const isFullMenu = category.id === FULL_MENU_CATEGORY_ID;
+          const bannerSubs = category.subcategories.filter(
+            (sub) => !isFullMenuSubcategory(sub) && hasSubcategoryPage(sub.id)
+          );
+          if (!isFullMenu && bannerSubs.length === 0) return null;
+          return (
+            <section key={category.id} className="category-group" id={`cat-${category.id}`}>
+              <h3 className="category-group__title">{t(`categories.${category.id}`)}</h3>
+              {isFullMenu ? (
+                <FullMenuPlate />
+              ) : (
+                <div className="sub-grid">
+                  {bannerSubs.map((sub) => (
+                    <SubcategoryBanner key={sub.id} subId={sub.id} />
+                  ))}
+                </div>
+              )}
+            </section>
+          );
+        })}
       </div>
     </section>
   );

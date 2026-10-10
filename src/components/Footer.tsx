@@ -6,6 +6,10 @@
  * 10.10.2026: на мобильных контент футера по центру; графики работы/доставки
  * — плашки (ScheduleCards) только на десктопе (на мобильных они в бургер-меню).
  *
+ * 10.10.2026: колонка «Меню» — ссылки на страницы разделов (/promo, /drinks,
+ * /food, /menu) вместо ряда пилюль на главной; только на десктопе (на мобильных
+ * те же ссылки в списке «Меню» бургер-меню), стоит перед «Местоположением».
+ *
  * Соцсети (27.09.2026 — добавление мессенджеров/соцсетей; 02.10.2026 —
  * сами ссылки/иконки вынесены в components/SocialLinks.tsx, т.к.
  * error.tsx (500-страница) тоже должен их показывать — подробности о
@@ -20,10 +24,12 @@ import { useUIStore } from '@/store/uiStore';
 import { SocialLinks } from '@/components/SocialLinks';
 import { ScheduleCards } from '@/components/ScheduleCards';
 import { localizedPath } from '@/lib/i18nConfig';
+import { getMenuLinks } from '@/lib/menuLinks';
 
 export function Footer() {
   const { t, lang } = useI18n();
   const openPrivacy = useUIStore((s) => s.openPrivacy);
+  const menuLinks = getMenuLinks(lang);
 
   return (
     <footer className="footer" id="footer">
@@ -36,6 +42,20 @@ export function Footer() {
           </Link>
           <p className="footer__tagline">{t('footer.tagline')}</p>
         </div>
+        <nav className="footer__col footer__col--menu" aria-labelledby="footerMenuTitle">
+          <h5 className="footer__col-title" id="footerMenuTitle">
+            {t('footer.menuTitle')}
+          </h5>
+          <ul className="footer__menu-list">
+            {menuLinks.map((link) => (
+              <li key={link.id}>
+                <Link href={link.href} className="footer__menu-link" prefetch={false}>
+                  {t(link.labelKey)}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
         <div className="footer__col">
           <h5 className="footer__col-title">{t('footer.locationTitle')}</h5>
           <address className="footer__address">
