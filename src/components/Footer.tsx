@@ -8,7 +8,7 @@
  *
  * 10.10.2026: колонка «Меню» — ссылки на страницы разделов (/promo, /drinks,
  * /food, /menu) вместо ряда пилюль на главной; только на десктопе (на мобильных
- * те же ссылки в списке «Меню» бургер-меню), стоит перед «Местоположением».
+ * те же ссылки в списке «Меню» бургер-меню), в одной колонке над «Местоположением».
  *
  * Соцсети (27.09.2026 — добавление мессенджеров/соцсетей; 02.10.2026 —
  * сами ссылки/иконки вынесены в components/SocialLinks.tsx, т.к.
@@ -42,26 +42,30 @@ export function Footer() {
           </Link>
           <p className="footer__tagline">{t('footer.tagline')}</p>
         </div>
-        <nav className="footer__col footer__col--menu" aria-labelledby="footerMenuTitle">
-          <h5 className="footer__col-title" id="footerMenuTitle">
-            {t('footer.menuTitle')}
-          </h5>
-          <ul className="footer__menu-list">
-            {menuLinks.map((link) => (
-              <li key={link.id}>
-                <Link href={link.href} className="footer__menu-link" prefetch={false}>
-                  {t(link.labelKey)}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <div className="footer__col">
-          <h5 className="footer__col-title">{t('footer.locationTitle')}</h5>
-          <address className="footer__address">
-            <p>Bălți, Moldova</p>
-            <p>Alexandru cel Bun 1A</p>
-          </address>
+        {/* 10.10.2026: «Меню» и «Местоположение» — одна колонка (меню сверху).
+            Блок «Меню» виден только с 769px (.footer__menu скрыт CSS). */}
+        <div className="footer__stack">
+          <nav className="footer__col footer__menu" aria-labelledby="footerMenuTitle">
+            <h5 className="footer__col-title" id="footerMenuTitle">
+              {t('footer.menuTitle')}
+            </h5>
+            <ul className="footer__menu-list">
+              {menuLinks.map((link) => (
+                <li key={link.id}>
+                  <Link href={link.href} className="footer__menu-link" prefetch={false}>
+                    {t(link.labelKey)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <div className="footer__col">
+            <h5 className="footer__col-title">{t('footer.locationTitle')}</h5>
+            <address className="footer__address">
+              <p>Bălți, Moldova</p>
+              <p>Alexandru cel Bun 1A</p>
+            </address>
+          </div>
         </div>
         {/* 10.10.2026: графики — плашками с живым статусом (ScheduleCards). Колонка
             видна только на десктопе (≥769px): на мобильных тот же график лежит

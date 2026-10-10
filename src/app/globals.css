@@ -2877,7 +2877,13 @@
 
       /* 10.10.2026: колонка «Меню» — ссылки на разделы столбиком; как и график,
          только на десктопе (на мобильных — список «Меню» в бургере). */
-      .footer__col--menu {
+      .footer__stack {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      .footer__menu {
         display: none;
       }
 
@@ -3266,13 +3272,8 @@
         }
 
         .footer__col--hours,
-        .footer__col--menu {
+        .footer__menu {
           display: block;
-        }
-
-        /* Планшет: пять блоков в две колонки — бренд на всю ширину сверху. */
-        .footer__brand {
-          grid-column: 1 / -1;
         }
       }
 
@@ -3287,20 +3288,9 @@
         }
 
         .footer__inner {
+          grid-template-columns: 1.4fr 1fr 1.6fr 1fr;
+          gap: 3rem;
           padding: 4.5rem 2rem 3rem;
-        }
-      }
-
-      /* 5 колонок футера (бренд, меню, место, график, контакты) — с 1200px:
-         у колонки графика должно хватать места для двух плашек в ряд. */
-      @media (min-width: 1200px) {
-        .footer__inner {
-          grid-template-columns: 1.2fr 0.9fr 0.95fr 1.5fr 1fr;
-          gap: 2.5rem;
-        }
-
-        .footer__brand {
-          grid-column: auto;
         }
       }
 
