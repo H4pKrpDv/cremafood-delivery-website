@@ -59,7 +59,7 @@ export const SUBCATEGORY_SLUGS: Record<string, LangSlugs> = {
 
 /** id позиции из menu.json → слаг на каждом языке. */
 export const ITEM_SLUGS: Record<string, LangSlugs> = {
-  'combo-latte-sandwich': { ru: 'kombo-latte-kapuchino-sendvich', ro: 'combo-latte-cappuccino-sandvis', en: 'combo-latte-cappuccino-sandwich' },
+  'combo-cola-sandwich': { ru: 'kombo-kola-sendvich', ro: 'combo-cola-sandvis', en: 'combo-cola-sandwich' },
   'spicy-tea-strawberry-raspberry': { ru: 'chay-pryanyy-klubnika-malina', ro: 'ceai-picant-capsuni-zmeura', en: 'spiced-tea-strawberry-raspberry' },
   'tea-seabuckthorn-passionfruit': { ru: 'chay-oblepiha-marakuyya', ro: 'ceai-catina-fructul-pasiunii', en: 'tea-sea-buckthorn-passion-fruit' },
   'tea-barberry-mint-orange': { ru: 'chay-barbaris-myata-apelsin', ro: 'ceai-berberis-menta-portocala', en: 'tea-barberry-mint-orange' },
@@ -103,6 +103,10 @@ export const ITEM_SLUGS: Record<string, LangSlugs> = {
   'ube-latte': { ru: 'ube-latte', ro: 'ube-latte', en: 'ube-latte' },
   'ube-cream-latte': { ru: 'ube-cream-latte', ro: 'ube-cream-latte', en: 'ube-cream-latte' },
   'ube-smoothie': { ru: 'ube-smoothie', ro: 'ube-smoothie', en: 'ube-smoothie' },
+  'ube-coconut': { ru: 'ube-coconut', ro: 'ube-coconut', en: 'ube-coconut' },
+  'ube-tropic': { ru: 'ube-tropic', ro: 'ube-tropic', en: 'ube-tropic' },
+  'ice-americano': { ru: 'ice-americano', ro: 'ice-americano', en: 'ice-americano' },
+  'bubble-coffee': { ru: 'bubble-coffee', ro: 'bubble-coffee', en: 'bubble-coffee' },
   'bubble-tea-tropic': { ru: 'bubble-tea-tropic', ro: 'bubble-tea-tropic', en: 'bubble-tea-tropic' },
   'bubble-tea-kiwi': { ru: 'bubble-tea-kiwi', ro: 'bubble-tea-kiwi', en: 'bubble-tea-kiwi' },
   'bubble-tea-strawberry': { ru: 'bubble-tea-strawberry', ro: 'bubble-tea-strawberry', en: 'bubble-tea-strawberry' },

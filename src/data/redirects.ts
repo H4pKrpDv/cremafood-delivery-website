@@ -29,7 +29,11 @@
 export const REDIRECTS: Record<string, string> = {
   '/menu': '/full-menu',
   '/ro/menu': '/ro/full-menu',
-  '/en/menu': '/en/full-menu'
+  '/en/menu': '/en/full-menu',
+  // 16.10.2026: комбо «Латте/Капучино + сэндвич» стало «Кола + сэндвич» — новый слаг.
+  '/promo/postoyannye/kombo-latte-kapuchino-sendvich': '/promo/postoyannye/kombo-kola-sendvich',
+  '/ro/promo/permanente/combo-latte-cappuccino-sandvis': '/ro/promo/permanente/combo-cola-sandvis',
+  '/en/promo/permanent/combo-latte-cappuccino-sandwich': '/en/promo/permanent/combo-cola-sandwich'
 };
 
 /** Адреса, удалённые навсегда без замены (ответ 410 Gone). Пока пусто. */

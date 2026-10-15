@@ -15,6 +15,8 @@ export type DepartmentValue = string | string[] | null | undefined;
 export interface MenuItem {
   id: string;
   price: number;
+  /** Цена «без акции» — показывается зачёркнутой рядом с price (пока только у комбо). */
+  oldPrice?: number;
   image: string;
   modifiers?: string[];
   available?: boolean;

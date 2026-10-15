@@ -136,11 +136,11 @@
     }
   },
   "items": {
-    "combo-latte-sandwich": {
-      "name": "Комбо: Латте/Капучино + сэндвич",
-      "desc": "Выгодное предложение дня — ароматный кофе и свежий сэндвич по специальной цене",
+    "combo-cola-sandwich": {
+      "name": "Комбо: Кола + сэндвич",
+      "desc": "Выгодное предложение — прохладительный напиток Кола и свежий сэндвич по специальной цене",
       "weight": "",
-      "imageAlt": "Латте и сэндвич"
+      "imageAlt": "Кола и сэндвич"
     },
     "espresso": {
       "name": "Espresso",
@@ -181,7 +181,7 @@
     "latte": {
       "name": "Latte",
       "desc": "Мягкий кофе с большим количеством вспененного молока",
-      "weight": "300 мл",
+      "weight": "320 мл",
       "imageAlt": "Латте в чашке"
     },
     "flat-white": {
@@ -201,6 +201,12 @@
       "desc": "Кофе со сливками и ванилью",
       "weight": "300 мл",
       "imageAlt": "Раф кофе"
+    },
+    "ice-americano": {
+      "name": "Ice Americano",
+      "desc": "Холодный американо — эспрессо с водой и льдом, освежающий и бодрящий",
+      "weight": "400 мл",
+      "imageAlt": "Ice Americano в стакане"
     },
     "iced-latte": {
       "name": "Ice Latte",
@@ -346,6 +352,12 @@
       "weight": "400 мл",
       "imageAlt": "Raspberry Pink Latte в стакане"
     },
+    "bubble-coffee": {
+      "name": "Bubble Coffee",
+      "desc": "Кофейный напиток с желейными шариками — освежающий и необычный на вкус",
+      "weight": "400 мл",
+      "imageAlt": "Bubble Coffee в стакане"
+    },
     "lemonade-strawberry": {
       "name": "Strawberry Lemonade",
       "desc": "Освежающий лимонад со свежей клубникой и лёгкой кислинкой лимона",
@@ -397,20 +409,32 @@
     "ube-latte": {
       "name": "Ube Latte",
       "desc": "Латте на основе филиппинского фиолетового батата Ube — мягкий ванильный вкус и насыщенный фиолетовый цвет",
-      "weight": "400 мл",
+      "weight": "320 мл",
       "imageAlt": "Ube Latte в стакане"
     },
     "ube-cream-latte": {
       "name": "Ube Cream Latte",
       "desc": "Ube Latte с нежной сливочной пенкой сверху",
-      "weight": "400 мл",
+      "weight": "320 мл",
       "imageAlt": "Ube Cream Latte в стакане"
     },
     "ube-smoothie": {
       "name": "Ube Smoothie",
       "desc": "Густой смузи на основе Ube со льдом — освежающий и необычный на вкус",
-      "weight": "400 мл",
+      "weight": "320 мл",
       "imageAlt": "Ube Smoothie в стакане"
+    },
+    "ube-coconut": {
+      "name": "Ube Coconut",
+      "desc": "Напиток на основе Ube с кокосовым вкусом — нежный и необычный на вкус",
+      "weight": "320 мл",
+      "imageAlt": "Ube Coconut в стакане"
+    },
+    "ube-tropic": {
+      "name": "Ube Tropic",
+      "desc": "Напиток на основе Ube с тропическим фруктовым вкусом — яркий и освежающий",
+      "weight": "320 мл",
+      "imageAlt": "Ube Tropic в стакане"
     },
     "bubble-tea-tropic": {
       "name": "Bubble Tea Tropic",
@@ -590,7 +614,7 @@
     "ice-coffee": {
       "h1": "Холодный кофе с доставкой в Бельцах",
       "metaTitle": "Холодный кофе с доставкой в Бельцах: айс-латте, фраппе | Crema Food",
-      "metaDescription": "Закажите холодный кофе в Бельцах: айс-латте, фраппе, эспрессо-тоник, Bumblebee. Доставка 60 MDL, бесплатно от 399 MDL."
+      "metaDescription": "Закажите холодный кофе в Бельцах: Ice Americano, айс-латте, фраппе, эспрессо-тоник, Bumblebee, Bubble Coffee. Доставка 60 MDL, бесплатно от 399 MDL."
     },
     "milkshakes": {
       "h1": "Милкшейки с доставкой в Бельцах",
@@ -610,7 +634,7 @@
     "ube": {
       "h1": "Ube латте с доставкой в Бельцах",
       "metaTitle": "Ube латте с доставкой в Бельцах: Ube Cream Latte, смузи | Crema Food",
-      "metaDescription": "Закажите напитки с фиолетовым бататом Ube в Бельцах: Ube Latte, Ube Cream Latte и Ube Smoothie. Доставка 60 MDL, бесплатно от 399 MDL."
+      "metaDescription": "Закажите напитки с фиолетовым бататом Ube в Бельцах: Ube Latte, Ube Cream Latte, Ube Smoothie, Ube Coconut и Ube Tropic. Доставка 60 MDL, бесплатно от 399 MDL."
     },
     "bubble-tea": {
       "h1": "Bubble Tea с доставкой в Бельцах",
@@ -640,7 +664,7 @@
     "promo-permanent": {
       "h1": "Постоянные акции и скидки в Бельцах",
       "metaTitle": "Постоянные акции и скидки в Бельцах: комбо, карта −20% | Crema Food",
-      "metaDescription": "Постоянные предложения Crema Food в Бельцах: комбо с латте или капучино и сэндвичем, скидочная карта −20% на кофе. Доставка 60 MDL, бесплатно от 399 MDL."
+      "metaDescription": "Постоянные предложения Crema Food в Бельцах: комбо Кола + сэндвич по цене 40 MDL вместо 50 MDL, скидочная карта −20% на кофе. Доставка 60 MDL, бесплатно от 399 MDL."
     },
     "promo-seasonal": {
       "h1": "Сезонные напитки с доставкой в Бельцах",
@@ -757,7 +781,9 @@
     "showLess": "свернуть",
     "quantityLabel": "Количество",
     "increaseQty": "Увеличить количество",
-    "decreaseQty": "Уменьшить количество"
+    "decreaseQty": "Уменьшить количество",
+    "oldPrice": "Цена без акции",
+    "discount": "Скидка"
   },
   "notFound": {
     "title": "Бариста не нашёл эту страницу",

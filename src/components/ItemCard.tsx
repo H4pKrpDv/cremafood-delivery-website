@@ -16,6 +16,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '@/i18n/I18nProvider';
+import PriceDiscount from '@/components/PriceDiscount';
 import { useCartStore, useCartHydrated } from '@/store/cartStore';
 import { useItemMeta } from '@/lib/useItemMeta';
 import { useImageFallback } from '@/lib/useImageFallback';
@@ -148,7 +149,14 @@ export function ItemCard({ itemId }: { itemId: string }) {
         </button>
         <div className="item-card__meta">
           <span className="item-card__weight">{weight}</span>
-          <span className="item-card__price">{base.price} MDL</span>
+          {base.oldPrice ? (
+            <span className="item-card__prices">
+              <PriceDiscount price={base.price} oldPrice={base.oldPrice} />
+              <span className="item-card__price">{base.price} MDL</span>
+            </span>
+          ) : (
+            <span className="item-card__price">{base.price} MDL</span>
+          )}
         </div>
 
         {base.available === false ? (

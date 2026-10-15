@@ -43,7 +43,7 @@ export function hasRealImage(path: string): boolean {
 // Департамент (кухня/бар) определяется по категории автоматически — то же
 // правило, что CATEGORY_DEPARTMENT в build.js нативной версии. Для
 // "special-offers" автоматика не подходит — там department проставлен
-// вручную в menu.json (см. combo-latte-sandwich: department:["bar","kitchen"]).
+// вручную в menu.json (см. combo-cola-sandwich: department:["bar","kitchen"]).
 const CATEGORY_DEPARTMENT: Record<string, string> = {
   cafe: 'bar',
   kitchen: 'kitchen'
@@ -57,6 +57,8 @@ export function resolveDepartment(item: MenuItem, categoryId: string): Departmen
 export interface ItemMetaBase {
   id: string;
   price: number;
+  /** Цена без акции (зачёркнутая) — только если задана в menu.json. */
+  oldPrice?: number;
   image: string;
   hasImage: boolean;
   available: boolean;
@@ -77,6 +79,7 @@ function buildItemMetaIndex(): Record<string, ItemMetaBase> {
         index[item.id] = {
           id: item.id,
           price: item.price,
+          ...(item.oldPrice && item.oldPrice > item.price ? { oldPrice: item.oldPrice } : {}),
           image: item.image,
           hasImage: hasRealImage(item.image),
           available: item.available !== false,

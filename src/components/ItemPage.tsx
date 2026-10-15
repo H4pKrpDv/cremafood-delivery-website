@@ -29,6 +29,7 @@
 
 import type { ReactNode } from 'react';
 import { useI18n } from '@/i18n/I18nProvider';
+import PriceDiscount from '@/components/PriceDiscount';
 import { useCartStore, useCartHydrated } from '@/store/cartStore';
 import { useItemMeta } from '@/lib/useItemMeta';
 import { useImageFallback } from '@/lib/useImageFallback';
@@ -175,6 +176,7 @@ export function ItemPage({ itemId, children }: { itemId: string; children?: Reac
             <h1 className="item-page__title">{name}</h1>
             <p className="item-page__desc">{desc}</p>
             <p className="item-page__meta">
+              <PriceDiscount price={base.price} oldPrice={base.oldPrice} />
               <span className="item-page__price">{base.price} MDL</span>
               {weight ? (
                 <>

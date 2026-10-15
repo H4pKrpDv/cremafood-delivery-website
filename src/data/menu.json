@@ -8,9 +8,10 @@
           "image": "img/categories/promo-permanent.jpg",
           "items": [
             {
-              "id": "combo-latte-sandwich",
+              "id": "combo-cola-sandwich",
               "price": 40,
-              "image": "img/items/combo-latte-sandwich.jpg",
+              "oldPrice": 50,
+              "image": "img/items/combo-cola-sandwich.jpg",
               "modifiers": [],
               "available": true,
               "department": [
@@ -197,6 +198,13 @@
           "image": "img/categories/ice-coffee.jpg",
           "items": [
             {
+              "id": "ice-americano",
+              "price": 30,
+              "image": "img/items/ice-americano.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
               "id": "iced-latte",
               "price": 40,
               "image": "img/items/iced-latte.jpg",
@@ -228,6 +236,13 @@
               "id": "raspberry-pink-latte",
               "price": 60,
               "image": "img/items/raspberry-pink-latte.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "bubble-coffee",
+              "price": 60,
+              "image": "img/items/bubble-coffee.jpg",
               "modifiers": [],
               "available": true
             }
@@ -378,6 +393,20 @@
               "id": "ube-smoothie",
               "price": 60,
               "image": "img/items/ube-smoothie.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "ube-coconut",
+              "price": 60,
+              "image": "img/items/ube-coconut.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "ube-tropic",
+              "price": 60,
+              "image": "img/items/ube-tropic.jpg",
               "modifiers": [],
               "available": true
             }
