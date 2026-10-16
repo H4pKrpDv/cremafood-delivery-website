@@ -102,6 +102,15 @@ export function formatOrderMessage(payload: OrderPayload, siteLang: string = 'ru
   lines.push('<b>Состав заказа:</b>');
   for (const item of payload.items) {
     lines.push(`• ${escapeHtml(item.name)} × ${item.qty} — ${formatMdl(item.lineTotal)}`);
+    if (item.syrups) {
+      if (item.syrups.items.length) {
+        const names = item.syrups.items.map((s) => escapeHtml(s.name)).join(', ');
+        const extra = item.syrups.surchargePerUnit > 0 ? ` (+${formatMdl(item.syrups.surchargePerUnit)} за шт.)` : item.syrups.included > 0 ? ' (в цене)' : '';
+        lines.push(`   🍯 сироп: ${names}${extra}`);
+      } else if (item.syrups.defaultRemoved) {
+        lines.push('   🍯 без сиропа (ваниль убрана)');
+      }
+    }
     for (const modifier of item.modifiers) {
       lines.push(`   + ${escapeHtml(modifier.optionId)} × ${modifier.qty} (${formatMdl(modifier.price * modifier.qty)})`);
     }

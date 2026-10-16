@@ -17,12 +17,16 @@
  *    доставки (399 MDL) её естественно учитывает.
  *  - Позиция исключена из суммы, если !available ИЛИ отдел сейчас закрыт
  *    по часам работы (orderable = available && departmentOpen).
+ *  - 17.10.2026: ключ в cart.items — КЛЮЧ СТРОКИ (lib/cartLines.ts): позиция +
+ *    набор сиропов. Доплата за сиропы входит в цену одного напитка и
+ *    умножается на qty; у raf-coffee одна порция сиропа уже в цене.
  *  - 18+: если есть хотя бы одна ЗАКАЗЫВАЕМАЯ позиция с ageRestricted —
  *    нужен cart.ageConfirmed, иначе canCheckout=false.
  * ------------------------------------------------------------------
  */
 
 import { itemMetaIndex, modifierGroups } from './data';
+import { parseLineKey, syrupSurcharge, getItemSyrupIncluded, isSyrupItem } from './cartLines';
 import { isOpen as isDepartmentOpen, getOpenTimeLabel } from './hours';
 import type { DepartmentValue } from '@/types/menu';
 
@@ -56,6 +60,8 @@ export interface ResolvedItemMeta {
   departmentOpen: boolean;
   departmentOpenLabel: string;
   orderable: boolean;
+  /** Поддерживает ли позиция сиропы (menu.json → item.syrups). */
+  syrupSupported: boolean;
 }
 
 export function resolveItemMeta(itemId: string, t: Translator, nowMinutes: number): ResolvedItemMeta {
@@ -73,7 +79,8 @@ export function resolveItemMeta(itemId: string, t: Translator, nowMinutes: numbe
       department: null,
       departmentOpen: true,
       departmentOpenLabel: '',
-      orderable: false
+      orderable: false,
+      syrupSupported: false
     };
   }
   const departmentOpen = isDepartmentOpen(base.department, nowMinutes);
@@ -89,7 +96,8 @@ export function resolveItemMeta(itemId: string, t: Translator, nowMinutes: numbe
     department: base.department,
     departmentOpen,
     departmentOpenLabel,
-    orderable: base.available && departmentOpen
+    orderable: base.available && departmentOpen,
+    syrupSupported: Boolean(base.syrups)
   };
 }
 
@@ -100,9 +108,22 @@ export interface ModifierDetail {
   qty: number;
 }
 
+export interface SyrupDetail {
+  id: string;
+  name: string;
+}
+
 export interface CartLine {
+  /** Ключ строки в cart.items (id позиции или id~сиропы, см. lib/cartLines.ts). */
+  lineKey: string;
   itemId: string;
   qty: number;
+  /** Выбранные сиропы (уже с учётом набора по умолчанию), каноническом порядке. */
+  syrups: SyrupDetail[];
+  /** Доплата за сиропы на ОДИН напиток (MDL), уже включена в lineTotal. */
+  syrupSurcharge: number;
+  /** Сколько порций сиропа входит в цену напитка (raf-coffee: 1). */
+  syrupIncluded: number;
   meta: ResolvedItemMeta;
   modifiersDetail: ModifierDetail[];
   cutleryQty: number;
@@ -131,10 +152,12 @@ export function computeSummary(cart: Cart, t: Translator, nowMinutes: number): C
   let totalCutleryCost = 0;
   let hasAgeRestrictedLine = false;
 
-  for (const itemId of Object.keys(cart.items)) {
-    const entry = cart.items[itemId];
+  for (const lineKey of Object.keys(cart.items)) {
+    const entry = cart.items[lineKey];
     const qty = entry && typeof entry.qty === 'number' ? entry.qty : 0;
     if (qty <= 0) continue;
+
+    const { itemId, syrups: syrupIds } = parseLineKey(lineKey);
 
     const meta = resolveItemMeta(itemId, t, nowMinutes);
     if (meta.orderable && meta.ageRestricted) hasAgeRestrictedLine = true;
@@ -155,13 +178,29 @@ export function computeSummary(cart: Cart, t: Translator, nowMinutes: number): C
     const extraCutlery = Math.max(0, cutleryQty - freeCutlery);
     const cutleryCost = extraCutlery * 2;
 
-    const lineTotal = meta.orderable ? meta.price * qty + modifiersCost + cutleryCost : 0;
+    const surcharge = syrupSurcharge(itemId, syrupIds);
+    const syrups: SyrupDetail[] = syrupIds.map((id) => ({ id, name: t(`syrups.option.${id}`) || id }));
+
+    const lineTotal = meta.orderable ? (meta.price + surcharge) * qty + modifiersCost + cutleryCost : 0;
     if (meta.orderable) {
       subtotal += lineTotal;
       totalCutleryCost += cutleryCost;
     }
 
-    lines.push({ itemId, qty, meta, modifiersDetail, cutleryQty, extraCutlery, cutleryCost, lineTotal });
+    lines.push({
+      lineKey,
+      itemId,
+      qty,
+      syrups,
+      syrupSurcharge: surcharge,
+      syrupIncluded: isSyrupItem(itemId) ? getItemSyrupIncluded(itemId) : 0,
+      meta,
+      modifiersDetail,
+      cutleryQty,
+      extraCutlery,
+      cutleryCost,
+      lineTotal
+    });
   }
 
   const hasOrderableLine = lines.some((line) => line.meta.orderable);

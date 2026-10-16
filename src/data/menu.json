@@ -126,70 +126,85 @@
               "price": 23,
               "image": "img/items/espresso.jpg",
               "modifiers": [],
-              "available": true
+              "available": true,
+              "syrups": {}
             },
             {
               "id": "americano",
               "price": 23,
               "image": "img/items/americano.jpg",
               "modifiers": [],
-              "available": true
+              "available": true,
+              "syrups": {}
             },
             {
               "id": "doppio",
               "price": 30,
               "image": "img/items/doppio.jpg",
               "modifiers": [],
-              "available": true
+              "available": true,
+              "syrups": {}
             },
             {
               "id": "cortado",
               "price": 26,
               "image": "img/items/cortado.jpg",
               "modifiers": [],
-              "available": true
+              "available": true,
+              "syrups": {}
             },
             {
               "id": "cappuccino",
               "price": 27,
               "image": "img/items/cappuccino.jpg",
               "modifiers": [],
-              "available": true
+              "available": true,
+              "syrups": {}
             },
             {
               "id": "grand-cappuccino",
               "price": 35,
               "image": "img/items/grand-cappuccino.jpg",
               "modifiers": [],
-              "available": true
+              "available": true,
+              "syrups": {}
             },
             {
               "id": "latte",
               "price": 30,
               "image": "img/items/latte.jpg",
               "modifiers": [],
-              "available": true
+              "available": true,
+              "syrups": {}
             },
             {
               "id": "flat-white",
               "price": 30,
               "image": "img/items/flat-white.jpg",
               "modifiers": [],
-              "available": true
+              "available": true,
+              "syrups": {}
             },
             {
               "id": "moccacino",
               "price": 35,
               "image": "img/items/moccacino.jpg",
               "modifiers": [],
-              "available": true
+              "available": true,
+              "syrups": {}
             },
             {
               "id": "raf-coffee",
               "price": 35,
               "image": "img/items/raf-coffee.jpg",
               "modifiers": [],
-              "available": true
+              "available": true,
+              "syrups": {
+                "default": [
+                  "vanilla"
+                ],
+                "included": 1
+              }
             }
           ]
         },
@@ -746,6 +761,37 @@
       {
         "id": "ketchup",
         "price": 10
+      }
+    ]
+  },
+  "syrups": {
+    "price": 5,
+    "volumeMl": 20,
+    "maxPerDrink": 3,
+    "options": [
+      {
+        "id": "green-banana"
+      },
+      {
+        "id": "caramel"
+      },
+      {
+        "id": "salted-caramel"
+      },
+      {
+        "id": "chocolate-cookie"
+      },
+      {
+        "id": "coconut"
+      },
+      {
+        "id": "hazelnut"
+      },
+      {
+        "id": "vanilla",
+        "onlyFor": [
+          "raf-coffee"
+        ]
       }
     ]
   }

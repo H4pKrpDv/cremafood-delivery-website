@@ -22,11 +22,26 @@ export interface OrderPayloadItemModifier {
   price: number;
 }
 
+export interface OrderPayloadSyrup {
+  id: string;
+  name: string;
+}
+
 export interface OrderPayloadItem {
   id: string;
   name: string;
   qty: number;
   unitPrice: number;
+  /** Сиропы в напитке (17.10.2026). null — позиция не поддерживает сиропы. */
+  syrups: {
+    items: OrderPayloadSyrup[];
+    /** Доплата за сиропы на ОДИН напиток (уже входит в lineTotal). */
+    surchargePerUnit: number;
+    /** Порций сиропа, входящих в цену напитка (raf-coffee: 1). */
+    included: number;
+    /** У позиции есть сироп по умолчанию, но его убрали (raf без ванили). */
+    defaultRemoved: boolean;
+  } | null;
   modifiers: OrderPayloadItemModifier[];
   cutleryQty: number;
   cutleryCost: number;
@@ -81,6 +96,14 @@ export function buildOrderPayload(
       name: line.meta.name,
       qty: line.qty,
       unitPrice: line.meta.price,
+      syrups: line.meta.syrupSupported
+        ? {
+            items: line.syrups.map((s) => ({ id: s.id, name: s.name })),
+            surchargePerUnit: line.syrupSurcharge,
+            included: line.syrupIncluded,
+            defaultRemoved: line.syrupIncluded > 0 && line.syrups.length === 0
+          }
+        : null,
       modifiers: line.modifiersDetail
         .filter((d) => d.qty > 0)
         .map((d) => ({ groupId: d.groupId, optionId: d.optionId, qty: d.qty, price: d.price })),

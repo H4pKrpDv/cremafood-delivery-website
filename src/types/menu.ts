@@ -22,6 +22,17 @@ export interface MenuItem {
   available?: boolean;
   ageRestricted?: boolean;
   department?: DepartmentValue;
+  /**
+   * Сиропы (кастомизация напитка). Наличие поля = сиропы разрешены. default —
+   * сиропы, выбранные по умолчанию (raf-coffee: ваниль); included — сколько
+   * порций сиропа уже входит в цену напитка (raf-coffee: 1).
+   */
+  syrups?: ItemSyrupConfig;
+}
+
+export interface ItemSyrupConfig {
+  default?: string[];
+  included?: number;
 }
 
 export interface MenuSubcategoryItems {
@@ -51,9 +62,26 @@ export interface ModifierOption {
   price: number;
 }
 
+export interface SyrupOption {
+  id: string;
+  /** Вкус доступен только этим позициям (ваниль — только raf-coffee). */
+  onlyFor?: string[];
+}
+
+export interface SyrupSettings {
+  /** Цена одной порции, MDL. */
+  price: number;
+  /** Объём одной порции, мл. */
+  volumeMl: number;
+  /** Максимум порций (разных вкусов, по одной порции) в одном напитке. */
+  maxPerDrink: number;
+  options: SyrupOption[];
+}
+
 export interface MenuData {
   categories: MenuCategory[];
   modifierGroups: Record<string, ModifierOption[]>;
+  syrups: SyrupSettings;
 }
 
 export function isFullMenuSubcategory(sub: MenuSubcategory): sub is MenuSubcategoryFullMenu {

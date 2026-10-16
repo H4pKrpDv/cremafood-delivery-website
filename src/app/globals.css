@@ -1128,6 +1128,7 @@
 
       .cart-item {
         display: flex;
+        flex-wrap: wrap;
         align-items: flex-start;
         justify-content: space-between;
         gap: 0.65rem;
@@ -3856,6 +3857,272 @@
 
       .item-page__stepper .stepper__qty {
         font-size: 1.1rem;
+      }
+
+      /* ===== Сиропы (17.10.2026) =====
+         Блок выбора сиропа на странице напитка (components/SyrupPicker.tsx,
+         «вариант A»): строка-кнопка «+ Добавить сироп», под ней — выбранные
+         чипы, по нажатию раскрывается список чипов (иконка + название, без
+         фото). Тот же список в режиме panel используется при правке строки в
+         корзине. Цвета — через токены темы; иконка красится переменной
+         --syrup-color (см. SyrupIcon.tsx), а на «нажатом» чипе — цветом фона. */
+      .syrup-icon {
+        flex: none;
+        color: var(--syrup-color, currentColor);
+      }
+
+      .syrup-row {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        padding: 0.7rem 0.9rem;
+        border-radius: 14px;
+        border: 1px dashed var(--gold);
+        background: transparent;
+        color: var(--cream);
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .syrup-row:hover {
+        background: var(--surface);
+      }
+
+      .syrup-row__plus {
+        flex: none;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--gold);
+        color: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+      }
+
+      .syrup-row__text {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+        min-width: 0;
+      }
+
+      .syrup-row__title {
+        font-weight: 600;
+      }
+
+      .syrup-row__small {
+        font-size: 0.78rem;
+        color: var(--text-3);
+        line-height: 1.35;
+      }
+
+      .syrup-row__chev {
+        flex: none;
+        color: var(--text-3);
+        transition: transform 0.2s;
+      }
+
+      .syrup-row[aria-expanded='true'] .syrup-row__chev {
+        transform: rotate(180deg);
+      }
+
+      .syrup-selected {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.6rem;
+      }
+
+      .syrup-panel {
+        margin-top: 0.7rem;
+      }
+
+      .syrup-panel[hidden] {
+        display: none;
+      }
+
+      .syrup--panel .syrup-panel {
+        margin-top: 0.4rem;
+      }
+
+      .syrup-panel__note {
+        margin: 0 0 0.6rem;
+        font-size: 0.8rem;
+        color: var(--text-2);
+        line-height: 1.4;
+      }
+
+      .syrup-panel__limit {
+        margin: 0.6rem 0 0;
+        font-size: 0.78rem;
+        color: var(--gold);
+      }
+
+      .syrup-hint {
+        margin: 0.7rem 0 0;
+        font-size: 0.76rem;
+        line-height: 1.4;
+        color: var(--text-3);
+      }
+
+      .syrup-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .syrup-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.45rem 0.8rem 0.45rem 0.55rem;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text-2);
+        font: inherit;
+        font-size: 0.85rem;
+        line-height: 1.1;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s, color 0.15s;
+      }
+
+      .syrup-chip:hover:not(:disabled) {
+        border-color: var(--gold);
+      }
+
+      .syrup-chip:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+
+      .syrup-chip[aria-pressed='true'],
+      .syrup-chip--selected {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: var(--bg);
+        font-weight: 600;
+      }
+
+      .syrup-chip[aria-pressed='true'] .syrup-icon,
+      .syrup-chip--selected .syrup-icon {
+        color: var(--bg);
+      }
+
+      .syrup-chip--selected {
+        cursor: default;
+        padding: 0.35rem 0.4rem 0.35rem 0.55rem;
+      }
+
+      .syrup-chip__x {
+        border: 0;
+        background: transparent;
+        color: inherit;
+        font-size: 1.1rem;
+        line-height: 1;
+        padding: 0 0.3rem;
+        cursor: pointer;
+        opacity: 0.85;
+      }
+
+      .item-page__other-qty {
+        margin: 0.6rem 0 0;
+      }
+
+      .item-card__variants-note {
+        margin: 0.35rem 0 0;
+        font-size: 0.72rem;
+        line-height: 1.3;
+        color: var(--text-3);
+        text-align: center;
+      }
+
+      /* Сиропы в строке корзины */
+      .cart-syrup {
+        margin-top: 0.3rem;
+      }
+
+      .cart-syrup__summary {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.2rem 0.7rem;
+        font-size: 0.82rem;
+        color: var(--text-2);
+      }
+
+      .cart-syrup__item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+      }
+
+      .cart-syrup__price,
+      .cart-syrup__none {
+        font-size: 0.76rem;
+        color: var(--text-3);
+      }
+
+      .cart-syrup__edit {
+        border: 0;
+        background: transparent;
+        color: var(--gold);
+        font: inherit;
+        font-size: 0.8rem;
+        text-decoration: underline;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .cart-syrup__editor {
+        flex: 0 0 100%;
+        margin-top: 0.1rem;
+        padding: 0.7rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--bg-2);
+      }
+
+      .cart-syrup__scope {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem 1rem;
+        margin: 0.8rem 0 0;
+        padding: 0;
+        border: 0;
+        font-size: 0.82rem;
+        color: var(--text-2);
+      }
+
+      .cart-syrup__scope legend {
+        padding: 0;
+        margin-bottom: 0.3rem;
+        color: var(--text-3);
+        font-size: 0.76rem;
+      }
+
+      .cart-syrup__scope label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        cursor: pointer;
+      }
+
+      .cart-syrup__actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.8rem;
+      }
+
+      .cart-syrup__btn {
+        flex: 1;
+        padding: 0.55rem 0.8rem;
+        font-size: 0.85rem;
       }
 
       /* Название позиции в карточке меню — ссылка на страницу позиции. По

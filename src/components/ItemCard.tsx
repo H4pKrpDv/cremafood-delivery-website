@@ -30,7 +30,11 @@ export function ItemCard({ itemId }: { itemId: string }) {
   const meta = useItemMeta(itemId);
   const base = itemMetaIndex[itemId];
   const hydrated = useCartHydrated();
+  // Быстрое «Добавить» кладёт позицию с набором по умолчанию (без сиропов; у
+  // raf-coffee — с ванилью): ключ такой строки равен id позиции. Сироп можно
+  // выбрать на странице напитка или потом в корзине (lib/cartLines.ts).
   const qty = useCartStore((s) => (hydrated ? s.getItemQty(itemId) : 0));
+  const otherQty = useCartStore((s) => (hydrated && base?.syrups ? s.getItemTotalQty(itemId) - s.getItemQty(itemId) : 0));
   const setItemQty = useCartStore((s) => s.setItemQty);
   // base может быть undefined (неизвестный itemId) — ниже есть ранний
   // return null, но хуки обязаны вызываться безусловно и в одном и том же
@@ -184,6 +188,7 @@ export function ItemCard({ itemId }: { itemId: string }) {
             </button>
           </div>
         )}
+        {otherQty > 0 ? <p className="item-card__variants-note">{t('syrups.inCartElse').replace('{n}', String(otherQty))}</p> : null}
       </div>
     </article>
   );

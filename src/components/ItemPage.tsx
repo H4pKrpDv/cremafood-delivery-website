@@ -27,9 +27,11 @@
 
 'use client';
 
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useI18n } from '@/i18n/I18nProvider';
 import PriceDiscount from '@/components/PriceDiscount';
+import { SyrupPicker } from '@/components/SyrupPicker';
+import { getItemSyrupDefault, isSyrupItem, makeLineKey, syrupSurcharge } from '@/lib/cartLines';
 import { useCartStore, useCartHydrated } from '@/store/cartStore';
 import { useItemMeta } from '@/lib/useItemMeta';
 import { useImageFallback } from '@/lib/useImageFallback';
@@ -120,8 +122,18 @@ export function ItemPage({ itemId, children }: { itemId: string; children?: Reac
   const meta = useItemMeta(itemId);
   const base = itemMetaIndex[itemId];
   const hydrated = useCartHydrated();
-  const qty = useCartStore((s) => (hydrated ? s.getItemQty(itemId) : 0));
-  const cutleryQty = useCartStore((s) => (hydrated ? s.getItemCutlery(itemId) : 0));
+  // 17.10.2026: сиропы. Выбор живёт здесь (черновик), а в корзине позиция
+  // хранится под ключом строки «позиция + набор сиропов» (lib/cartLines.ts):
+  // степпер ниже всегда показывает количество именно ВЫБРАННОГО набора.
+  // Черновик привязан к itemId, чтобы при переходе на другую позицию
+  // (компонент страницы может сохраниться) он сбрасывался на умолчания.
+  const [draft, setDraft] = useState<{ itemId: string; syrups: string[] }>({ itemId, syrups: getItemSyrupDefault(itemId) });
+  const syrupsSupported = isSyrupItem(itemId);
+  const syrups = draft.itemId === itemId ? draft.syrups : getItemSyrupDefault(itemId);
+  const lineKey = makeLineKey(itemId, syrups);
+  const qty = useCartStore((s) => (hydrated ? s.getItemQty(lineKey) : 0));
+  const otherQty = useCartStore((s) => (hydrated && syrupsSupported ? s.getItemTotalQty(itemId) - s.getItemQty(lineKey) : 0));
+  const cutleryQty = useCartStore((s) => (hydrated ? s.getItemCutlery(lineKey) : 0));
   const setItemQty = useCartStore((s) => s.setItemQty);
   const setItemCutlery = useCartStore((s) => s.setItemCutlery);
   const img = useImageFallback(base ? publicImagePath(base.image) : '', base?.hasImage ?? false);
@@ -193,6 +205,16 @@ export function ItemPage({ itemId, children }: { itemId: string; children?: Reac
               <p className="item-page__notice">{t('menu.availableFrom').replace('{time}', meta.departmentOpenLabel)}</p>
             ) : null}
 
+            {orderable && syrupsSupported ? (
+              <section className="item-page__section item-page__syrups">
+                <SyrupPicker
+                  itemId={itemId}
+                  value={syrups}
+                  onChange={(next) => setDraft({ itemId, syrups: next })}
+                />
+              </section>
+            ) : null}
+
             {orderable
               ? groupIds.map((groupId) => (
                   <section className="item-page__section" key={groupId}>
@@ -200,7 +222,7 @@ export function ItemPage({ itemId, children }: { itemId: string; children?: Reac
                     {!inCart ? <p className="item-page__hint">{t('itemPage.modifiersHint')}</p> : null}
                     <ul className="item-page__mods">
                       {(modifierGroups[groupId] || []).map((option) => (
-                        <ModifierCard key={option.id} itemId={itemId} groupId={groupId} option={option} interactive={inCart} />
+                        <ModifierCard key={option.id} itemId={lineKey} groupId={groupId} option={option} interactive={inCart} />
                       ))}
                     </ul>
                   </section>
@@ -222,7 +244,7 @@ export function ItemPage({ itemId, children }: { itemId: string; children?: Reac
                         type="button"
                         className="stepper__btn"
                         aria-label={t('common.decreaseQty')}
-                        onClick={() => setItemCutlery(itemId, Math.max(0, cutleryQty - 1))}
+                        onClick={() => setItemCutlery(lineKey, Math.max(0, cutleryQty - 1))}
                       >
                         −
                       </button>
@@ -233,7 +255,7 @@ export function ItemPage({ itemId, children }: { itemId: string; children?: Reac
                         type="button"
                         className="stepper__btn"
                         aria-label={t('common.increaseQty')}
-                        onClick={() => setItemCutlery(itemId, cutleryQty + 1)}
+                        onClick={() => setItemCutlery(lineKey, cutleryQty + 1)}
                       >
                         +
                       </button>
@@ -248,21 +270,25 @@ export function ItemPage({ itemId, children }: { itemId: string; children?: Reac
               <div className="item-page__actions">
                 {qty > 0 ? (
                   <div className="stepper item-page__stepper">
-                    <button type="button" className="stepper__btn" aria-label={t('common.decreaseQty')} onClick={() => setItemQty(itemId, qty - 1)}>
+                    <button type="button" className="stepper__btn" aria-label={t('common.decreaseQty')} onClick={() => setItemQty(lineKey, qty - 1)}>
                       −
                     </button>
                     <span className="stepper__qty" aria-label={t('common.quantityLabel')}>
                       {qty}
                     </span>
-                    <button type="button" className="stepper__btn" aria-label={t('common.increaseQty')} onClick={() => setItemQty(itemId, qty + 1)}>
+                    <button type="button" className="stepper__btn" aria-label={t('common.increaseQty')} onClick={() => setItemQty(lineKey, qty + 1)}>
                       +
                     </button>
                   </div>
                 ) : (
-                  <button type="button" className="stepper__add item-page__add" onClick={() => setItemQty(itemId, 1)}>
+                  <button type="button" className="stepper__add item-page__add" onClick={() => setItemQty(lineKey, 1)}>
                     {t('common.add')}
+                    {syrupsSupported ? ` · ${base.price + syrupSurcharge(itemId, syrups)} MDL` : ''}
                   </button>
                 )}
+                {otherQty > 0 ? (
+                  <p className="item-page__hint item-page__other-qty">{t('syrups.inCartElse').replace('{n}', String(otherQty))}</p>
+                ) : null}
               </div>
             ) : null}
           </div>

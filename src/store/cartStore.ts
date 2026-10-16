@@ -23,6 +23,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { useEffect, useState } from 'react';
+import { makeLineKey, parseLineKey } from '@/lib/cartLines';
 
 export interface CartEntry {
   qty: number;
@@ -37,6 +38,14 @@ export interface CartStoreState {
 
 interface CartStoreActions {
   getItemQty: (itemId: string) => number;
+  /** Сумма qty по ВСЕМ строкам позиции (с любыми наборами сиропов). */
+  getItemTotalQty: (itemId: string) => number;
+  /**
+   * Меняет набор сиропов у строки корзины. count — сколько напитков
+   * перенести в строку с новым набором ('all' — вся строка). Если строка с
+   * таким набором уже есть, количества складываются.
+   */
+  changeLineSyrups: (lineKey: string, syrups: string[], count: number | 'all') => void;
   setItemQty: (itemId: string, qty: number) => void;
   getItemCutlery: (itemId: string) => number;
   setItemCutlery: (itemId: string, qty: number) => void;
@@ -63,7 +72,34 @@ export const useCartStore = create<CartStore>()(
       items: {},
       ageConfirmed: false,
 
+      // itemId здесь — КЛЮЧ СТРОКИ (для позиции без сиропов он равен id позиции).
       getItemQty: (itemId) => get().items[itemId]?.qty ?? 0,
+
+      getItemTotalQty: (itemId) =>
+        Object.entries(get().items).reduce(
+          (sum, [key, entry]) => (parseLineKey(key).itemId === itemId ? sum + (entry.qty || 0) : sum),
+          0
+        ),
+
+      changeLineSyrups: (lineKey, syrups, count) =>
+        set((state) => {
+          const source = state.items[lineKey];
+          if (!source) return state;
+          const { itemId } = parseLineKey(lineKey);
+          const targetKey = makeLineKey(itemId, syrups);
+          if (targetKey === lineKey) return state;
+          const move = count === 'all' ? source.qty : Math.max(0, Math.min(count, source.qty));
+          if (move <= 0) return state;
+          const items = { ...state.items };
+          const moveAll = move >= source.qty;
+          if (moveAll) delete items[lineKey];
+          else items[lineKey] = { ...source, qty: source.qty - move };
+          const existing = items[targetKey];
+          items[targetKey] = existing
+            ? { ...existing, qty: existing.qty + move }
+            : { qty: move, modifiers: moveAll ? source.modifiers : {}, cutlery: moveAll ? source.cutlery : 0 };
+          return { items };
+        }),
 
       setItemQty: (itemId, qty) =>
         set((state) => {

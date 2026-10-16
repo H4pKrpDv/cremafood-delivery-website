@@ -12,15 +12,108 @@
 
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '@/i18n/I18nProvider';
 import { useCartStore } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
 import { useCartSummary } from '@/lib/useCartSummary';
 import { FREE_DELIVERY_THRESHOLD, type CartLine } from '@/lib/cartSummary';
+import { SyrupIcon } from './SyrupIcon';
+import { SyrupPicker } from './SyrupPicker';
 
 function formatMdl(amount: number): string {
   return `${Math.round(amount * 100) / 100} MDL`;
+}
+
+// 17.10.2026. Сиропы в строке корзины: компактные иконки выбранных вкусов,
+// пометка «в цене»/доплата и «Изменить». Правка — черновик + «Применить»,
+// потому что смена набора меняет КЛЮЧ строки (lib/cartLines.ts): позиция
+// переезжает в строку с новым набором (или сливается с уже существующей).
+// Если в строке несколько напитков, можно применить набор ко всем или к
+// одному — так получается «один латте с сиропом, второй без».
+function CartSyrups({
+  line,
+  disabled,
+  editing,
+  onEdit
+}: {
+  line: CartLine;
+  disabled: boolean;
+  editing: boolean;
+  onEdit: () => void;
+}) {
+  const { t } = useI18n();
+  const inPrice = line.syrupIncluded > 0 && line.syrups.length > 0 && line.syrupSurcharge === 0;
+
+  return (
+    <div className="cart-syrup">
+      <div className="cart-syrup__summary">
+        {line.syrups.length ? (
+          <>
+            {line.syrups.map((s) => (
+              <span className="cart-syrup__item" key={s.id}>
+                <SyrupIcon id={s.id} size={16} />
+                <span>{s.name}</span>
+              </span>
+            ))}
+            {line.syrupSurcharge > 0 ? (
+              <span className="cart-syrup__price">{t('syrups.perCup').replace('{amount}', String(line.syrupSurcharge))}</span>
+            ) : inPrice ? (
+              <span className="cart-syrup__price">{t('syrups.inPrice')}</span>
+            ) : null}
+          </>
+        ) : line.syrupIncluded > 0 ? (
+          <span className="cart-syrup__none">{t('syrups.noSyrup')}</span>
+        ) : null}
+        {!editing && !disabled ? (
+          <button type="button" className="cart-syrup__edit" onClick={onEdit}>
+            {line.syrups.length || line.syrupIncluded > 0 ? t('syrups.edit') : `+ ${t('syrups.add')}`}
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+// Редактор — отдельным блоком на всю ширину строки (под степпером), монтируется
+// только при правке, поэтому черновик всегда стартует с текущего набора.
+function CartSyrupEditor({ line, onClose }: { line: CartLine; onClose: () => void }) {
+  const { t } = useI18n();
+  const changeLineSyrups = useCartStore((s) => s.changeLineSyrups);
+  const [draft, setDraft] = useState<string[]>(() => line.syrups.map((s) => s.id));
+  const [scope, setScope] = useState<'all' | 'one'>('all');
+
+  function apply() {
+    changeLineSyrups(line.lineKey, draft, scope === 'one' && line.qty > 1 ? 1 : 'all');
+    onClose();
+  }
+
+  return (
+    <div className="cart-syrup__editor">
+      <SyrupPicker itemId={line.itemId} value={draft} onChange={setDraft} mode="panel" />
+      {line.qty > 1 ? (
+        <fieldset className="cart-syrup__scope">
+          <legend>{t('syrups.scopeLabel')}</legend>
+          <label>
+            <input type="radio" name={`scope-${line.lineKey}`} checked={scope === 'all'} onChange={() => setScope('all')} />
+            <span>{t('syrups.scopeAll').replace('{n}', String(line.qty))}</span>
+          </label>
+          <label>
+            <input type="radio" name={`scope-${line.lineKey}`} checked={scope === 'one'} onChange={() => setScope('one')} />
+            <span>{t('syrups.scopeOne')}</span>
+          </label>
+        </fieldset>
+      ) : null}
+      <div className="cart-syrup__actions">
+        <button type="button" className="btn btn--secondary cart-syrup__btn" onClick={onClose}>
+          {t('syrups.cancel')}
+        </button>
+        <button type="button" className="btn btn--primary cart-syrup__btn" onClick={apply}>
+          {t('syrups.apply')}
+        </button>
+      </div>
+    </div>
+  );
 }
 
 function CartItemRow({ line }: { line: CartLine }) {
@@ -30,6 +123,7 @@ function CartItemRow({ line }: { line: CartLine }) {
   const setItemCutlery = useCartStore((s) => s.setItemCutlery);
   const meta = line.meta;
   const disabled = !meta.orderable;
+  const [editingSyrups, setEditingSyrups] = useState(false);
 
   const groupsSeen = new Set<string>();
 
@@ -44,6 +138,8 @@ function CartItemRow({ line }: { line: CartLine }) {
             {t('cart.itemClosedNow').replace('{time}', meta.departmentOpenLabel)}
           </span>
         ) : null}
+
+        {meta.syrupSupported ? <CartSyrups line={line} disabled={disabled} editing={editingSyrups} onEdit={() => setEditingSyrups(true)} /> : null}
 
         {line.modifiersDetail.length ? (
           <div className="cart-item__modifiers">
@@ -67,7 +163,7 @@ function CartItemRow({ line }: { line: CartLine }) {
                         type="button"
                         className="stepper__btn"
                         disabled={disabled}
-                        onClick={() => setModifierQty(line.itemId, detail.groupId, detail.optionId, Math.max(0, currentQty - 1))}
+                        onClick={() => setModifierQty(line.lineKey, detail.groupId, detail.optionId, Math.max(0, currentQty - 1))}
                       >
                         −
                       </button>
@@ -76,7 +172,7 @@ function CartItemRow({ line }: { line: CartLine }) {
                         type="button"
                         className="stepper__btn"
                         disabled={disabled}
-                        onClick={() => setModifierQty(line.itemId, detail.groupId, detail.optionId, currentQty + 1)}
+                        onClick={() => setModifierQty(line.lineKey, detail.groupId, detail.optionId, currentQty + 1)}
                       >
                         +
                       </button>
@@ -102,7 +198,7 @@ function CartItemRow({ line }: { line: CartLine }) {
                   type="button"
                   className="stepper__btn"
                   disabled={disabled}
-                  onClick={() => setItemCutlery(line.itemId, Math.max(0, line.cutleryQty - 1))}
+                  onClick={() => setItemCutlery(line.lineKey, Math.max(0, line.cutleryQty - 1))}
                 >
                   −
                 </button>
@@ -111,7 +207,7 @@ function CartItemRow({ line }: { line: CartLine }) {
                   type="button"
                   className="stepper__btn"
                   disabled={disabled}
-                  onClick={() => setItemCutlery(line.itemId, line.cutleryQty + 1)}
+                  onClick={() => setItemCutlery(line.lineKey, line.cutleryQty + 1)}
                 >
                   +
                 </button>
@@ -123,15 +219,18 @@ function CartItemRow({ line }: { line: CartLine }) {
       <div className="cart-item__side">
         <span className="cart-item__price">{formatMdl(line.lineTotal)}</span>
         <div className="stepper">
-          <button type="button" className="stepper__btn" disabled={disabled} onClick={() => setItemQty(line.itemId, line.qty - 1)}>
+          <button type="button" className="stepper__btn" disabled={disabled} onClick={() => setItemQty(line.lineKey, line.qty - 1)}>
             −
           </button>
           <span className="stepper__qty">{line.qty}</span>
-          <button type="button" className="stepper__btn" disabled={disabled} onClick={() => setItemQty(line.itemId, line.qty + 1)}>
+          <button type="button" className="stepper__btn" disabled={disabled} onClick={() => setItemQty(line.lineKey, line.qty + 1)}>
             +
           </button>
         </div>
       </div>
+      {editingSyrups && meta.syrupSupported ? (
+        <CartSyrupEditor line={line} onClose={() => setEditingSyrups(false)} />
+      ) : null}
     </li>
   );
 }
@@ -178,7 +277,7 @@ export function CartModal() {
         <div className="cart-modal__body" hidden={summary.isEmpty}>
           <ul className="cart-list">
             {summary.lines.map((line) => (
-              <CartItemRow key={line.itemId} line={line} />
+              <CartItemRow key={line.lineKey} line={line} />
             ))}
           </ul>
         </div>
