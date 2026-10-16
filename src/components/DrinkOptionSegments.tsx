@@ -7,6 +7,11 @@
  * radio-кнопок (стрелки на клавиатуре работают «из коробки»), поэтому
  * отдельной ARIA-карусели не нужно.
  *
+ * 18.10.2026 (правка по видео): раскладка зависит от ШИРИНЫ САМОГО блока
+ * (container query), а не экрана: в корзине блок вложен в строку позиции и
+ * узкий — там сегменты выстраиваются столбиком (название слева, пометка и
+ * цена справа), поэтому «Миндальное» больше не вылезает за границы кнопки.
+ *
  * Под названием варианта — пометка («безлактозное», «без кофеина») и
  * «+10 MDL» для всех вариантов, кроме стандартного. Если у выбранного
  * варианта есть примечание (миндаль — «содержит орехи»), оно показывается
@@ -39,29 +44,33 @@ export function DrinkOptionSegments({ group, value, onChange, compact = false }:
   const note = t(`drinkOptions.${group}.${value}.note`);
 
   return (
-    <fieldset className={`drink-opt${compact ? ' drink-opt--compact' : ''}`}>
+    <fieldset className={`drink-opt drink-opt--n${options.length}${compact ? ' drink-opt--compact' : ''}`}>
       <legend className="drink-opt__legend">{t(`drinkOptions.title.${group}`)}</legend>
-      <div className="drink-opt__seg" style={{ ['--n' as string]: options.length }}>
-        {options.map((option) => {
-          const checked = option.id === value;
-          const isDefault = option.id === settings.default;
-          const tag = t(`drinkOptions.${group}.${option.id}.tag`);
-          return (
-            <label className={`drink-opt__item${checked ? ' drink-opt__item--on' : ''}`} key={option.id}>
-              <input
-                type="radio"
-                className="drink-opt__input"
-                name={`${uid}-${group}`}
-                value={option.id}
-                checked={checked}
-                onChange={() => onChange(option.id)}
-              />
-              <span className="drink-opt__name">{t(`drinkOptions.${group}.${option.id}.name`)}</span>
-              <span className="drink-opt__sub">{tag}</span>
-              <span className="drink-opt__price">{isDefault ? '' : extra}</span>
-            </label>
-          );
-        })}
+      <div className="drink-opt__wrap">
+        <div className="drink-opt__seg" style={{ ['--n' as string]: options.length }}>
+          {options.map((option) => {
+            const checked = option.id === value;
+            const isDefault = option.id === settings.default;
+            const tag = t(`drinkOptions.${group}.${option.id}.tag`);
+            return (
+              <label className={`drink-opt__item${checked ? ' drink-opt__item--on' : ''}`} key={option.id}>
+                <input
+                  type="radio"
+                  className="drink-opt__input"
+                  name={`${uid}-${group}`}
+                  value={option.id}
+                  checked={checked}
+                  onChange={() => onChange(option.id)}
+                />
+                <span className="drink-opt__name">{t(`drinkOptions.${group}.${option.id}.name`)}</span>
+                <span className="drink-opt__meta">
+                  <span className="drink-opt__sub">{tag}</span>
+                  <span className="drink-opt__price">{isDefault ? '' : extra}</span>
+                </span>
+              </label>
+            );
+          })}
+        </div>
       </div>
       <p className="drink-opt__note" aria-live="polite">
         {note}

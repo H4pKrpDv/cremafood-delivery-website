@@ -116,16 +116,32 @@ function CartSyrupEditor({ line, onClose }: { line: CartLine; onClose: () => voi
       ))}
       {line.meta.syrupSupported ? <SyrupPicker itemId={line.itemId} value={draft} onChange={setDraft} mode="panel" /> : null}
       {line.qty > 1 ? (
-        <fieldset className="cart-syrup__scope">
-          <legend>{t('syrups.scopeLabel')}</legend>
-          <label>
-            <input type="radio" name={`scope-${line.lineKey}`} checked={scope === 'all'} onChange={() => setScope('all')} />
-            <span>{t('syrups.scopeAll').replace('{n}', String(line.qty))}</span>
-          </label>
-          <label>
-            <input type="radio" name={`scope-${line.lineKey}`} checked={scope === 'one'} onChange={() => setScope('one')} />
-            <span>{t('syrups.scopeOne')}</span>
-          </label>
+        <fieldset className="drink-opt drink-opt--n2 drink-opt--compact drink-opt--scope">
+          <legend className="drink-opt__legend">{t('syrups.scopeLabel')}</legend>
+          <div className="drink-opt__wrap">
+            <div className="drink-opt__seg">
+              <label className={`drink-opt__item${scope === 'all' ? ' drink-opt__item--on' : ''}`}>
+                <input
+                  type="radio"
+                  className="drink-opt__input"
+                  name={`scope-${line.lineKey}`}
+                  checked={scope === 'all'}
+                  onChange={() => setScope('all')}
+                />
+                <span className="drink-opt__name">{t('syrups.scopeAll').replace('{n}', String(line.qty))}</span>
+              </label>
+              <label className={`drink-opt__item${scope === 'one' ? ' drink-opt__item--on' : ''}`}>
+                <input
+                  type="radio"
+                  className="drink-opt__input"
+                  name={`scope-${line.lineKey}`}
+                  checked={scope === 'one'}
+                  onChange={() => setScope('one')}
+                />
+                <span className="drink-opt__name">{t('syrups.scopeOne')}</span>
+              </label>
+            </div>
+          </div>
         </fieldset>
       ) : null}
       <div className="cart-syrup__actions">

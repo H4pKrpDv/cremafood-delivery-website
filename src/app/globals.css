@@ -4040,6 +4040,11 @@
         min-width: 0;
       }
 
+      /* Раскладка по ширине самого блока (см. @container ниже). */
+      .drink-opt__wrap {
+        container-type: inline-size;
+      }
+
       .drink-opt__legend {
         padding: 0;
         margin-bottom: 0.45rem;
@@ -4099,10 +4104,24 @@
         cursor: pointer;
       }
 
+      .drink-opt__item {
+        min-width: 0;
+      }
+
       .drink-opt__name {
         font-size: 0.88rem;
         font-weight: 600;
         line-height: 1.2;
+        max-width: 100%;
+        overflow-wrap: anywhere;
+      }
+
+      .drink-opt__meta {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.1rem;
+        max-width: 100%;
       }
 
       .drink-opt__sub,
@@ -4137,8 +4156,77 @@
         margin-bottom: 0.7rem;
       }
 
-      .drink-opt--compact .drink-opt__item {
-        min-height: 3rem;
+      .drink-opt--scope {
+        margin: 0.8rem 0 0;
+      }
+
+      .drink-opt--scope .drink-opt__item {
+        min-height: 2.6rem;
+      }
+
+      /* Узкий блок (редактор в корзине на телефоне): варианты столбиком —
+         название слева, пометка и цена справа; ничего не обрезается. Порог
+         зависит от числа сегментов: трём нужно больше места, чем двум. */
+      @container (max-width: 19.5rem) {
+        .drink-opt--n3 .drink-opt__seg {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .drink-opt--n3 .drink-opt__item {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto;
+          grid-template-areas: 'name price' 'sub sub';
+          align-items: center;
+          justify-items: start;
+          column-gap: 0.6rem;
+          min-height: 2.8rem;
+          padding: 0.5rem 0.8rem;
+          text-align: left;
+        }
+        .drink-opt--n3 .drink-opt__meta {
+          display: contents;
+        }
+        .drink-opt--n3 .drink-opt__name {
+          grid-area: name;
+          overflow-wrap: normal;
+        }
+        .drink-opt--n3 .drink-opt__price {
+          grid-area: price;
+          justify-self: end;
+        }
+        .drink-opt--n3 .drink-opt__sub {
+          grid-area: sub;
+        }
+      }
+
+      @container (max-width: 15rem) {
+        .drink-opt--n2 .drink-opt__seg {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .drink-opt--n2 .drink-opt__item {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto;
+          grid-template-areas: 'name price' 'sub sub';
+          align-items: center;
+          justify-items: start;
+          column-gap: 0.6rem;
+          min-height: 2.6rem;
+          padding: 0.5rem 0.8rem;
+          text-align: left;
+        }
+        .drink-opt--n2 .drink-opt__meta {
+          display: contents;
+        }
+        .drink-opt--n2 .drink-opt__name {
+          grid-area: name;
+          overflow-wrap: normal;
+        }
+        .drink-opt--n2 .drink-opt__price {
+          grid-area: price;
+          justify-self: end;
+        }
+        .drink-opt--n2 .drink-opt__sub {
+          grid-area: sub;
+        }
       }
 
       .item-page__options {
@@ -4179,8 +4267,9 @@
 
       .cart-syrup__choice {
         display: inline-flex;
+        flex-wrap: wrap;
         align-items: baseline;
-        gap: 0.35rem;
+        gap: 0 0.35rem;
         color: var(--cream);
         font-weight: 600;
       }
@@ -4215,31 +4304,6 @@
         border: 1px solid var(--border);
         border-radius: var(--radius);
         background: var(--bg-2);
-      }
-
-      .cart-syrup__scope {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.3rem 1rem;
-        margin: 0.8rem 0 0;
-        padding: 0;
-        border: 0;
-        font-size: 0.82rem;
-        color: var(--text-2);
-      }
-
-      .cart-syrup__scope legend {
-        padding: 0;
-        margin-bottom: 0.3rem;
-        color: var(--text-3);
-        font-size: 0.76rem;
-      }
-
-      .cart-syrup__scope label {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        cursor: pointer;
       }
 
       .cart-syrup__actions {
