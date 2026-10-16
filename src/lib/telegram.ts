@@ -113,7 +113,7 @@ export function formatOrderMessage(payload: OrderPayload, siteLang: string = 'ru
         const extra = item.syrups.surchargePerUnit > 0 ? ` (+${formatMdl(item.syrups.surchargePerUnit)} за шт.)` : item.syrups.included > 0 ? ' (в цене)' : '';
         lines.push(`   🍯 сироп: ${names}${extra}`);
       } else if (item.syrups.defaultRemoved) {
-        lines.push('   🍯 без сиропа (ваниль убрана)');
+        lines.push(`   🍯 без сиропа (сироп по умолчанию «${escapeHtml(item.syrups.defaultNames.join(', '))}» убран)`);
       }
     }
     for (const modifier of item.modifiers) {

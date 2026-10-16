@@ -33,6 +33,7 @@ import {
   parseLineKey,
   syrupSurcharge,
   getItemSyrupIncluded,
+  getItemSyrupDefault,
   isSyrupItem,
   isCustomizableItem,
   getItemDrinkGroups,
@@ -153,6 +154,8 @@ export interface CartLine {
   syrupSurcharge: number;
   /** Сколько порций сиропа входит в цену напитка (raf-coffee: 1). */
   syrupIncluded: number;
+  /** Названия сиропов по умолчанию у позиции (raf-coffee: «Ваниль», iced-latte: «Карамель»); [] — если нет. */
+  syrupDefaultNames: string[];
   /** Молоко/кофе по группам, доступным позиции (включая варианты по умолчанию). */
   drinkChoices: DrinkChoiceDetail[];
   /** Доплата за молоко/кофе на ОДИН напиток (MDL), уже включена в lineTotal. */
@@ -239,6 +242,7 @@ export function computeSummary(cart: Cart, t: Translator, nowMinutes: number): C
       syrups,
       syrupSurcharge: surcharge,
       syrupIncluded: isSyrupItem(itemId) ? getItemSyrupIncluded(itemId) : 0,
+      syrupDefaultNames: isSyrupItem(itemId) ? getItemSyrupDefault(itemId).map((id) => t(`syrups.option.${id}`) || id) : [],
       drinkChoices,
       drinkSurcharge: drinkExtra,
       meta,

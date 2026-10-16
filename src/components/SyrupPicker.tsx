@@ -12,7 +12,7 @@
  * Правила (данные — data/menu.json → syrups и item.syrups, логика —
  * lib/cartLines.ts): не больше maxPerDrink разных вкусов по одной порции;
  * у позиции с «сиропом в цене» (raf-coffee) выбранный по умолчанию вкус
- * (ваниль) можно убрать или заменить, а доплата начинается со второй порции.
+ * (у raf-coffee — ваниль, у iced-latte — карамель) можно убрать или заменить, а доплата начинается со второй порции.
  * Компонент «глупый»: состояние хранит родитель (value/onChange).
  * ------------------------------------------------------------------
  */
@@ -50,7 +50,8 @@ export function SyrupPicker({ itemId, value, onChange, mode = 'row', defaultOpen
     t(key)
       .replace('{price}', String(syrupSettings.price))
       .replace('{volume}', String(syrupSettings.volumeMl))
-      .replace('{max}', String(max));
+      .replace('{max}', String(max))
+      .replace('{name}', getItemSyrupDefault(itemId).map((id) => t(`syrups.option.${id}`) || id).join(', '));
   const name = (id: string) => t(`syrups.option.${id}`) || id;
 
   function toggle(id: string) {
@@ -105,7 +106,7 @@ export function SyrupPicker({ itemId, value, onChange, mode = 'row', defaultOpen
         </span>
         <span className="syrup-row__text">
           <span className="syrup-row__title">{hasDefault ? t('syrups.title') : t('syrups.add')}</span>
-          <span className="syrup-row__small">{hasDefault ? t('syrups.defaultNote') : fmt('syrups.priceNote')}</span>
+          <span className="syrup-row__small">{hasDefault ? fmt('syrups.defaultNote') : fmt('syrups.priceNote')}</span>
         </span>
         <span className="syrup-row__chev" aria-hidden="true">
           ⌄

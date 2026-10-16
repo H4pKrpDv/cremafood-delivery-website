@@ -49,8 +49,10 @@ export interface OrderPayloadItem {
     surchargePerUnit: number;
     /** Порций сиропа, входящих в цену напитка (raf-coffee: 1). */
     included: number;
-    /** У позиции есть сироп по умолчанию, но его убрали (raf без ванили). */
+    /** У позиции есть сироп по умолчанию, но его убрали (raf без ванили, айс-латте без карамели). */
     defaultRemoved: boolean;
+    /** Названия сиропов по умолчанию (для сообщения «убран сироп по умолчанию: …»). */
+    defaultNames: string[];
   } | null;
   /** Молоко/кофе НЕ по умолчанию (18.10.2026); пустой массив — всё стандартное. */
   drinkChoices: OrderPayloadDrinkChoice[];
@@ -113,7 +115,8 @@ export function buildOrderPayload(
             items: line.syrups.map((s) => ({ id: s.id, name: s.name })),
             surchargePerUnit: line.syrupSurcharge,
             included: line.syrupIncluded,
-            defaultRemoved: line.syrupIncluded > 0 && line.syrups.length === 0
+            defaultRemoved: line.syrupDefaultNames.length > 0 && line.syrups.length === 0,
+            defaultNames: line.syrupDefaultNames
           }
         : null,
       drinkChoices: line.drinkChoices

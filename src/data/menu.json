@@ -253,49 +253,86 @@
               "price": 30,
               "image": "img/items/ice-americano.jpg",
               "modifiers": [],
-              "available": true
+              "available": true,
+              "syrups": {},
+              "drinkOptions": [
+                "beans"
+              ]
             },
             {
               "id": "iced-latte",
               "price": 40,
               "image": "img/items/iced-latte.jpg",
               "modifiers": [],
-              "available": true
+              "available": true,
+              "syrups": {
+                "default": [
+                  "caramel"
+                ],
+                "included": 1
+              },
+              "drinkOptions": [
+                "milk",
+                "beans"
+              ]
             },
             {
               "id": "frappe",
               "price": 45,
               "image": "img/items/frappe.jpg",
               "modifiers": [],
-              "available": true
+              "available": true,
+              "syrups": {},
+              "drinkOptions": [
+                "milk",
+                "beans"
+              ]
             },
             {
               "id": "espresso-tonic",
               "price": 50,
               "image": "img/items/espresso-tonic.jpg",
               "modifiers": [],
-              "available": true
+              "available": true,
+              "syrups": {},
+              "drinkOptions": [
+                "beans"
+              ]
             },
             {
               "id": "bumblebee",
               "price": 55,
               "image": "img/items/bumblebee.jpg",
               "modifiers": [],
-              "available": true
+              "available": true,
+              "syrups": {},
+              "drinkOptions": [
+                "beans"
+              ]
             },
             {
               "id": "raspberry-pink-latte",
               "price": 60,
               "image": "img/items/raspberry-pink-latte.jpg",
               "modifiers": [],
-              "available": true
+              "available": true,
+              "syrups": {},
+              "drinkOptions": [
+                "milk",
+                "beans"
+              ]
             },
             {
               "id": "bubble-coffee",
               "price": 60,
               "image": "img/items/bubble-coffee.jpg",
               "modifiers": [],
-              "available": true
+              "available": true,
+              "syrups": {},
+              "drinkOptions": [
+                "milk",
+                "beans"
+              ]
             }
           ]
         },
