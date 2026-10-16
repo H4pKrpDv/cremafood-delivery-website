@@ -461,6 +461,89 @@
           ]
         },
         {
+          "id": "soft-drinks",
+          "image": "img/categories/soft-drinks.jpg",
+          "items": [
+            {
+              "id": "coca-cola",
+              "price": 25,
+              "image": "img/items/coca-cola.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "schweppes-tonic",
+              "price": 25,
+              "image": "img/items/schweppes-tonic.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "schweppes-pomegranate",
+              "price": 25,
+              "image": "img/items/schweppes-pomegranate.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "sprite",
+              "price": 25,
+              "image": "img/items/sprite.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "fanta",
+              "price": 25,
+              "image": "img/items/fanta.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "dorna-sparkling",
+              "price": 25,
+              "image": "img/items/dorna-sparkling.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "dorna-still",
+              "price": 25,
+              "image": "img/items/dorna-still.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "vita-pomegranate",
+              "price": 25,
+              "image": "img/items/vita-pomegranate.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "vita-multifruit",
+              "price": 25,
+              "image": "img/items/vita-multifruit.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "naturalis-apple",
+              "price": 15,
+              "image": "img/items/naturalis-apple.jpg",
+              "modifiers": [],
+              "available": true
+            },
+            {
+              "id": "naturalis-multifruit",
+              "price": 15,
+              "image": "img/items/naturalis-multifruit.jpg",
+              "modifiers": [],
+              "available": true
+            }
+          ]
+        },
+        {
           "id": "alcohol",
           "image": "img/categories/alcohol.jpg",
           "items": [

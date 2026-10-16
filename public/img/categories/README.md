@@ -64,6 +64,7 @@
 | `matcha.jpg` | Напитки → Matcha |
 | `ube.jpg` | Напитки → Ube |
 | `bubble-tea.jpg` | Напитки → Bubble Tea |
+| `soft-drinks.jpg` | Напитки → Прохладительные напитки |
 | `alcohol.jpg` | Напитки → Алкогольные напитки |
 | `breakfast.jpg` | Блюда → Завтраки |
 | `mexican.jpg` | Блюда → Мексиканская кухня |

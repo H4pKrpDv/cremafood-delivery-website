@@ -109,6 +109,10 @@
       "title": "Десерты",
       "desc": "Удовлетворите свою тягу к сладкому нашими кондитерскими шедеврами и авторской выпечкой"
     },
+    "soft-drinks": {
+      "title": "Прохладительные напитки",
+      "desc": "Газированные напитки, вода и соки: Coca Cola, Sprite, Fanta, Schweppes, Dorna, VITA и детские соки Naturalis"
+    },
     "alcohol": {
       "title": "Алкогольные напитки",
       "desc": "Популярные коктейли и отдельный алкоголь. Продажа только лицам старше 18 лет"
@@ -309,6 +313,72 @@
       "desc": "Популярное кондитерское изделие из сладкого дрожжевого теста, покрытое глазурью",
       "weight": "1 шт",
       "imageAlt": "Пончик с глазурью"
+    },
+    "coca-cola": {
+      "name": "Coca Cola",
+      "desc": "Классический газированный напиток",
+      "weight": "330 мл",
+      "imageAlt": "Coca Cola"
+    },
+    "schweppes-tonic": {
+      "name": "Schweppes Tonic",
+      "desc": "Газированный тоник с характерным горьковато-освежающим вкусом",
+      "weight": "330 мл",
+      "imageAlt": "Schweppes Tonic"
+    },
+    "schweppes-pomegranate": {
+      "name": "Schweppes Pomegranate",
+      "desc": "Газированный напиток Schweppes со вкусом граната",
+      "weight": "330 мл",
+      "imageAlt": "Schweppes Pomegranate"
+    },
+    "sprite": {
+      "name": "Sprite",
+      "desc": "Газированный лимонно-лаймовый напиток — освежает и хорошо утоляет жажду",
+      "weight": "330 мл",
+      "imageAlt": "Sprite"
+    },
+    "fanta": {
+      "name": "Fanta",
+      "desc": "Газированный напиток с ярким фруктовым вкусом",
+      "weight": "330 мл",
+      "imageAlt": "Fanta"
+    },
+    "dorna-sparkling": {
+      "name": "Dorna газированная",
+      "desc": "Газированная питьевая вода",
+      "weight": "330 мл",
+      "imageAlt": "Dorna газированная"
+    },
+    "dorna-still": {
+      "name": "Dorna негазированная",
+      "desc": "Негазированная питьевая вода",
+      "weight": "330 мл",
+      "imageAlt": "Dorna негазированная"
+    },
+    "vita-pomegranate": {
+      "name": "VITA Pomegranate",
+      "desc": "Напиток VITA со вкусом граната",
+      "weight": "250 мл",
+      "imageAlt": "VITA Pomegranate"
+    },
+    "vita-multifruit": {
+      "name": "VITA Multifruit",
+      "desc": "Напиток VITA со вкусом мультифрукт",
+      "weight": "250 мл",
+      "imageAlt": "VITA Multifruit"
+    },
+    "naturalis-apple": {
+      "name": "Детский сок Naturalis Яблоко",
+      "desc": "Детский сок с яблочным вкусом",
+      "weight": "200 мл",
+      "imageAlt": "Детский сок Naturalis Яблоко"
+    },
+    "naturalis-multifruit": {
+      "name": "Детский сок Naturalis Мультифрукт",
+      "desc": "Детский сок со вкусом мультифрукт",
+      "weight": "200 мл",
+      "imageAlt": "Детский сок Naturalis Мультифрукт"
     },
     "jack-daniels-honey": {
       "name": "Jack Daniel's Honey",
@@ -641,6 +711,11 @@
       "metaTitle": "Bubble Tea с доставкой в Бельцах: киви, клубника, персик | Crema Food",
       "metaDescription": "Закажите Bubble Tea в Бельцах: чай и молочные напитки с желейными шариками, 6 вкусов. Доставка 60 MDL, бесплатно от 399 MDL."
     },
+    "soft-drinks": {
+      "h1": "Прохладительные напитки с доставкой в Бельцах",
+      "metaTitle": "Прохладительные напитки в Бельцах: Coca Cola, Sprite | Crema Food",
+      "metaDescription": "Закажите прохладительные напитки в Бельцах: Coca Cola, Schweppes, Sprite, Fanta, вода Dorna, VITA, соки Naturalis. Доставка 60 MDL, бесплатно от 399 MDL."
+    },
     "alcohol": {
       "h1": "Алкогольные напитки с доставкой в Бельцах",
       "metaTitle": "Алкогольные напитки с доставкой в Бельцах | Crema Food",
@@ -680,7 +755,7 @@
     "cafe": {
       "h1": "Доставка напитков в Бельцах",
       "metaTitle": "Доставка напитков в Бельцах: кофе, лимонады, матча | Crema Food",
-      "metaDescription": "Закажите напитки с доставкой в Бельцах: кофе, холодный кофе, милкшейки, лимонады, матча, Ube и Bubble Tea. Доставка 60 MDL, бесплатно от 399 MDL."
+      "metaDescription": "Закажите напитки с доставкой в Бельцах: кофе, холодный кофе, милкшейки, лимонады, матча, Ube, Bubble Tea и газировка. Доставка 60 MDL, бесплатно от 399 MDL."
     },
     "kitchen": {
       "h1": "Доставка блюд в Бельцах",

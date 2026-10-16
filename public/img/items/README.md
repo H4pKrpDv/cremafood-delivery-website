@@ -54,7 +54,7 @@
 
 | Файл | Позиция |
 |---|---|
-| `combo-latte-sandwich.jpg` | Комбо: Латте/Капучино + сэндвич |
+| `combo-cola-sandwich.jpg` | Комбо: Кола + сэндвич |
 
 ### Спец. предложения → Сезонные (10)
 
@@ -86,15 +86,17 @@
 | `moccacino.jpg` | Moccacino |
 | `raf-coffee.jpg` | Raf Coffee |
 
-### Напитки → Ice Coffee (5)
+### Напитки → Ice Coffee (7)
 
 | Файл | Позиция |
 |---|---|
+| `ice-americano.jpg` | Ice Americano |
 | `iced-latte.jpg` | Ice Latte |
 | `frappe.jpg` | Frappe |
 | `espresso-tonic.jpg` | Espresso Tonic |
 | `bumblebee.jpg` | Bumblebee |
 | `raspberry-pink-latte.jpg` | Raspberry Pink Latte |
+| `bubble-coffee.jpg` | Bubble Coffee |
 
 ### Напитки → Милкшейки (5)
 
@@ -126,13 +128,15 @@
 | `matcha-tonic.jpg` | Matcha Tonic |
 | `matcha-mango.jpg` | Mango Matcha Latte |
 
-### Напитки → Ube (3)
+### Напитки → Ube (5)
 
 | Файл | Позиция |
 |---|---|
 | `ube-latte.jpg` | Ube Latte |
 | `ube-cream-latte.jpg` | Ube Cream Latte |
 | `ube-smoothie.jpg` | Ube Smoothie |
+| `ube-coconut.jpg` | Ube Coconut |
+| `ube-tropic.jpg` | Ube Tropic |
 
 ### Напитки → Bubble Tea (6)
 
@@ -144,6 +148,22 @@
 | `bubble-tea-peach.jpg` | Bubble Tea Peach |
 | `bubble-latte-caramel.jpg` | Bubble Latte Caramel |
 | `bubble-latte-chocolate.jpg` | Bubble Latte Chocolate |
+
+### Напитки → Прохладительные напитки (11)
+
+| Файл | Позиция |
+|---|---|
+| `coca-cola.jpg` | Coca Cola |
+| `schweppes-tonic.jpg` | Schweppes Tonic |
+| `schweppes-pomegranate.jpg` | Schweppes Pomegranate |
+| `sprite.jpg` | Sprite |
+| `fanta.jpg` | Fanta |
+| `dorna-sparkling.jpg` | Dorna газированная |
+| `dorna-still.jpg` | Dorna негазированная |
+| `vita-pomegranate.jpg` | VITA Pomegranate |
+| `vita-multifruit.jpg` | VITA Multifruit |
+| `naturalis-apple.jpg` | Детский сок Naturalis Яблоко |
+| `naturalis-multifruit.jpg` | Детский сок Naturalis Мультифрукт |
 
 ### Напитки → Алкогольные напитки (6)
 

@@ -109,6 +109,10 @@
       "title": "Десерты",
       "desc": "Удовлетворите свою тягу к сладкому нашими кондитерскими шедеврами и авторской выпечкой"
     },
+    "soft-drinks": {
+      "title": "Прохладительные напитки",
+      "desc": "Газированные напитки, вода и соки: Coca Cola, Sprite, Fanta, Schweppes, Dorna, VITA и детские соки Naturalis"
+    },
     "alcohol": {
       "title": "Алкогольные напитки",
       "desc": "Популярные коктейли и отдельный алкоголь. Продажа только лицам старше 18 лет"
@@ -309,6 +313,72 @@
       "desc": "Популярное кондитерское изделие из сладкого дрожжевого теста, покрытое глазурью",
       "weight": "1 шт",
       "imageAlt": "Пончик с глазурью"
+    },
+    "coca-cola": {
+      "name": "Coca Cola",
+      "desc": "Классический газированный напиток",
+      "weight": "330 мл",
+      "imageAlt": "Coca Cola"
+    },
+    "schweppes-tonic": {
+      "name": "Schweppes Tonic",
+      "desc": "Газированный тоник с характерным горьковато-освежающим вкусом",
+      "weight": "330 мл",
+      "imageAlt": "Schweppes Tonic"
+    },
+    "schweppes-pomegranate": {
+      "name": "Schweppes Pomegranate",
+      "desc": "Газированный напиток Schweppes со вкусом граната",
+      "weight": "330 мл",
+      "imageAlt": "Schweppes Pomegranate"
+    },
+    "sprite": {
+      "name": "Sprite",
+      "desc": "Газированный лимонно-лаймовый напиток — освежает и хорошо утоляет жажду",
+      "weight": "330 мл",
+      "imageAlt": "Sprite"
+    },
+    "fanta": {
+      "name": "Fanta",
+      "desc": "Газированный напиток с ярким фруктовым вкусом",
+      "weight": "330 мл",
+      "imageAlt": "Fanta"
+    },
+    "dorna-sparkling": {
+      "name": "Dorna газированная",
+      "desc": "Газированная питьевая вода",
+      "weight": "330 мл",
+      "imageAlt": "Dorna газированная"
+    },
+    "dorna-still": {
+      "name": "Dorna негазированная",
+      "desc": "Негазированная питьевая вода",
+      "weight": "330 мл",
+      "imageAlt": "Dorna негазированная"
+    },
+    "vita-pomegranate": {
+      "name": "VITA Pomegranate",
+      "desc": "Напиток VITA со вкусом граната",
+      "weight": "250 мл",
+      "imageAlt": "VITA Pomegranate"
+    },
+    "vita-multifruit": {
+      "name": "VITA Multifruit",
+      "desc": "Напиток VITA со вкусом мультифрукт",
+      "weight": "250 мл",
+      "imageAlt": "VITA Multifruit"
+    },
+    "naturalis-apple": {
+      "name": "Детский сок Naturalis Яблоко",
+      "desc": "Детский сок с яблочным вкусом",
+      "weight": "200 мл",
+      "imageAlt": "Детский сок Naturalis Яблоко"
+    },
+    "naturalis-multifruit": {
+      "name": "Детский сок Naturalis Мультифрукт",
+      "desc": "Детский сок со вкусом мультифрукт",
+      "weight": "200 мл",
+      "imageAlt": "Детский сок Naturalis Мультифрукт"
     },
     "jack-daniels-honey": {
       "name": "Jack Daniel's Honey",
@@ -614,7 +684,7 @@
     "ice-coffee": {
       "h1": "Cafea rece cu livrare în Bălți",
       "metaTitle": "Cafea rece cu livrare în Bălți: ice latte, frappe | Crema Food",
-      "metaDescription": "Закажите холодный кофе в Бельцах: Ice Americano, айс-латте, фраппе, эспрессо-тоник, Bumblebee, Bubble Coffee. Доставка 60 MDL, бесплатно от 399 MDL."
+      "metaDescription": "Comandați cafea rece în Bălți: Ice Americano, ice latte, frappe, espresso tonic, Bumblebee, Bubble Coffee. Livrare 60 MDL, gratuită de la 399 MDL."
     },
     "milkshakes": {
       "h1": "Milkshake-uri cu livrare în Bălți",
@@ -634,12 +704,17 @@
     "ube": {
       "h1": "Ube latte cu livrare în Bălți",
       "metaTitle": "Ube latte cu livrare în Bălți: Ube Cream Latte, smoothie | Crema Food",
-      "metaDescription": "Закажите напитки с фиолетовым бататом Ube в Бельцах: Ube Latte, Ube Cream Latte, Ube Smoothie, Ube Coconut и Ube Tropic. Доставка 60 MDL, бесплатно от 399 MDL."
+      "metaDescription": "Comandați băuturi cu cartof dulce violet Ube în Bălți: Ube Latte, Ube Cream Latte, Ube Smoothie, Ube Coconut și Ube Tropic. Livrare 60 MDL, gratuită de la 399 MDL."
     },
     "bubble-tea": {
       "h1": "Bubble Tea cu livrare în Bălți",
       "metaTitle": "Bubble Tea cu livrare în Bălți: kiwi, căpșuni, piersică | Crema Food",
       "metaDescription": "Comandați Bubble Tea în Bălți: băuturi pe bază de ceai sau lapte cu bile de jeleu, 6 arome. Livrare 60 MDL, gratuită de la 399 MDL."
+    },
+    "soft-drinks": {
+      "h1": "Băuturi răcoritoare cu livrare în Bălți",
+      "metaTitle": "Băuturi răcoritoare în Bălți: Coca Cola, Sprite | Crema Food",
+      "metaDescription": "Comandați băuturi răcoritoare în Bălți: Coca Cola, Schweppes, Sprite, Fanta, apă Dorna, VITA, sucuri Naturalis. Livrare 60 MDL, gratuită de la 399 MDL."
     },
     "alcohol": {
       "h1": "Băuturi alcoolice cu livrare în Bălți",
@@ -663,8 +738,8 @@
     },
     "promo-permanent": {
       "h1": "Oferte permanente și reduceri în Bălți",
-      "metaTitle": "Постоянные акции и скидки в Бельцах: комбо, карта −20% | Crema Food",
-      "metaDescription": "Постоянные предложения Crema Food в Бельцах: комбо Кола + сэндвич по цене 40 MDL вместо 50 MDL, скидочная карта −20% на кофе. Доставка 60 MDL, бесплатно от 399 MDL."
+      "metaTitle": "Oferte permanente și reduceri în Bălți: combo, card −20% | Crema Food",
+      "metaDescription": "Ofertele permanente Crema Food în Bălți: combo Cola + sandviș la 40 MDL în loc de 50 MDL, card de reducere −20% la cafea. Livrare 60 MDL, gratuită de la 399 MDL."
     },
     "promo-seasonal": {
       "h1": "Băuturi de sezon cu livrare în Bălți",
@@ -680,7 +755,7 @@
     "cafe": {
       "h1": "Livrare de băuturi în Bălți",
       "metaTitle": "Livrare de băuturi în Bălți: cafea, limonade, matcha | Crema Food",
-      "metaDescription": "Comandați băuturi cu livrare în Bălți: cafea, cafea rece, milkshake-uri, limonade, matcha, Ube și Bubble Tea. Livrare 60 MDL, gratuită de la 399 MDL."
+      "metaDescription": "Comandați băuturi cu livrare în Bălți: cafea, cafea rece, milkshake-uri, limonade, matcha, Ube, Bubble Tea și băuturi carbogazoase. Livrare 60 MDL, gratuită de la 399 MDL."
     },
     "kitchen": {
       "h1": "Livrare de preparate în Bălți",

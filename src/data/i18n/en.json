@@ -109,6 +109,10 @@
       "title": "Десерты",
       "desc": "Удовлетворите свою тягу к сладкому нашими кондитерскими шедеврами и авторской выпечкой"
     },
+    "soft-drinks": {
+      "title": "Прохладительные напитки",
+      "desc": "Газированные напитки, вода и соки: Coca Cola, Sprite, Fanta, Schweppes, Dorna, VITA и детские соки Naturalis"
+    },
     "alcohol": {
       "title": "Алкогольные напитки",
       "desc": "Популярные коктейли и отдельный алкоголь. Продажа только лицам старше 18 лет"
@@ -309,6 +313,72 @@
       "desc": "Популярное кондитерское изделие из сладкого дрожжевого теста, покрытое глазурью",
       "weight": "1 шт",
       "imageAlt": "Пончик с глазурью"
+    },
+    "coca-cola": {
+      "name": "Coca Cola",
+      "desc": "Классический газированный напиток",
+      "weight": "330 мл",
+      "imageAlt": "Coca Cola"
+    },
+    "schweppes-tonic": {
+      "name": "Schweppes Tonic",
+      "desc": "Газированный тоник с характерным горьковато-освежающим вкусом",
+      "weight": "330 мл",
+      "imageAlt": "Schweppes Tonic"
+    },
+    "schweppes-pomegranate": {
+      "name": "Schweppes Pomegranate",
+      "desc": "Газированный напиток Schweppes со вкусом граната",
+      "weight": "330 мл",
+      "imageAlt": "Schweppes Pomegranate"
+    },
+    "sprite": {
+      "name": "Sprite",
+      "desc": "Газированный лимонно-лаймовый напиток — освежает и хорошо утоляет жажду",
+      "weight": "330 мл",
+      "imageAlt": "Sprite"
+    },
+    "fanta": {
+      "name": "Fanta",
+      "desc": "Газированный напиток с ярким фруктовым вкусом",
+      "weight": "330 мл",
+      "imageAlt": "Fanta"
+    },
+    "dorna-sparkling": {
+      "name": "Dorna газированная",
+      "desc": "Газированная питьевая вода",
+      "weight": "330 мл",
+      "imageAlt": "Dorna газированная"
+    },
+    "dorna-still": {
+      "name": "Dorna негазированная",
+      "desc": "Негазированная питьевая вода",
+      "weight": "330 мл",
+      "imageAlt": "Dorna негазированная"
+    },
+    "vita-pomegranate": {
+      "name": "VITA Pomegranate",
+      "desc": "Напиток VITA со вкусом граната",
+      "weight": "250 мл",
+      "imageAlt": "VITA Pomegranate"
+    },
+    "vita-multifruit": {
+      "name": "VITA Multifruit",
+      "desc": "Напиток VITA со вкусом мультифрукт",
+      "weight": "250 мл",
+      "imageAlt": "VITA Multifruit"
+    },
+    "naturalis-apple": {
+      "name": "Детский сок Naturalis Яблоко",
+      "desc": "Детский сок с яблочным вкусом",
+      "weight": "200 мл",
+      "imageAlt": "Детский сок Naturalis Яблоко"
+    },
+    "naturalis-multifruit": {
+      "name": "Детский сок Naturalis Мультифрукт",
+      "desc": "Детский сок со вкусом мультифрукт",
+      "weight": "200 мл",
+      "imageAlt": "Детский сок Naturalis Мультифрукт"
     },
     "jack-daniels-honey": {
       "name": "Jack Daniel's Honey",
@@ -614,7 +684,7 @@
     "ice-coffee": {
       "h1": "Iced coffee delivery in Bălți",
       "metaTitle": "Iced coffee delivery in Bălți: iced latte, frappe | Crema Food",
-      "metaDescription": "Закажите холодный кофе в Бельцах: Ice Americano, айс-латте, фраппе, эспрессо-тоник, Bumblebee, Bubble Coffee. Доставка 60 MDL, бесплатно от 399 MDL."
+      "metaDescription": "Order iced coffee in Bălți: Ice Americano, iced latte, frappe, espresso tonic, Bumblebee, Bubble Coffee. Delivery 60 MDL, free from 399 MDL."
     },
     "milkshakes": {
       "h1": "Milkshake delivery in Bălți",
@@ -634,12 +704,17 @@
     "ube": {
       "h1": "Ube latte delivery in Bălți",
       "metaTitle": "Ube latte delivery in Bălți: Ube Cream Latte, smoothie | Crema Food",
-      "metaDescription": "Закажите напитки с фиолетовым бататом Ube в Бельцах: Ube Latte, Ube Cream Latte, Ube Smoothie, Ube Coconut и Ube Tropic. Доставка 60 MDL, бесплатно от 399 MDL."
+      "metaDescription": "Order drinks made with purple sweet potato Ube in Bălți: Ube Latte, Ube Cream Latte, Ube Smoothie, Ube Coconut and Ube Tropic. Delivery 60 MDL, free from 399 MDL."
     },
     "bubble-tea": {
       "h1": "Bubble Tea delivery in Bălți",
       "metaTitle": "Bubble Tea delivery in Bălți: kiwi, strawberry, peach | Crema Food",
       "metaDescription": "Order Bubble Tea in Bălți: tea or milk drinks with jelly pearls, 6 flavors. Delivery 60 MDL, free from 399 MDL."
+    },
+    "soft-drinks": {
+      "h1": "Soft drinks delivery in Bălți",
+      "metaTitle": "Soft drinks in Bălți: Coca Cola, Sprite | Crema Food",
+      "metaDescription": "Order soft drinks in Bălți: Coca Cola, Schweppes, Sprite, Fanta, Dorna water, VITA, Naturalis juices. Delivery 60 MDL, free from 399 MDL."
     },
     "alcohol": {
       "h1": "Alcoholic drinks delivery in Bălți",
@@ -663,8 +738,8 @@
     },
     "promo-permanent": {
       "h1": "Permanent offers and discounts in Bălți",
-      "metaTitle": "Постоянные акции и скидки в Бельцах: комбо, карта −20% | Crema Food",
-      "metaDescription": "Постоянные предложения Crema Food в Бельцах: комбо Кола + сэндвич по цене 40 MDL вместо 50 MDL, скидочная карта −20% на кофе. Доставка 60 MDL, бесплатно от 399 MDL."
+      "metaTitle": "Permanent offers and discounts in Bălți: combo, −20% card | Crema Food",
+      "metaDescription": "Crema Food permanent offers in Bălți: Cola + sandwich combo for 40 MDL instead of 50 MDL, a −20% coffee discount card. Delivery 60 MDL, free from 399 MDL."
     },
     "promo-seasonal": {
       "h1": "Seasonal drinks delivery in Bălți",
@@ -680,7 +755,7 @@
     "cafe": {
       "h1": "Drink delivery in Bălți",
       "metaTitle": "Drink delivery in Bălți: coffee, lemonades, matcha | Crema Food",
-      "metaDescription": "Order drinks for delivery in Bălți: coffee, iced coffee, milkshakes, lemonades, matcha, Ube and Bubble Tea. Delivery 60 MDL, free from 399 MDL."
+      "metaDescription": "Order drinks for delivery in Bălți: coffee, iced coffee, milkshakes, lemonades, matcha, Ube, Bubble Tea and sodas. Delivery 60 MDL, free from 399 MDL."
     },
     "kitchen": {
       "h1": "Meal delivery in Bălți",
