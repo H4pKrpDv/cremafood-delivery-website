@@ -31,7 +31,18 @@ import { useState, type ReactNode } from 'react';
 import { useI18n } from '@/i18n/I18nProvider';
 import PriceDiscount from '@/components/PriceDiscount';
 import { SyrupPicker } from '@/components/SyrupPicker';
-import { getItemSyrupDefault, isSyrupItem, makeLineKey, syrupSurcharge } from '@/lib/cartLines';
+import {
+  drinkSurcharge,
+  getItemDrinkDefaults,
+  getItemDrinkGroups,
+  getItemSyrupDefault,
+  isCustomizableItem,
+  isSyrupItem,
+  makeLineKey,
+  syrupSurcharge,
+  type DrinkChoices
+} from '@/lib/cartLines';
+import { DrinkOptionSegments } from './DrinkOptionSegments';
 import { useCartStore, useCartHydrated } from '@/store/cartStore';
 import { useItemMeta } from '@/lib/useItemMeta';
 import { useImageFallback } from '@/lib/useImageFallback';
@@ -127,12 +138,20 @@ export function ItemPage({ itemId, children }: { itemId: string; children?: Reac
   // степпер ниже всегда показывает количество именно ВЫБРАННОГО набора.
   // Черновик привязан к itemId, чтобы при переходе на другую позицию
   // (компонент страницы может сохраниться) он сбрасывался на умолчания.
-  const [draft, setDraft] = useState<{ itemId: string; syrups: string[] }>({ itemId, syrups: getItemSyrupDefault(itemId) });
+  const [draft, setDraft] = useState<{ itemId: string; syrups: string[]; choices: DrinkChoices }>({
+    itemId,
+    syrups: getItemSyrupDefault(itemId),
+    choices: getItemDrinkDefaults(itemId)
+  });
   const syrupsSupported = isSyrupItem(itemId);
-  const syrups = draft.itemId === itemId ? draft.syrups : getItemSyrupDefault(itemId);
-  const lineKey = makeLineKey(itemId, syrups);
+  const drinkGroups = getItemDrinkGroups(itemId);
+  const customizable = isCustomizableItem(itemId);
+  const fresh = draft.itemId === itemId;
+  const syrups = fresh ? draft.syrups : getItemSyrupDefault(itemId);
+  const choices = fresh ? draft.choices : getItemDrinkDefaults(itemId);
+  const lineKey = makeLineKey(itemId, syrups, choices);
   const qty = useCartStore((s) => (hydrated ? s.getItemQty(lineKey) : 0));
-  const otherQty = useCartStore((s) => (hydrated && syrupsSupported ? s.getItemTotalQty(itemId) - s.getItemQty(lineKey) : 0));
+  const otherQty = useCartStore((s) => (hydrated && customizable ? s.getItemTotalQty(itemId) - s.getItemQty(lineKey) : 0));
   const cutleryQty = useCartStore((s) => (hydrated ? s.getItemCutlery(lineKey) : 0));
   const setItemQty = useCartStore((s) => s.setItemQty);
   const setItemCutlery = useCartStore((s) => s.setItemCutlery);
@@ -205,12 +224,25 @@ export function ItemPage({ itemId, children }: { itemId: string; children?: Reac
               <p className="item-page__notice">{t('menu.availableFrom').replace('{time}', meta.departmentOpenLabel)}</p>
             ) : null}
 
+            {orderable && drinkGroups.length ? (
+              <section className="item-page__section item-page__options">
+                {drinkGroups.map((group) => (
+                  <DrinkOptionSegments
+                    key={group}
+                    group={group}
+                    value={choices[group] ?? ''}
+                    onChange={(next) => setDraft({ itemId, syrups, choices: { ...choices, [group]: next } })}
+                  />
+                ))}
+              </section>
+            ) : null}
+
             {orderable && syrupsSupported ? (
               <section className="item-page__section item-page__syrups">
                 <SyrupPicker
                   itemId={itemId}
                   value={syrups}
-                  onChange={(next) => setDraft({ itemId, syrups: next })}
+                  onChange={(next) => setDraft({ itemId, syrups: next, choices })}
                 />
               </section>
             ) : null}
@@ -283,7 +315,7 @@ export function ItemPage({ itemId, children }: { itemId: string; children?: Reac
                 ) : (
                   <button type="button" className="stepper__add item-page__add" onClick={() => setItemQty(lineKey, 1)}>
                     {t('common.add')}
-                    {syrupsSupported ? ` · ${base.price + syrupSurcharge(itemId, syrups)} MDL` : ''}
+                    {customizable ? ` · ${base.price + syrupSurcharge(itemId, syrups) + drinkSurcharge(itemId, choices)} MDL` : ''}
                   </button>
                 )}
                 {otherQty > 0 ? (

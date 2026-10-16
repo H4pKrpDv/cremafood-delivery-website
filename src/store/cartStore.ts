@@ -23,7 +23,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { useEffect, useState } from 'react';
-import { makeLineKey, parseLineKey } from '@/lib/cartLines';
+import { makeLineKey, parseLineKey, type DrinkChoices } from '@/lib/cartLines';
 
 export interface CartEntry {
   qty: number;
@@ -41,11 +41,15 @@ interface CartStoreActions {
   /** Сумма qty по ВСЕМ строкам позиции (с любыми наборами сиропов). */
   getItemTotalQty: (itemId: string) => number;
   /**
-   * Меняет набор сиропов у строки корзины. count — сколько напитков
-   * перенести в строку с новым набором ('all' — вся строка). Если строка с
-   * таким набором уже есть, количества складываются.
+   * Меняет состав строки корзины (сиропы, молоко, кофе). count — сколько
+   * напитков перенести в строку с новым составом ('all' — вся строка). Если
+   * строка с таким составом уже есть, количества складываются.
    */
-  changeLineSyrups: (lineKey: string, syrups: string[], count: number | 'all') => void;
+  changeLineConfig: (
+    lineKey: string,
+    config: { syrups: string[]; choices?: DrinkChoices },
+    count: number | 'all'
+  ) => void;
   setItemQty: (itemId: string, qty: number) => void;
   getItemCutlery: (itemId: string) => number;
   setItemCutlery: (itemId: string, qty: number) => void;
@@ -81,12 +85,12 @@ export const useCartStore = create<CartStore>()(
           0
         ),
 
-      changeLineSyrups: (lineKey, syrups, count) =>
+      changeLineConfig: (lineKey, config, count) =>
         set((state) => {
           const source = state.items[lineKey];
           if (!source) return state;
           const { itemId } = parseLineKey(lineKey);
-          const targetKey = makeLineKey(itemId, syrups);
+          const targetKey = makeLineKey(itemId, config.syrups, config.choices);
           if (targetKey === lineKey) return state;
           const move = count === 'all' ? source.qty : Math.max(0, Math.min(count, source.qty));
           if (move <= 0) return state;

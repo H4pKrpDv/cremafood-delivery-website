@@ -18,13 +18,17 @@
 
 import menuJson from '@/data/menu.json';
 import imageManifest from '@/data/imageManifest.json';
-import type { MenuData, MenuItem, DepartmentValue, ItemSyrupConfig, SyrupSettings } from '@/types/menu';
+import type { MenuData, MenuItem, DepartmentValue, ItemSyrupConfig, SyrupSettings, DrinkGroupId, DrinkOptionGroup } from '@/types/menu';
 
 export const menuData = menuJson as unknown as MenuData;
 
 // 17.10.2026. Общие настройки сиропов (цена порции, объём, максимум на напиток,
 // список вкусов) — см. data/menu.json → "syrups" и lib/cartLines.ts.
 export const syrupSettings: SyrupSettings = menuData.syrups;
+
+// 18.10.2026. Группы «основы» напитка (молоко, кофе): цена доплаты, вариант
+// по умолчанию, список вариантов — data/menu.json → "drinkOptions".
+export const drinkOptionSettings: Record<DrinkGroupId, DrinkOptionGroup> = menuData.drinkOptions;
 
 // 01.10.2026. Множество путей (вида "img/items/espresso.jpg", без ведущего
 // слэша — тот же формат, что в menu.json), для которых в public/ РЕАЛЬНО
@@ -69,6 +73,8 @@ export interface ItemMetaBase {
   modifierGroupIds: string[];
   /** Конфиг сиропов позиции (если задан — позиция кастомизируется сиропами). */
   syrups?: ItemSyrupConfig;
+  /** Какие группы основы (молоко/кофе) можно выбирать у позиции. */
+  drinkOptions?: DrinkGroupId[];
   ageRestricted: boolean;
   cutleryEligible: boolean;
   department: DepartmentValue;
@@ -91,6 +97,7 @@ function buildItemMetaIndex(): Record<string, ItemMetaBase> {
           available: item.available !== false,
           modifierGroupIds: item.modifiers ?? [],
           ...(item.syrups ? { syrups: item.syrups } : {}),
+          ...(item.drinkOptions?.length ? { drinkOptions: item.drinkOptions } : {}),
           ageRestricted: Boolean(item.ageRestricted),
           cutleryEligible: Boolean(sub.cutleryEligible),
           department: resolveDepartment(item, category.id),

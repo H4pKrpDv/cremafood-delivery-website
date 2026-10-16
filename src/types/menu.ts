@@ -28,6 +28,22 @@ export interface MenuItem {
    * порций сиропа уже входит в цену напитка (raf-coffee: 1).
    */
   syrups?: ItemSyrupConfig;
+  /**
+   * 18.10.2026. Группы «основы» напитка, которые можно выбрать на странице
+   * позиции: 'milk' (молоко), 'beans' (кофе: классический / декаф).
+   * Настройки групп — MenuData.drinkOptions.
+   */
+  drinkOptions?: DrinkGroupId[];
+}
+
+export type DrinkGroupId = 'milk' | 'beans';
+
+export interface DrinkOptionGroup {
+  /** Доплата за вариант НЕ по умолчанию, MDL за один напиток. */
+  price: number;
+  /** id варианта по умолчанию (в цене). */
+  default: string;
+  options: { id: string }[];
 }
 
 export interface ItemSyrupConfig {
@@ -82,6 +98,7 @@ export interface MenuData {
   categories: MenuCategory[];
   modifierGroups: Record<string, ModifierOption[]>;
   syrups: SyrupSettings;
+  drinkOptions: Record<DrinkGroupId, DrinkOptionGroup>;
 }
 
 export function isFullMenuSubcategory(sub: MenuSubcategory): sub is MenuSubcategoryFullMenu {

@@ -12,6 +12,7 @@
 
 import type { CartSummary } from './cartSummary';
 import type { OrderFormValidated } from './orderSchema';
+import { drinkOptionSettings } from './data';
 
 export const DELIVERY_FEE = 60;
 
@@ -25,6 +26,15 @@ export interface OrderPayloadItemModifier {
 export interface OrderPayloadSyrup {
   id: string;
   name: string;
+}
+
+export interface OrderPayloadDrinkChoice {
+  group: 'milk' | 'beans';
+  id: string;
+  name: string;
+  tag: string;
+  /** Доплата за этот вариант на ОДИН напиток (уже входит в lineTotal). */
+  surchargePerUnit: number;
 }
 
 export interface OrderPayloadItem {
@@ -42,6 +52,8 @@ export interface OrderPayloadItem {
     /** У позиции есть сироп по умолчанию, но его убрали (raf без ванили). */
     defaultRemoved: boolean;
   } | null;
+  /** Молоко/кофе НЕ по умолчанию (18.10.2026); пустой массив — всё стандартное. */
+  drinkChoices: OrderPayloadDrinkChoice[];
   modifiers: OrderPayloadItemModifier[];
   cutleryQty: number;
   cutleryCost: number;
@@ -104,6 +116,15 @@ export function buildOrderPayload(
             defaultRemoved: line.syrupIncluded > 0 && line.syrups.length === 0
           }
         : null,
+      drinkChoices: line.drinkChoices
+        .filter((c) => !c.isDefault)
+        .map((c) => ({
+          group: c.group,
+          id: c.id,
+          name: c.name,
+          tag: c.tag,
+          surchargePerUnit: drinkOptionSettings[c.group].price
+        })),
       modifiers: line.modifiersDetail
         .filter((d) => d.qty > 0)
         .map((d) => ({ groupId: d.groupId, optionId: d.optionId, qty: d.qty, price: d.price })),

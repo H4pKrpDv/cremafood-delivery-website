@@ -4030,6 +4030,121 @@
         opacity: 0.85;
       }
 
+      /* 18.10.2026. Выбор молока/кофе: сегментированный переключатель
+         (components/DrinkOptionSegments.tsx). Mobile-first: сегменты делят ряд
+         поровну (--n), узкие подписи переносятся. */
+      .drink-opt {
+        margin: 0 0 1rem;
+        padding: 0;
+        border: 0;
+        min-width: 0;
+      }
+
+      .drink-opt__legend {
+        padding: 0;
+        margin-bottom: 0.45rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--text-3);
+      }
+
+      .drink-opt__seg {
+        display: grid;
+        grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr));
+        gap: 0.4rem;
+        padding: 0.25rem;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+      }
+
+      .drink-opt__item {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.1rem;
+        min-height: 3.6rem;
+        padding: 0.5rem 0.3rem;
+        border-radius: 10px;
+        text-align: center;
+        color: var(--text-2);
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+      }
+
+      .drink-opt__item:hover {
+        background: var(--bg-2);
+      }
+
+      .drink-opt__item--on,
+      .drink-opt__item--on:hover {
+        background: var(--gold);
+        color: var(--bg);
+      }
+
+      .drink-opt__item:has(.drink-opt__input:focus-visible) {
+        outline: 2px solid var(--gold);
+        outline-offset: 2px;
+      }
+
+      .drink-opt__input {
+        position: absolute;
+        opacity: 0;
+        inset: 0;
+        margin: 0;
+        cursor: pointer;
+      }
+
+      .drink-opt__name {
+        font-size: 0.88rem;
+        font-weight: 600;
+        line-height: 1.2;
+      }
+
+      .drink-opt__sub,
+      .drink-opt__price {
+        font-size: 0.7rem;
+        line-height: 1.25;
+        opacity: 0.85;
+      }
+
+      .drink-opt__sub:empty,
+      .drink-opt__price:empty {
+        display: none;
+      }
+
+      .drink-opt__item--on .drink-opt__price {
+        font-weight: 600;
+        opacity: 1;
+      }
+
+      .drink-opt__note {
+        margin: 0.4rem 0 0;
+        font-size: 0.76rem;
+        line-height: 1.4;
+        color: var(--text-3);
+      }
+
+      .drink-opt__note:empty {
+        display: none;
+      }
+
+      .drink-opt--compact {
+        margin-bottom: 0.7rem;
+      }
+
+      .drink-opt--compact .drink-opt__item {
+        min-height: 3rem;
+      }
+
+      .item-page__options {
+        margin: 1rem 0 0;
+      }
+
       .item-page__other-qty {
         margin: 0.6rem 0 0;
       }
@@ -4060,6 +4175,20 @@
         display: inline-flex;
         align-items: center;
         gap: 0.3rem;
+      }
+
+      .cart-syrup__choice {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 0.35rem;
+        color: var(--cream);
+        font-weight: 600;
+      }
+
+      .cart-syrup__tag {
+        font-size: 0.72rem;
+        font-weight: 400;
+        color: var(--text-3);
       }
 
       .cart-syrup__price,

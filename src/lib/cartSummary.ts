@@ -20,13 +20,26 @@
  *  - 17.10.2026: ключ в cart.items — КЛЮЧ СТРОКИ (lib/cartLines.ts): позиция +
  *    набор сиропов. Доплата за сиропы входит в цену одного напитка и
  *    умножается на qty; у raf-coffee одна порция сиропа уже в цене.
+ *  - 18.10.2026: ключ строки дополнен выбором молока/кофе (токены m=/b=);
+ *    доплата за не-стандартный вариант (+10 MDL за напиток по каждой группе)
+ *    входит в цену одного напитка и умножается на qty.
  *  - 18+: если есть хотя бы одна ЗАКАЗЫВАЕМАЯ позиция с ageRestricted —
  *    нужен cart.ageConfirmed, иначе canCheckout=false.
  * ------------------------------------------------------------------
  */
 
 import { itemMetaIndex, modifierGroups } from './data';
-import { parseLineKey, syrupSurcharge, getItemSyrupIncluded, isSyrupItem } from './cartLines';
+import {
+  parseLineKey,
+  syrupSurcharge,
+  getItemSyrupIncluded,
+  isSyrupItem,
+  isCustomizableItem,
+  getItemDrinkGroups,
+  getDrinkDefault,
+  drinkSurcharge
+} from './cartLines';
+import type { DrinkGroupId } from '@/types/menu';
 import { isOpen as isDepartmentOpen, getOpenTimeLabel } from './hours';
 import type { DepartmentValue } from '@/types/menu';
 
@@ -62,6 +75,8 @@ export interface ResolvedItemMeta {
   orderable: boolean;
   /** Поддерживает ли позиция сиропы (menu.json → item.syrups). */
   syrupSupported: boolean;
+  /** Есть ли у позиции любая кастомизация: сиропы, молоко или кофе. */
+  customizable: boolean;
 }
 
 export function resolveItemMeta(itemId: string, t: Translator, nowMinutes: number): ResolvedItemMeta {
@@ -80,7 +95,8 @@ export function resolveItemMeta(itemId: string, t: Translator, nowMinutes: numbe
       departmentOpen: true,
       departmentOpenLabel: '',
       orderable: false,
-      syrupSupported: false
+      syrupSupported: false,
+      customizable: false
     };
   }
   const departmentOpen = isDepartmentOpen(base.department, nowMinutes);
@@ -97,7 +113,8 @@ export function resolveItemMeta(itemId: string, t: Translator, nowMinutes: numbe
     departmentOpen,
     departmentOpenLabel,
     orderable: base.available && departmentOpen,
-    syrupSupported: Boolean(base.syrups)
+    syrupSupported: Boolean(base.syrups),
+    customizable: isCustomizableItem(itemId)
   };
 }
 
@@ -113,6 +130,18 @@ export interface SyrupDetail {
   name: string;
 }
 
+/** Выбранный вариант основы (молоко/кофе) в строке корзины. */
+export interface DrinkChoiceDetail {
+  group: DrinkGroupId;
+  id: string;
+  /** Полное название для корзины/заказа («Кокосовое молоко», «Декаф»). */
+  name: string;
+  /** Пометка («безлактозное», «без кофеина»); пусто, если её нет. */
+  tag: string;
+  /** Это вариант по умолчанию (в цене, в корзине не показывается). */
+  isDefault: boolean;
+}
+
 export interface CartLine {
   /** Ключ строки в cart.items (id позиции или id~сиропы, см. lib/cartLines.ts). */
   lineKey: string;
@@ -124,6 +153,10 @@ export interface CartLine {
   syrupSurcharge: number;
   /** Сколько порций сиропа входит в цену напитка (raf-coffee: 1). */
   syrupIncluded: number;
+  /** Молоко/кофе по группам, доступным позиции (включая варианты по умолчанию). */
+  drinkChoices: DrinkChoiceDetail[];
+  /** Доплата за молоко/кофе на ОДИН напиток (MDL), уже включена в lineTotal. */
+  drinkSurcharge: number;
   meta: ResolvedItemMeta;
   modifiersDetail: ModifierDetail[];
   cutleryQty: number;
@@ -157,7 +190,7 @@ export function computeSummary(cart: Cart, t: Translator, nowMinutes: number): C
     const qty = entry && typeof entry.qty === 'number' ? entry.qty : 0;
     if (qty <= 0) continue;
 
-    const { itemId, syrups: syrupIds } = parseLineKey(lineKey);
+    const { itemId, syrups: syrupIds, choices } = parseLineKey(lineKey);
 
     const meta = resolveItemMeta(itemId, t, nowMinutes);
     if (meta.orderable && meta.ageRestricted) hasAgeRestrictedLine = true;
@@ -181,7 +214,19 @@ export function computeSummary(cart: Cart, t: Translator, nowMinutes: number): C
     const surcharge = syrupSurcharge(itemId, syrupIds);
     const syrups: SyrupDetail[] = syrupIds.map((id) => ({ id, name: t(`syrups.option.${id}`) || id }));
 
-    const lineTotal = meta.orderable ? (meta.price + surcharge) * qty + modifiersCost + cutleryCost : 0;
+    const drinkExtra = drinkSurcharge(itemId, choices);
+    const drinkChoices: DrinkChoiceDetail[] = getItemDrinkGroups(itemId).map((group) => {
+      const id = choices[group] ?? getDrinkDefault(group);
+      return {
+        group,
+        id,
+        name: t(`drinkOptions.${group}.${id}.full`) || id,
+        tag: t(`drinkOptions.${group}.${id}.tag`),
+        isDefault: id === getDrinkDefault(group)
+      };
+    });
+
+    const lineTotal = meta.orderable ? (meta.price + surcharge + drinkExtra) * qty + modifiersCost + cutleryCost : 0;
     if (meta.orderable) {
       subtotal += lineTotal;
       totalCutleryCost += cutleryCost;
@@ -194,6 +239,8 @@ export function computeSummary(cart: Cart, t: Translator, nowMinutes: number): C
       syrups,
       syrupSurcharge: surcharge,
       syrupIncluded: isSyrupItem(itemId) ? getItemSyrupIncluded(itemId) : 0,
+      drinkChoices,
+      drinkSurcharge: drinkExtra,
       meta,
       modifiersDetail,
       cutleryQty,

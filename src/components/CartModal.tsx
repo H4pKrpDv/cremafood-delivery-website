@@ -20,6 +20,8 @@ import { useCartSummary } from '@/lib/useCartSummary';
 import { FREE_DELIVERY_THRESHOLD, type CartLine } from '@/lib/cartSummary';
 import { SyrupIcon } from './SyrupIcon';
 import { SyrupPicker } from './SyrupPicker';
+import { DrinkOptionSegments } from './DrinkOptionSegments';
+import type { DrinkChoices } from '@/lib/cartLines';
 
 function formatMdl(amount: number): string {
   return `${Math.round(amount * 100) / 100} MDL`;
@@ -43,11 +45,20 @@ function CartSyrups({
   onEdit: () => void;
 }) {
   const { t } = useI18n();
-  const inPrice = line.syrupIncluded > 0 && line.syrups.length > 0 && line.syrupSurcharge === 0;
+  const perCup = line.syrupSurcharge + line.drinkSurcharge;
+  const changedChoices = line.drinkChoices.filter((c) => !c.isDefault);
+  const inPrice = line.syrupIncluded > 0 && line.syrups.length > 0 && perCup === 0;
+  const hasAnything = line.syrups.length > 0 || line.syrupIncluded > 0 || changedChoices.length > 0;
 
   return (
     <div className="cart-syrup">
       <div className="cart-syrup__summary">
+        {changedChoices.map((c) => (
+          <span className="cart-syrup__choice" key={c.group}>
+            <span>{c.name}</span>
+            {c.tag ? <span className="cart-syrup__tag">{c.tag}</span> : null}
+          </span>
+        ))}
         {line.syrups.length ? (
           <>
             {line.syrups.map((s) => (
@@ -56,18 +67,17 @@ function CartSyrups({
                 <span>{s.name}</span>
               </span>
             ))}
-            {line.syrupSurcharge > 0 ? (
-              <span className="cart-syrup__price">{t('syrups.perCup').replace('{amount}', String(line.syrupSurcharge))}</span>
-            ) : inPrice ? (
-              <span className="cart-syrup__price">{t('syrups.inPrice')}</span>
-            ) : null}
+            {inPrice ? <span className="cart-syrup__price">{t('syrups.inPrice')}</span> : null}
           </>
         ) : line.syrupIncluded > 0 ? (
           <span className="cart-syrup__none">{t('syrups.noSyrup')}</span>
         ) : null}
+        {perCup > 0 ? (
+          <span className="cart-syrup__price">{t('syrups.perCup').replace('{amount}', String(perCup))}</span>
+        ) : null}
         {!editing && !disabled ? (
           <button type="button" className="cart-syrup__edit" onClick={onEdit}>
-            {line.syrups.length || line.syrupIncluded > 0 ? t('syrups.edit') : `+ ${t('syrups.add')}`}
+            {hasAnything ? t('syrups.edit') : `+ ${t('drinkOptions.customize')}`}
           </button>
         ) : null}
       </div>
@@ -79,18 +89,32 @@ function CartSyrups({
 // только при правке, поэтому черновик всегда стартует с текущего набора.
 function CartSyrupEditor({ line, onClose }: { line: CartLine; onClose: () => void }) {
   const { t } = useI18n();
-  const changeLineSyrups = useCartStore((s) => s.changeLineSyrups);
+  const changeLineConfig = useCartStore((s) => s.changeLineConfig);
   const [draft, setDraft] = useState<string[]>(() => line.syrups.map((s) => s.id));
+  const [choices, setChoices] = useState<DrinkChoices>(() => {
+    const out: DrinkChoices = {};
+    for (const c of line.drinkChoices) out[c.group] = c.id;
+    return out;
+  });
   const [scope, setScope] = useState<'all' | 'one'>('all');
 
   function apply() {
-    changeLineSyrups(line.lineKey, draft, scope === 'one' && line.qty > 1 ? 1 : 'all');
+    changeLineConfig(line.lineKey, { syrups: draft, choices }, scope === 'one' && line.qty > 1 ? 1 : 'all');
     onClose();
   }
 
   return (
     <div className="cart-syrup__editor">
-      <SyrupPicker itemId={line.itemId} value={draft} onChange={setDraft} mode="panel" />
+      {line.drinkChoices.map((c) => (
+        <DrinkOptionSegments
+          key={c.group}
+          group={c.group}
+          value={choices[c.group] ?? c.id}
+          onChange={(next) => setChoices((prev) => ({ ...prev, [c.group]: next }))}
+          compact
+        />
+      ))}
+      {line.meta.syrupSupported ? <SyrupPicker itemId={line.itemId} value={draft} onChange={setDraft} mode="panel" /> : null}
       {line.qty > 1 ? (
         <fieldset className="cart-syrup__scope">
           <legend>{t('syrups.scopeLabel')}</legend>
@@ -139,7 +163,7 @@ function CartItemRow({ line }: { line: CartLine }) {
           </span>
         ) : null}
 
-        {meta.syrupSupported ? <CartSyrups line={line} disabled={disabled} editing={editingSyrups} onEdit={() => setEditingSyrups(true)} /> : null}
+        {meta.customizable ? <CartSyrups line={line} disabled={disabled} editing={editingSyrups} onEdit={() => setEditingSyrups(true)} /> : null}
 
         {line.modifiersDetail.length ? (
           <div className="cart-item__modifiers">
@@ -228,7 +252,7 @@ function CartItemRow({ line }: { line: CartLine }) {
           </button>
         </div>
       </div>
-      {editingSyrups && meta.syrupSupported ? (
+      {editingSyrups && meta.customizable ? (
         <CartSyrupEditor line={line} onClose={() => setEditingSyrups(false)} />
       ) : null}
     </li>

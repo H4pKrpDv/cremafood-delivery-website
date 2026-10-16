@@ -31,10 +31,10 @@ export function ItemCard({ itemId }: { itemId: string }) {
   const base = itemMetaIndex[itemId];
   const hydrated = useCartHydrated();
   // Быстрое «Добавить» кладёт позицию с набором по умолчанию (без сиропов; у
-  // raf-coffee — с ванилью): ключ такой строки равен id позиции. Сироп можно
+  // raf-coffee — с ванилью; обычное молоко и классический кофе): ключ такой строки равен id позиции. Сироп можно
   // выбрать на странице напитка или потом в корзине (lib/cartLines.ts).
   const qty = useCartStore((s) => (hydrated ? s.getItemQty(itemId) : 0));
-  const otherQty = useCartStore((s) => (hydrated && base?.syrups ? s.getItemTotalQty(itemId) - s.getItemQty(itemId) : 0));
+  const otherQty = useCartStore((s) => (hydrated && (base?.syrups || base?.drinkOptions) ? s.getItemTotalQty(itemId) - s.getItemQty(itemId) : 0));
   const setItemQty = useCartStore((s) => s.setItemQty);
   // base может быть undefined (неизвестный itemId) — ниже есть ранний
   // return null, но хуки обязаны вызываться безусловно и в одном и том же

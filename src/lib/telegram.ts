@@ -102,6 +102,11 @@ export function formatOrderMessage(payload: OrderPayload, siteLang: string = 'ru
   lines.push('<b>Состав заказа:</b>');
   for (const item of payload.items) {
     lines.push(`• ${escapeHtml(item.name)} × ${item.qty} — ${formatMdl(item.lineTotal)}`);
+    for (const choice of item.drinkChoices) {
+      const icon = choice.group === 'milk' ? '🥛 молоко' : '☕ кофе';
+      const tag = choice.tag ? ` (${escapeHtml(choice.tag)})` : '';
+      lines.push(`   ${icon}: ${escapeHtml(choice.name)}${tag} (+${formatMdl(choice.surchargePerUnit)} за шт.)`);
+    }
     if (item.syrups) {
       if (item.syrups.items.length) {
         const names = item.syrups.items.map((s) => escapeHtml(s.name)).join(', ');

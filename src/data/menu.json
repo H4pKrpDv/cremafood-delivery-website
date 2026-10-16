@@ -127,7 +127,10 @@
               "image": "img/items/espresso.jpg",
               "modifiers": [],
               "available": true,
-              "syrups": {}
+              "syrups": {},
+              "drinkOptions": [
+                "beans"
+              ]
             },
             {
               "id": "americano",
@@ -135,7 +138,10 @@
               "image": "img/items/americano.jpg",
               "modifiers": [],
               "available": true,
-              "syrups": {}
+              "syrups": {},
+              "drinkOptions": [
+                "beans"
+              ]
             },
             {
               "id": "doppio",
@@ -143,7 +149,10 @@
               "image": "img/items/doppio.jpg",
               "modifiers": [],
               "available": true,
-              "syrups": {}
+              "syrups": {},
+              "drinkOptions": [
+                "beans"
+              ]
             },
             {
               "id": "cortado",
@@ -151,7 +160,11 @@
               "image": "img/items/cortado.jpg",
               "modifiers": [],
               "available": true,
-              "syrups": {}
+              "syrups": {},
+              "drinkOptions": [
+                "milk",
+                "beans"
+              ]
             },
             {
               "id": "cappuccino",
@@ -159,7 +172,11 @@
               "image": "img/items/cappuccino.jpg",
               "modifiers": [],
               "available": true,
-              "syrups": {}
+              "syrups": {},
+              "drinkOptions": [
+                "milk",
+                "beans"
+              ]
             },
             {
               "id": "grand-cappuccino",
@@ -167,7 +184,11 @@
               "image": "img/items/grand-cappuccino.jpg",
               "modifiers": [],
               "available": true,
-              "syrups": {}
+              "syrups": {},
+              "drinkOptions": [
+                "milk",
+                "beans"
+              ]
             },
             {
               "id": "latte",
@@ -175,7 +196,11 @@
               "image": "img/items/latte.jpg",
               "modifiers": [],
               "available": true,
-              "syrups": {}
+              "syrups": {},
+              "drinkOptions": [
+                "milk",
+                "beans"
+              ]
             },
             {
               "id": "flat-white",
@@ -183,7 +208,11 @@
               "image": "img/items/flat-white.jpg",
               "modifiers": [],
               "available": true,
-              "syrups": {}
+              "syrups": {},
+              "drinkOptions": [
+                "milk",
+                "beans"
+              ]
             },
             {
               "id": "moccacino",
@@ -191,7 +220,11 @@
               "image": "img/items/moccacino.jpg",
               "modifiers": [],
               "available": true,
-              "syrups": {}
+              "syrups": {},
+              "drinkOptions": [
+                "milk",
+                "beans"
+              ]
             },
             {
               "id": "raf-coffee",
@@ -204,7 +237,10 @@
                   "vanilla"
                 ],
                 "included": 1
-              }
+              },
+              "drinkOptions": [
+                "beans"
+              ]
             }
           ]
         },
@@ -794,5 +830,34 @@
         ]
       }
     ]
+  },
+  "drinkOptions": {
+    "milk": {
+      "price": 10,
+      "default": "regular",
+      "options": [
+        {
+          "id": "regular"
+        },
+        {
+          "id": "coconut"
+        },
+        {
+          "id": "almond"
+        }
+      ]
+    },
+    "beans": {
+      "price": 10,
+      "default": "classic",
+      "options": [
+        {
+          "id": "classic"
+        },
+        {
+          "id": "decaf"
+        }
+      ]
+    }
   }
 }
